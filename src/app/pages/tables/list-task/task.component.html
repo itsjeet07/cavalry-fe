@@ -1,0 +1,928 @@
+<div class="main_layout" [ngClass]="{'from-dashboard': fromDashboard}" [nbSpinner]="loading" nbSpinnerSize="large"
+  nbSpinnerStatus="primary">
+  <div class="drag-container">
+    <div class="section2 task-page " [id]="getTaskId()" (mouseup)="onCollapse()">
+      <div class="tasks-main">
+        <nb-card class="nb_card mb-0" [ngStyle]="{'background-color': fromDashboard ? 'transparent' : '#fff' }">
+          <nb-card-body [ngStyle]="{'padding': fromDashboard ? 0 : null }">
+            <nb-alert status="success" class="alert-div" closable (click)="onRemoveFilter()"
+              *ngIf="showAlert && !fromDashboard">
+              Additional Filter Applied
+            </nb-alert>
+            <nb-tabset class="nb_tab_set" *ngIf="recordTypes.length > 0" (changeTab)="onTabChanged($event)">
+              <nb-tab class="tab_set" [active]="setActiveTab(i, tab.title)" [tabTitle]="tab.title | pluralize"
+                [badgeText]="tab.totalInCompleteTasks" badgeStatus="success"
+                *ngFor="let tab of recordTypes; let i = index">
+                <div class="tab1">
+                  <div class="header">
+                    <div class="inner_head reminder-btn mb-2">
+                      <div class="heade_icon" [ngClass]="{'active_header_icon':!activeHeader}" (click)="changeTab()">
+                        <i class="fas fa-list mr-1"></i>
+                        <span>List</span>
+                      </div>
+                      <div class="heade_icon reminder-btn" [ngClass]="{'active_header_icon':!activeHeader}"
+                        (click)="showCalendarMode({checked: true})" *ngIf="tab.title !== 'Calendar'">
+                        <nb-icon icon="calendar-outline" class="calendar-icon"></nb-icon>
+                        <span>Calendar</span>
+                      </div>
+                      <!--                      <div class="heade_icon pointer" [ngClass]="{'active_header_icon':activeHeader}"-->
+                      <!--                        (click)="changeTab()">-->
+                      <!--                        <i class="fas fa-columns mr-1"></i>-->
+                      <!--                        <span>Board</span>-->
+                      <!--                      </div>-->
+                    </div>
+                    <div class="group mb-2" *ngIf="showCalendar">
+                      <div class="btn-group">
+                        <div class="btn btn-primary" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
+                          (viewDateChange)="closeOpenMonthViewDay()">
+                          Previous
+                        </div>
+                        <div class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate">
+                          Today
+                        </div>
+                        <div class="btn btn-primary" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
+                          (viewDateChange)="closeOpenMonthViewDay()">
+                          Next
+                        </div>
+                      </div>
+                      <div class="mx-3">
+                        <h5 class="header-text">{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}
+                          <i *ngIf="view === 'day'" class="fas fa-plus-circle add-new-task-header pointer"
+                            (click)="addNewTask('Calendar', '', viewDate)"></i>
+                        </h5>
+                      </div>
+                      <div class="btn-group">
+                        <div class="btn btn-primary" (click)="setView(CalendarView.Month)"
+                          [class.active]="view === CalendarView.Month">
+                          Month
+                        </div>
+                        <div class="btn btn-primary" (click)="setView(CalendarView.Week)"
+                          [class.active]="view === CalendarView.Week">
+                          Week
+                        </div>
+                        <div class="btn btn-primary" (click)="setView(CalendarView.Day)"
+                          [class.active]="view === CalendarView.Day">
+                          Day
+                        </div>
+                      </div>
+                    </div>
+                    <div class="group mb-2">
+                      <div class="search_icon_set" *ngIf="tab.title !== 'Calendar'">
+                        <input nbInput class="search-input" placeholder="Search & Enter" #search
+                          (keyup.enter)="onSearch(search.value)" [(ngModel)]="searchValue">
+                        <i class="fa fa-search icon" aria-hidden="true"></i>
+                      </div>
+                      <div *ngIf="tab.title === 'Calendar'">
+                        <mat-slide-toggle color="primary" [(ngModel)]="showCalendar"
+                          (change)="showCalendarMode($event)"></mat-slide-toggle>
+                        <span class="ml-1 pr-2">View In Calendar Mode</span>
+                      </div>
+                      <mat-slide-toggle color="primary" [(ngModel)]="showCompletedTasks"
+                        (change)="showCompleted($event)"></mat-slide-toggle>
+                      <span class="ml-1 completed-text">View Completed</span>
+                    </div>
+                  </div>
+                  <div class="second_header">
+                    <div class="w-30 d-flex flex-row align-items-baseline" *ngIf="!showCalendar">
+                      <span class="header_text ">All {{ tab.title + 's' }}</span>
+                      <div class="add ml-2 pointer" (click)="addNewTask(tab.title)">
+                        <i class="fas fa-plus-circle "></i>
+                        <span>Add new {{ tab.title }}</span>
+                      </div>
+                    </div>
+                    <!-- <span *ngIf="!isDynamicTable" class="group w-30 spanstyle" style="font-weight: 700;width: 30%;justify-content: flex-start;
+                display: flex;">Associated with</span> -->
+
+                    <div class="second_inner_header_right w-40">
+                      <div [ngClass]="showCalendar ? 'groupCalendar' : 'group'" *ngIf="!isDynamicTable || showCalendar">
+                        <ng-container *ngIf="!showCalendar && false">
+                          <span class="pointer">My watched issues</span>
+                          <mat-slide-toggle color="primary" [(ngModel)]="watchedIssue"
+                            (change)="onMyWatchedIssues($event)"></mat-slide-toggle>
+                          <!--  createdBy-->
+                          <span class="assigned_to">created By</span>
+                          <button aria-hidden="true" mat-icon-button class="eye-btnn "
+                            [matMenuTriggerFor]="menuCreatedBy">
+                            <span class="icon-mar-lft"><i
+                                class="fa fa-users"></i>&nbsp;{{createdByUserArray.length}}</span>
+                          </button>
+                          <mat-menu #menuCreatedBy="matMenu" yPosition="below">
+                            <div class="outerdiv">
+                              <nb-checkbox (checkedChange)="onAllCreatedByUserSelected($event)"
+                                [formControl]="allCreatedByUserSelected">All
+                              </nb-checkbox>
+                              <nb-checkbox [formControl]="createdByMeSelected" (checkedChange)="onCreatedByMe($event)">
+                                Me
+                              </nb-checkbox>
+                            </div>
+                            <div class="all-user-list">
+                              <button mat-menu-item class="buttonstyle"
+                                *ngFor="let option of createdByUserArray;let i=index">
+                                <span class="li-head" (mouseover)="createdByUser = option._id"
+                                  (mouseleave)="createdByUser = ''">
+                                  <span class="icon-mar-lft assign_icon"
+                                    [ngStyle]="{'background-color': option?.userColor}">{{ option.firstName[0] +
+                                    option.lastName[0] |
+                                    uppercase}}</span>
+                                  <span>{{ option.firstName +' ' + option.lastName}}</span>
+                                  <span class="pointer" *ngIf="createdByUser === option._id"
+                                    (click)="onRemoveCreatedBy(i)" style="margin-left: 10px;">
+                                    <i class="fa fa-times" aria-hidden="true"></i>
+                                  </span>
+                                </span>
+                              </button>
+                            </div>
+                            <span class="buttonstyle border_unset" *ngIf="!showMenu"
+                              (click)="assignedUser.length != createdByUserArray.length && onShowMenu($event)">
+                              <i class="fa fa-user-plus mr-2 add_user_icon" aria-hidden="true"></i>
+                              <span class="add_users">Add createdBy</span>
+                            </span>
+                            <mat-form-field appearance="outline" *ngIf="showMenu">
+                              <input type="text" aria-label="Number" (click)="$event.stopPropagation()"
+                                (keydown)="$event.stopPropagation()" #autoInput matInput [formControl]="autoForm"
+                                [matAutocomplete]="auto">
+                              <mat-autocomplete (optionSelected)="onOptionCreatedBySelected($event)"
+                                autoActiveFirstOption #auto="matAutocomplete" [displayWith]="getOptionText">
+                                <div>
+                                  <mat-option [value]="user"
+                                    *ngFor="let user of assignedUser| taskfilter:autoInput.value">
+                                    {{user.firstName + ' ' + user.lastName}}</mat-option>
+                                </div>
+                              </mat-autocomplete>
+                            </mat-form-field>
+                          </mat-menu>
+                        </ng-container>
+
+                        <!--                        Assigned To-->
+                        <span class="assigned_to" *ngIf="false">Assigned To</span>
+                        <button aria-hidden="true" *ngIf="false" mat-icon-button class="eye-btnn "
+                          [matMenuTriggerFor]="menu">
+                          <span class="icon-mar-lft"><i
+                              class="fa fa-users"></i>&nbsp;{{assignedUserArray.length}}</span>
+                        </button>
+                        <mat-menu #menu="matMenu" *ngIf="false" yPosition="below">
+                          <div class="outerdiv">
+                            <nb-checkbox (checkedChange)="onAllSelected($event)" [formControl]="allSelectedCheck">All
+                            </nb-checkbox>
+                            <nb-checkbox (checkedChange)="onNoneSelected($event)" [formControl]="noneSelectedCheck">
+                              None
+                            </nb-checkbox>
+                          </div>
+                          <div class="all-user-list">
+                            <button mat-menu-item class="buttonstyle"
+                              *ngFor="let option of assignedUserArray;let i=index">
+                              <span class="li-head" (mouseover)="closeUser = option._id" (mouseleave)="closeUser = ''">
+                                <span class="icon-mar-lft assign_icon"
+                                  [ngStyle]="{'background-color': option?.userColor}">{{ option.firstName[0] +
+                                  option.lastName[0] |
+                                  uppercase}}</span>
+                                <span>{{ option.firstName +' ' + option.lastName}}</span>
+                                <span class="pointer" *ngIf="closeUser === option._id" (click)="onRemoveAssignee(i)"
+                                  style="margin-left: 10px;">
+                                  <i class="fa fa-times" aria-hidden="true"></i>
+                                </span>
+                              </span>
+                            </button>
+                          </div>
+                          <span class="buttonstyle border_unset " *ngIf="!showMenu"
+                            (click)="assignedUser.length != assignedUserArray.length && onShowMenu($event)">
+                            <i class="fa fa-user-plus mr-2 add_user_icon" aria-hidden="true"></i>
+                            <span class="add_users">Add Assignee</span>
+                          </span>
+                          <mat-form-field appearance="outline" *ngIf="showMenu">
+                            <input type="text" aria-label="Number" (click)="$event.stopPropagation()"
+                              (keydown)="$event.stopPropagation()" #autoInput matInput [formControl]="autoForm"
+                              [matAutocomplete]="auto">
+                            <mat-autocomplete (optionSelected)="onOptionSelected($event)" autoActiveFirstOption
+                              #auto="matAutocomplete" [displayWith]="getOptionText">
+                              <div>
+                                <mat-option [value]="user"
+                                  *ngFor="let user of assignedUser| taskfilter:autoInput.value">
+                                  {{user.firstName + ' ' + user.lastName}}</mat-option>
+                              </div>
+                            </mat-autocomplete>
+
+                          </mat-form-field>
+                        </mat-menu>
+
+                      </div>
+                      <ng-container *ngIf="!showCalendar">
+                        <div class="group">
+                          <span>Group by</span>
+                          <span>
+                            <mat-form-field class="select_width group-by-select">
+                              <mat-select required [(value)]="selected" [(ngModel)]="groupBy"
+                                (selectionChange)="onGroupByChanged($event)">
+                                <mat-option value="status">Status</mat-option>
+                                <!-- <mat-option value="date">Date</mat-option> -->
+                              </mat-select>
+                            </mat-form-field>
+                          </span>
+                        </div>
+                      </ng-container>
+                      <div *ngIf="!showCalendar">
+                        <button mat-button class="filter_but" (click)="hideFilters = !hideFilters">
+                          <div class="filter_btn_div">
+                            <span class="material-icons">
+                              <mat-icon>filter_alt</mat-icon>
+                            </span>
+                            Filter
+                            <span class="material-icons " [ngClass]="{'down_arrow': !hideFilters}">
+                              <mat-icon>arrow_drop_down</mat-icon>
+                            </span>
+                          </div>
+                        </button>
+                        <div [ngClass]="{'filter_disable': hideFilters}" class="filter_popup">
+                          <div class="group watche_issues">
+                            <span>Status:</span>
+                            <span>
+                              <mat-form-field class="select_width">
+                                <mat-select required [(value)]='selectedStatus'>
+                                  <mat-option (click)="onStatusFilter('Clear Filter'); hideFilters = !hideFilters">Clear
+                                    Filter</mat-option>
+                                  <mat-option
+                                    *ngFor="let status of (statusColorArray | dynamicFormDependenciesFilter : dependencies : {name: 'status'} : parentFormData: refreshCounter : tempParentTableHeader : null : taskType : parentTableName)"
+                                    [value]="status" (click)="onStatusFilter(status); hideFilters = !hideFilters">
+                                    <i class="fas fa-circle " [ngStyle]="{'color': status.color}"></i>
+                                    {{status.status}}
+                                  </mat-option>
+                                </mat-select>
+                              </mat-form-field>
+                            </span>
+                          </div>
+                          <div class="watche_issues">
+                            <span class="assigned_to">created By</span>
+                            <div>
+                              <button aria-hidden="true" mat-icon-button class="eye-btnn "
+                                [matMenuTriggerFor]="menuCreatedBy">
+                                <span class="icon-mar-lft"><i
+                                    class="fa fa-users"></i>&nbsp;{{createdByUserArray.length}}</span>
+                              </button>
+                              <mat-menu #menuCreatedBy="matMenu" yPosition="below">
+                                <div class="outerdiv">
+                                  <nb-checkbox
+                                    (checkedChange)="onAllCreatedByUserSelected($event); hideFilters = !hideFilters"
+                                    [formControl]="allCreatedByUserSelected">All
+                                  </nb-checkbox>
+                                  <nb-checkbox [formControl]="createdByMeSelected"
+                                    (checkedChange)="onCreatedByMe($event); hideFilters = !hideFilters">
+                                    Me
+                                  </nb-checkbox>
+                                </div>
+                                <div class="all-user-list">
+                                  <button mat-menu-item class="buttonstyle"
+                                    *ngFor="let option of createdByUserArray;let i=index">
+                                    <span class="li-head" (mouseover)="createdByUser = option._id"
+                                      (mouseleave)="createdByUser = ''">
+                                      <span class="icon-mar-lft assign_icon"
+                                        [ngStyle]="{'background-color': option?.userColor}">{{ option.firstName[0] +
+                                        option.lastName[0] |
+                                        uppercase}}</span>
+                                      <span>{{ option.firstName +' ' + option.lastName}}</span>
+                                      <span class="pointer" *ngIf="createdByUser === option._id"
+                                        (click)="onRemoveCreatedBy(i); hideFilters = !hideFilters"
+                                        style="margin-left: 10px;">
+                                        <i class="fa fa-times" aria-hidden="true"></i>
+                                      </span>
+                                    </span>
+                                  </button>
+                                </div>
+                                <span class="buttonstyle border_unset" *ngIf="!showMenu"
+                                  (click)="assignedUser.length != createdByUserArray.length && onShowMenu($event)">
+                                  <i class="fa fa-user-plus mr-2 add_user_icon" aria-hidden="true"></i>
+                                  <span class="add_users">Add createdBy</span>
+                                </span>
+                                <mat-form-field appearance="outline" *ngIf="showMenu">
+                                  <input type="text" aria-label="Number" (click)="$event.stopPropagation()"
+                                    (keydown)="$event.stopPropagation()" #autoInput matInput [formControl]="autoForm"
+                                    [matAutocomplete]="auto">
+                                  <mat-autocomplete
+                                    (optionSelected)="onOptionCreatedBySelected($event); hideFilters = !hideFilters"
+                                    autoActiveFirstOption #auto="matAutocomplete" [displayWith]="getOptionText">
+                                    <div>
+                                      <mat-option [value]="user"
+                                        *ngFor="let user of assignedUser| taskfilter:autoInput.value">
+                                        {{user.firstName + ' ' + user.lastName}}</mat-option>
+                                    </div>
+                                  </mat-autocomplete>
+                                </mat-form-field>
+                              </mat-menu>
+                            </div>
+                          </div>
+                          <div class="watche_issues">
+                            <span class="assigned_to">Assigned To</span>
+                            <div>
+                              <button aria-hidden="true" mat-icon-button class="eye-btnn " [matMenuTriggerFor]="menu">
+                                <span class="icon-mar-lft"><i
+                                    class="fa fa-users"></i>&nbsp;{{assignedUserArray.length}}</span>
+                              </button>
+                              <mat-menu #menu="matMenu" yPosition="below">
+                                <div class="outerdiv">
+                                  <nb-checkbox (checkedChange)="onAllSelected($event); hideFilters = !hideFilters"
+                                    [formControl]="allSelectedCheck">All
+                                  </nb-checkbox>
+                                  <nb-checkbox (checkedChange)="onNoneSelected($event); hideFilters = !hideFilters"
+                                    [formControl]="noneSelectedCheck">
+                                    None
+                                  </nb-checkbox>
+                                </div>
+                                <div class="all-user-list">
+                                  <button mat-menu-item class="buttonstyle"
+                                    *ngFor="let option of assignedUserArray;let i=index">
+                                    <span class="li-head" (mouseover)="closeUser = option._id"
+                                      (mouseleave)="closeUser = ''">
+                                      <span class="icon-mar-lft assign_icon"
+                                        [ngStyle]="{'background-color': option?.userColor}">{{ option.firstName[0] +
+                                        option.lastName[0] |
+                                        uppercase}}</span>
+                                      <span>{{ option.firstName +' ' + option.lastName}}</span>
+                                      <span class="pointer" *ngIf="closeUser === option._id"
+                                        (click)="onRemoveAssignee(i)" style="margin-left: 10px;">
+                                        <i class="fa fa-times" aria-hidden="true"></i>
+                                      </span>
+                                    </span>
+                                  </button>
+                                </div>
+                                <span class="buttonstyle border_unset " *ngIf="!showMenu"
+                                  (click)="assignedUser.length != assignedUserArray.length && onShowMenu($event)">
+                                  <i class="fa fa-user-plus mr-2 add_user_icon" aria-hidden="true"></i>
+                                  <span class="add_users">Add Assignee</span>
+                                </span>
+                                <mat-form-field appearance="outline" *ngIf="showMenu">
+                                  <input type="text" aria-label="Number" (click)="$event.stopPropagation()"
+                                    (keydown)="$event.stopPropagation()" #autoInput matInput [formControl]="autoForm"
+                                    [matAutocomplete]="auto">
+                                  <mat-autocomplete
+                                    (optionSelected)="onOptionSelected($event); hideFilters = !hideFilters"
+                                    autoActiveFirstOption #auto="matAutocomplete" [displayWith]="getOptionText">
+                                    <div>
+                                      <mat-option [value]="user"
+                                        *ngFor="let user of assignedUser| taskfilter:autoInput.value">
+                                        {{user.firstName + ' ' + user.lastName}}</mat-option>
+                                    </div>
+                                  </mat-autocomplete>
+
+                                </mat-form-field>
+                              </mat-menu>
+                            </div>
+                          </div>
+                          <div class="watche_issues">
+                            <span class="pointer">My watched issues</span>
+                            <mat-slide-toggle color="primary" [(ngModel)]="watchedIssue"
+                              (change)="onMyWatchedIssues($event); hideFilters = !hideFilters"></mat-slide-toggle>
+                          </div>
+                          <div class="watche_issues">
+                            <span class="pointer">Also view Future Tasks</span>
+                            <mat-slide-toggle color="primary" [(ngModel)]="showFutureTasks"
+                              (change)="getAllTasksData(); hideFilters = !hideFilters"></mat-slide-toggle>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="body_inner_main" *ngFor="let task of allTaskData">
+                    <div class="main_body py-1"
+                      *ngIf="!showCalendar && (statuses.includes(task._id) || groupByDates.includes(task._id))">
+                      <div class="body_head">
+                        <div class="left_side">
+                          <div [ngClass]="groupBy === 'date' ? 'main_header_text_date' : 'main_header_text'"
+                            [ngStyle]="{'background-color': statusColor[task._id]}">
+                            {{ task._id }}
+                          </div>
+                          <div class="head_text">{{ task.count }} Tasks</div>
+                          <div class="head_text" *ngIf="!isDynamicTable || lookupTableName === 'Users'">Associated
+                            with</div>
+                        </div>
+                        <div class="task_right_side">
+                          <div class="last_wrep">
+                            <span class="head_text">Assignee</span>
+                            <span class="head_text">Due Date</span>
+                            <span class="head_text" style="width: 20px;"></span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="body">
+                        <div class="body_data pointer" *ngFor="let item of task.tasks; let i=index">
+                          <ng-container [ngTemplateOutlet]="taskBody" [ngTemplateOutletContext]="{task:item}">
+                          </ng-container>
+                        </div>
+                        <div>
+                          <button [ngClass]="groupBy === 'date' ? 'showMoreDate' : 'showMore'"
+                            *ngIf="task.count >= 5 && task.count != task.tasks.length"
+                            [ngStyle]="{'background-color': statusColor[task._id], 'border-color': statusColor[task._id]}"
+                            (click)="showMoreTasks(task._id, 'more')">Show More</button>&nbsp;&nbsp;
+                          <button [ngClass]="groupBy === 'date' ? 'showMoreDate' : 'showMore'"
+                            *ngIf="task.tasks.length > 5"
+                            [ngStyle]="{'background-color': statusColor[task._id], 'border-color': statusColor[task._id]}"
+                            (click)="showMoreTasks(task._id, 'less')">Show Less</button>
+                        </div>
+                        <div class="add">
+                          <i class="fas fa-plus-circle pointer" (click)=addNewTask(taskType,task._id)></i>
+                          <span>New Task</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--                  Calendar Mode-->
+                <div *ngIf="showCalendar">
+                  <!-- <div class="row text-center">
+                    <div class="col-md-4">
+                      <div class="btn-group">
+                        <div class="btn btn-primary" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
+                          (viewDateChange)="closeOpenMonthViewDay()">
+                          Previous
+                        </div>
+                        <div class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate">
+                          Today
+                        </div>
+                        <div class="btn btn-primary" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
+                          (viewDateChange)="closeOpenMonthViewDay()">
+                          Next
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <h4 class="header-text">{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}
+                        <i *ngIf="view === 'day'" class="fas fa-plus-circle add-new-task-header pointer"
+                          (click)="addNewTask('Calendar', '', viewDate)"></i>
+                      </h4>
+
+                    </div>
+                    <div class="col-md-4">
+                      <div class="btn-group">
+                        <div class="btn btn-primary" (click)="setView(CalendarView.Month)"
+                          [class.active]="view === CalendarView.Month">
+                          Month
+                        </div>
+                        <div class="btn btn-primary" (click)="setView(CalendarView.Week)"
+                          [class.active]="view === CalendarView.Week">
+                          Week
+                        </div>
+                        <div class="btn btn-primary" (click)="setView(CalendarView.Day)"
+                          [class.active]="view === CalendarView.Day">
+                          Day
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <br /> -->
+                  <div [ngSwitch]="view">
+                    <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate"
+                      [events]="calendarTasks" [activeDayIsOpen]="activeDayIsOpen"
+                      (dayClicked)="dayClicked($event.day,$event.day)" [openDayEventsTemplate]="openDayEventsTemplate"
+                      [cellTemplate]="customCellTemplate" (beforeViewRender)="beforeMonthViewRender($event)">
+                    </mwl-calendar-month-view>
+                    <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate"
+                      [events]="calendarTasks" [eventTemplate]="weekViewTemplate" [headerTemplate]="headerTemplate"
+                      (hourSegmentClicked)="addNewTask('Calendar', '', $event.date)"
+                      (beforeViewRender)="beforeWeekViewRender($event)">
+                    </mwl-calendar-week-view>
+                    <mwl-calendar-day-view *ngSwitchCase="CalendarView.Day" [viewDate]="viewDate"
+                      [events]="calendarTasks" [eventTemplate]="weekViewTemplate"
+                      (beforeViewRender)="beforeWeekViewRender($event)"
+                      (hourSegmentClicked)="addNewTask('Calendar', '', $event.date)">
+                    </mwl-calendar-day-view>
+                  </div>
+
+
+                  <ng-template #headerTemplate let-days="days" let-locale="locale">
+                    <div class="cal-day-headers cursor-default">
+                      <div class="cal-header" [ngStyle]="day.isToday && {'background-color': '#e8fde7'}"
+                        *ngFor="let day of days">
+                        <div class="top">
+                          <div class="day-label day-text text-uppercase">
+                            {{ day.date | calendarDate:'weekViewColumnHeader':locale }}
+                          </div>
+                          <div class="day-number month-text">
+                            {{ day.date | calendarDate:'weekViewColumnSubHeader':locale }}</div>
+                          <i class="fas fa-plus-circle pointer" (click)="addNewTask('Calendar', '', day.date)"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="cal-day-headers cursor-default p-3" *ngIf="weekCalendarViewEvents.length">
+                      <div class="main_body_cal border-0">
+                        <div *ngFor="let item of weekCalendarViewEvents; let i=index">
+                          <div class="calendarbody">
+                            <div class="body_data pointer">
+                              <ng-container [ngTemplateOutlet]="taskBody" [ngTemplateOutletContext]="{task:item.task}">
+                              </ng-container>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+
+                  <ng-template #weekViewTemplate let-weekEvent="weekEvent">
+                    <div class="cal-event w_100" [style.backgroundColor]="lightColors[weekEvent.event['task'].status]"
+                      [style.borderColor]="weekEvent.event.color?.secondary"
+                      (mwlClick)="onChatOpen(weekEvent.event['task']._id, weekEvent.event['task'], statusColor[weekEvent.event['task'].status])">
+                      <i class="fas fa-circle " [ngStyle]="{'color': statusColor[weekEvent.event['task'].status]}"></i>
+                      <span class="record_text pointer" [ngClass]="{'subject_style':!searchedTask}">
+                        {{ weekEvent.event['task'].subject }}
+                      </span>
+                    </div>
+                  </ng-template>
+
+                  <ng-template #openDayEventsTemplate let-events="events" let-isOpen="isOpen">
+                    <div class="main_body_cal" *ngIf="isOpen">
+                      <div *ngFor="let item of events;let i = index">
+                        <div class="calendarbody">
+                          <div class="body_data pointer">
+                            <ng-container [ngTemplateOutlet]="taskBody" [ngTemplateOutletContext]="{task:item.task}">
+                            </ng-container>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+
+                  <ng-template #customCellTemplate let-day="day" let-locale="locale">
+                    <div class="cal-cell-top">
+                      <span class="cal-day-badge" *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
+                      <span class="cal-day-number">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
+                    </div>
+                    <div class="cal-day-circle">
+                      <div class="cal-day-circle-group">
+                        <div class="cal-day-circle-event" *ngFor="let item of day.events;let i = index">
+                          <i class="fas fa-circle pointer" [ngStyle]="{'color': item.color.primary}"></i>
+                        </div>
+                      </div>
+                      <i class="fas fa-plus-circle pointer" (click)="addNewTask('Calendar', '', day.date)"></i>
+                    </div>
+                  </ng-template>
+                </div>
+                <!--Board Section-->
+                <!--                  <div class="board_body" [ngClass]="{'list':!activeHeader}"-->
+                <!--                    *ngFor="let status of statuses | keyvalue">-->
+                <!--                    <div class="card_section">-->
+                <!--                      <div class="open_card">-->
+                <!--                        <div class="card_left">-->
+                <!--                          <span class="card_text">{{ status.key }}</span>-->
+                <!--                          <span class="task_no">{{ status.value.length }}</span>-->
+                <!--                        </div>-->
+                <!--                        <i class="fas fa-plus icon"></i>-->
+                <!--                      </div>-->
+                <!--                      <div class="f_card" *ngFor="let item of status.value;let i=index">-->
+                <!--                        <div class="inner_card">-->
+                <!--                          <div class="card_left">-->
+                <!--                            <div class="inner_left_card">-->
+                <!--                              <span class="card_text">{{ item.subject }}</span>-->
+                <!--                              <span class="task_no" [ngStyle]="{'color': statusColor[status.key]}">3</span>-->
+                <!--                            </div>-->
+                <!--                            <span class="mk pointer"-->
+                <!--                              (click)="openSelect()">{{ item['Assigned To'] | firstLetterOfWords}}-->
+                <!--                              <mat-select (selectionChange)="onUserChange($event, taskType, status.key, item._id, item.lookup)"-->
+                <!--                                #select [(value)]="item['Assigned To']" style="width: 0px;">-->
+                <!--                                <mat-option [value]="user" *ngFor="let user of assignedUser">-->
+                <!--                                  {{user.firstName + '  ' + user.lastName}}</mat-option>-->
+                <!--                              </mat-select>-->
+                <!--                            </span>-->
+                <!--                          </div>-->
+                <!--                          <span class="view">-->
+                <!--                            <i class="fas fa-eye"></i>-->
+                <!--                            &lt;!&ndash; <span>View all subtasks</span> &ndash;&gt;-->
+                <!--                          </span>-->
+                <!--                        </div>-->
+                <!--                        <div class="expand_card" [ngClass]="{'list':!expandCard[i]}">-->
+                <!--                          <div class="expand_inner_card">-->
+                <!--                            <div class="card_left">-->
+                <!--                              <div class="inner_left_card">-->
+                <!--                                <span class="card_text">{{item.subject}}</span>-->
+                <!--                              </div>-->
+                <!--                              <span class="mk" (click)="openSelect()">{{ item['Assigned To'] | firstLetterOfWords}}-->
+                <!--                                {{status.key}}-->
+                <!--                                <mat-select disableOptionCentering #select [(value)]="item['Assigned To']"-->
+                <!--                                  style="width: 0px;">-->
+                <!--                                  <mat-option [value]="user" *ngFor="let user of assignedUser">-->
+                <!--                                    {{user.firstName + '  ' + user.lastName}}</mat-option>-->
+                <!--                                </mat-select>-->
+                <!--                              </span>-->
+                <!--                            </div>-->
+                <!--                            <span class="in_progress_chip">-->
+                <!--                              <span>{{item.status}}</span>-->
+                <!--                            </span>-->
+                <!--                            <span class="card_footer">-->
+                <!--                              <i class="far fa-calendar-check" (click)="picker2.open()"></i>-->
+                <!--                              <input matInput disableOptionCentering [(ngModel)]="item.dueDate"-->
+                <!--                                [matDatepicker]="picker2" (dateChange)="changeDueDate($event,item._id)">-->
+                <!--                              <mat-datepicker #picker2> </mat-datepicker>-->
+                <!--                              <div class="head_text divstyle" [nbContextMenu]="actionItems"-->
+                <!--                                (click)="onClick(item._id , 'Tasks')">-->
+                <!--                                <img class="imgstyle" src="/assets/images/more-vertical-outline.svg">-->
+                <!--                              </div>-->
+                <!--                            </span>-->
+                <!--                          </div>-->
+
+                <!--                        </div>-->
+
+                <!--                      </div>-->
+                <!--                    </div>-->
+
+                <!--                    <div class="expand_card list">-->
+                <!--                      <div class="expand_inner_card">-->
+                <!--                        <div class="card_left">-->
+                <!--                          <div class="inner_left_card">-->
+                <!--                            <span class="card_text" title="Open">Lorem Ipsum</span>-->
+                <!--                            <span class="task_no" [ngStyle]="{'color': statusColor[status.key]}">3</span>-->
+                <!--                          </div>-->
+                <!--                          <span class="mk">MK</span>-->
+                <!--                        </div>-->
+                <!--                        <span class="in_progress_chip">-->
+                <!--                          <span>In Progress</span>-->
+                <!--                        </span>-->
+                <!--                        <span class="card_footer">-->
+                <!--                          <i class="far fa-calendar-check icon1"></i>-->
+                <!--                          <i class="fas fa-pencil-alt icon2"></i>-->
+                <!--                          <i class="fas fa-trash-alt icon3"></i>-->
+                <!--                        </span>-->
+                <!--                      </div>-->
+
+                <!--                    </div>-->
+                <!--                    &lt;!&ndash;                    </div>&ndash;&gt;-->
+                <!--                    &lt;!&ndash;                  </div>&ndash;&gt;-->
+                <!--                  </div>-->
+
+              </nb-tab>
+            </nb-tabset>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </div>
+    <div id="dragbar" *ngIf='showChatWidget === true' class="dragbar" (mouseup)="onCollapse()" (mousedown)="onExpand()">
+    </div>
+    <div [ngClass]="isDynamicTable ? 'section3 panel-two todo-top' : 'section3 panel-two'"
+      *ngIf='showChatWidget === true' (mouseup)="onCollapse()">
+      <div class="chat">
+        <div class='chat_header' [ngStyle]="{'background-color': statusColor[specificTask.status]}">
+          <span class="span_text">{{ specificTask.subject }}</span>
+
+          <div class="date_time">
+            <span>Due Date</span>
+            <span>{{getChatDate(specificTask.dueDate)}}</span>
+          </div>
+        </div>
+        <div class='chat_header1'>
+          <div class="inner_section1">
+            <span class="span_text1">Created By:</span>
+            <span class="span_text2">{{ createdBy }}</span>
+            <div class="div_text3">
+              <span>{{getChatDate(specificTask.createdAt)}}</span>
+              <span class="time">{{specificTask.createdAt|date:'shortTime'}}</span>
+            </div>
+          </div>
+          <div class="inner_section1">
+            <span class="span_text1  ">Assignee:</span>
+            <span class="span_text2 ">{{ specificTask['Assigned To'] }}
+              <mat-select
+                (selectionChange)="onUserChange($event, specificTask.taskType, specificTask.status, specificTask._id, specificTask.lookup)"
+                [(value)]="specificTask['Assigned To']" style="width: 0px;">
+                <mat-option [value]="user" *ngFor="let user of assignedUser">
+                  <div class="assign_icon-list"> <span class="assign_icon pointer" (click)="openSelect()"
+                      [ngStyle]="{'background-color': user?.userColor}">
+                      {{ (user.firstName + ' ' + user.lastName) | firstLetterOfWords}}
+                    </span>
+                    <span>
+                      {{user.firstName + ' ' + user.lastName}}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </span>
+          </div>
+        </div>
+
+
+        <div class="description-wrapper">
+          <div class="description remind-des" [class.desc-max-height]="showMoreDesc || isDescEditable"
+            (click)="enableDescEditable()">
+            <span *ngIf="!isDescEditable && !!specificTask.description === false" class="description_text">Description:
+              <!-- <i class="fa fa-edit ml-2 pointer" (click)="onDescriptionEdit()"></i> -->
+            </span>
+            <!-- <div *ngIf="!isDescEditable" class="edit_text" [innerHTML]="getDecodedText(specificTask.description)"></div> -->
+            <div *ngIf="!isDescEditable" class="edit_text" #desContent>
+              <label [innerHtml]="descHtml"></label>
+            </div>
+            <!-- <editor *ngIf="isDescEditable" [init]="{plugins: 'autoresize',skin: false,autoresize_bottom_margin: 10,min_height: 130,  max_height: 180}" apiKey="3zk4lcdxv42ueqfotvbtw7lihq6uwkb0cy7l33muhxhr778z" [formControl]="editDescription"></editor> -->
+            <editor *ngIf="isDescEditable" [init]="{plugins: 'autoresize',skin: false,toolbar:false}"
+              apiKey="3zk4lcdxv42ueqfotvbtw7lihq6uwkb0cy7l33muhxhr778z" [formControl]="editDescription"></editor>
+          </div>
+          <div class="show-more-less" *ngIf="!showMoreDesc && !isDescEditable && descriptionHeight > 130"
+            (click)="hanleShowMoreDesc()">
+            <div class="show-more-btn d-flex align-items-center justify-content-center">
+              <div class="left-icon">
+                <!-- <i class="fa fa-angle-up"></i> -->
+              </div>
+              <div class="btn-text ml-1">See more</div>
+            </div>
+          </div>
+          <div class="show-more-less" *ngIf="showMoreDesc && !isDescEditable" (click)="hanleShowLessDesc()">
+            <div class="show-more-btn d-flex align-items-center justify-content-center">
+              <div class="left-icon">
+                <!-- <i class="fa fa-angle-down"></i> -->
+              </div>
+              <div class="btn-text ml-1">See less</div>
+            </div>
+          </div>
+          <div class="all_but subject_input_open d-flex align-items-center" *ngIf="isDescEditable">
+            <button class="edit_but btn btn-sm btn-primary_cus">
+              <span (click)="saveDescription()" class="icon_but material-icons">done</span>
+            </button>
+            <button class="edit_but btn btn-sm btn-primary_cus cancelbuttonstyle" (click)="disableDescEditable()">
+              <span class="icon_but material-icons">close</span>
+            </button>
+          </div>
+        </div>
+        <!-- <div class="user_count">
+          <button aria-hidden="true" mat-icon-button mat-icon-button class="eye-btnn ">
+                          <span class="icon-mar-lft"><i
+                              class="fa fa-users"></i>&nbsp;1</span>
+                        </button>
+        </div> -->
+      </div>
+      <div class="chat-wrapper" style="overflow: auto;">
+        <ngx-chat-tab class="w-100" [uiColor]='statusColor[specificTask.status]' [chatOpened]='chatOpened'
+          [tableInfo]='tableInfo' [fromTask]='true' (openreminderModal)="openReminderModal()">
+        </ngx-chat-tab>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #taskBody let-item="task">
+  <div class="main_tasks" (click)="delayOnChatOpen(item._id, item, statusColor[item.status]);"
+    [ngStyle]="item._id == searchedTask && {'background-color': lightColor}">
+    <div class="left_side">
+      <div class="record flex-column">
+        <div class="d-flex flex-row align-items-center space" [ngClass]="{'chat_space':searchedTask}">
+          <div class="main_text">
+            <i class="fas fa-circle pointer" [matMenuTriggerFor]="menu" [ngStyle]="{'color': statusColor[item.status]}"
+              (mouseover)="showStatusId = item._id" (mouseleave)="showStatusId = ''"
+              (click)="$event.stopPropagation();"></i>
+            <!--- user can't change status from here --->
+            <mat-menu #menu="matMenu">
+              <div class="icon_menu">
+                <mat-form-field>
+                  <input matInput #input placeholder="Search" (input)="onChange(input.value)"
+                    (click)="$event.stopPropagation();">
+                </mat-form-field>
+                <mat-option
+                  *ngFor="let status of (statusColorArray | dynamicFormDependenciesFilter : dependencies : {name: 'status'} : item: refreshCounter : tempParentTableHeader : null : taskType)"
+                  [value]="status" (click)="onStatusChange(status,item._id,item,status.color)"
+                  [ngStyle]="status.status == item.status && {'backgroundColor':'#D3D3D3','width': 'inherit','margin-top':'6px'}">
+                  <i class="fas fa-circle " [ngStyle]="{'color': status.color}"></i>
+                  {{status.status}}
+                </mat-option>
+              </div>
+            </mat-menu>
+            <div class="hover-div" *ngIf="showStatusId === item._id">
+              <span class="date-header" [ngStyle]="{'background-color': statusColor[item.status]}">
+                {{ item.status }}
+                <div class="arrow_icon_status" [ngStyle]="{'border-top-color': statusColor[item.status]}"></div>
+              </span>
+            </div>
+            <!-- Subject div-->
+            <div class="d-flex align-items-lg-center pointer w_100" *ngIf="onHoverId !== item._id"
+              (mouseenter)="displayIcon[item._id] = true" (mouseleave)="displayIcon[item._id] = false"
+              [ngClass]="{'subject_style':!searchedTask}">
+              <span class="record_text pointer"> {{ item.subject }}</span>
+              <i class="fa fa-pencil" *ngIf="displayIcon[item._id]"
+                (click)="onHoverId = item._id; $event.stopPropagation()"></i>
+            </div>
+
+            <div class="outer-span" *ngIf="item.subTaskCount > 0" [ngbTooltip]="tipContent"
+              tooltipClass="{{'my-subTask-class-'  + item?.status}}">
+              <ng-template #tipContent>
+                <span class="p-1">
+                  Sub Tasks</span>
+              </ng-template>
+              <span class="total_record"
+                [ngStyle]="{'background-color': lightColors[item.status], 'color': statusColor[item.status]}">
+                {{item.subTaskCount}}
+              </span>
+            </div>
+            <div class="edit_from" *ngIf="onHoverId === item._id">
+              <div class="subject_input">
+                <input class="edit_input" type="text" [(ngModel)]="item.subject" nbInput placeholder="Text field"><br>
+                <div class="all_but subject_input_open">
+                  <button class="edit_but btn btn-sm btn-primary_cus  m-2">
+                    <span (click)="onSubjectUpdate(item.subject,item._id); $event.stopPropagation();"
+                      class="icon_but material-icons">done</span>
+                  </button>
+                  <button class="edit_but btn btn-sm btn-primary_cus  m-2 cancelbuttonstyle"
+                    (click)="onCancel(item._id); $event.stopPropagation();">
+                    <span class="icon_but material-icons">close</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Associated with -->
+        <ng-container *ngIf="!isDynamicTable || lookupTableName === 'Users'">
+          <ng-container *ngIf="item?.lookupValues?.length<=1;else multipleLookup">
+            <div class="upperspan pointer " *ngFor="let lookup of item?.lookupValues | keyvalue">
+              <ng-container *ngFor="let lookupValue of lookup.value | keyvalue">
+
+                <ng-container *ngIf="lookupValue.key.indexOf('_link') == -1">
+                  <span title="{{ lookupValue.key }}: {{ lookupValue.value }}" class="spanstyle"
+                    [ngClass]="{'chatopentext':!searchedTask}">{{ lookupValue.key }}:
+                    {{ lookupValue.value }}</span>
+
+                  <a (click)="redirectToLookup(lookup.value)" class="white-space-pre-line" style="color: #2C2D34;">
+                    <p class="mb-1">
+                      <!-- <img src="assets/images/redirect.png" width="15px" /> -->
+                      <i class="fas fa-share-square send_icon" *ngIf="lookup.value"></i>
+                    </p>
+                  </a>
+                </ng-container>
+              </ng-container>
+            </div>
+          </ng-container>
+          <ng-template #multipleLookup>
+            <div class="pointer ml-2 customstyle" (click)="openLookupDialog(item?.lookupValues)">Multiple</div>
+          </ng-template>
+        </ng-container>
+      </div>
+    </div>
+    <div class="task_right_side">
+      <div class="last_wrep">
+        <span class="head_text">
+          <span class="assign_icon pointer" (click)="openSelect(matSelect)"
+            [ngStyle]="{'background-color': item?.userColor}">{{
+            item['Assigned To'] | firstLetterOfWords}}</span>
+          <mat-select disableOptionCentering #matSelect (openedChange)="selectOpened($event,item['Assigned To'])"
+            (selectionChange)="onUserChange($event, taskType, item.status, item._id, item.lookup)" #select
+            [(value)]="item['Assigned To']" style="width: 0px;">
+            <mat-option [value]="user" *ngFor="let user of assignedUser">
+              <div class="assign_icon-list">
+                <span class="assign_icon pointer" (click)="openSelect(matSelect)"
+                  [ngStyle]="{'background-color': user?.userColor}">
+                  {{ (user.firstName + ' ' + user.lastName) | firstLetterOfWords}}
+                </span>
+                <span>{{user.firstName + ' ' + user.lastName}}</span>
+              </div>
+            </mat-option>
+          </mat-select>
+        </span>
+        <span class="head_text">
+          <i class="far fa-calendar-check pointer" (click)="picker.open()"></i>
+
+          <div class="d-flex align-items-center" [ngClass]="{'overDue':checkDateNotInRange(item.dueDate)}">
+            <input matInput class="ml-1 mr-rgt-small" [(ngModel)]="item.dueDate" [matDatepicker]="picker"
+              (dateChange)="changeDueDate($event,item._id)">
+            <img class="alertDue m-0" src="/assets/images/alert.png" style="margin-bottom: 25px;" nbTooltip="Over Due"
+              nbTooltipStatus="danger" *ngIf="checkDateNotInRange(item.dueDate)">
+
+          </div>
+          <mat-datepicker #picker> </mat-datepicker>
+        </span>
+        <div class="head_text divstyle " style="width: 20px;" [matMenuTriggerFor]="verticalMenu"
+          (click)="$event.stopPropagation();">
+          <img class="imgstyle" src="/assets/images/more-vertical-outline.svg">
+        </div>
+        <mat-menu #verticalMenu="matMenu">
+          <button mat-menu-item (click)="onEdit(item._id, 'Tasks')"><img src="assets/images/edit.png"
+              height="50%"></button>
+          <button mat-menu-item (click)="onDeleteConfirm(item._id, 'Tasks')"><img src="assets/images/delete.png"
+              height="50%" style="display:block"></button>
+        </mat-menu>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sub Tasks -->
+  <div class="w-100" *ngIf="item._id === searchedTask && subTasks && subTasks.length > 0">
+    <div class="body_expand" *ngFor="let subTask of subTasks; let i = index">
+      <div [ngClass]="i == 0 ? 'tree1' : 'tree'"></div>
+      <div class="body_data pointer" (click)="redirectSubTasks(subTask)">
+        <div class="main_tasks p-0">
+          <div class="left_side">
+            <div class="record">
+              <div class="d-flex flex-row align-items-center space" [ngClass]="{'chat_space':searchedTask}">
+                <div class="main_text">
+                  <i style="font-size: 12px;" class="fas fa-circle pointer" [matMenuTriggerFor]="menu"
+                    [ngStyle]="{'color': statusColor[subTask.status]}"></i>
+
+                  <span class="record_text pointer">{{ subTask.subject }}</span>
+                  <span class="task_status" [ngStyle]="{'background-color': statusColor[subTask.status]}">{{
+                    subTask.status }}</span>
+                  <i class="fas fa-share-square"></i>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="background-color: white">
+      <div class="add_new_task" (click)=addNewSubTask(taskType,item.status,item._id)>
+        <i class="fas fa-plus-circle pointer"></i>
+        <span>Add Subtask</span>
+      </div>
+    </div>
+  </div>
+</ng-template>

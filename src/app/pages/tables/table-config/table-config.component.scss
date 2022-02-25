@@ -1,0 +1,105 @@
+.inputclass{
+  max-width: 150px;
+}
+
+.uploaded {
+  font-family: 'Roboto-Bold';
+}
+
+.center {
+  align-items: center;
+}
+
+.end {
+  justify-content: flex-end;
+}
+.drop {
+  display: flex;
+  .mr_10 {
+    margin-right: 10px;
+  }
+}
+.select{
+  width:50%
+}
+.add_but{
+  float: right;
+  position: relative;
+  bottom: 37px;
+  left: 24px;
+}
+.card{
+  padding-right: 27px;
+}
+.edit_but{
+  position: relative;
+  right: 15px;
+}
+table, th, td {
+  border: 1px solid black;
+  padding:5px;
+}
+.back_table_listing{
+  float:right;
+}
+
+.icon-right-side i.add-sub-form{
+  float: right;
+  margin-top: 4px;
+}
+.form-cols.row .col.scroll-div {
+  max-width: 48%;
+    width: 100%;
+    float: left;
+    flex-basis: inherit;
+    flex-grow: inherit;
+    padding: 0 0px 0 0;
+    margin-right: 1%;
+    background: #fff;
+    border: 0.0625rem solid #e4e9f2;
+    border-radius: 0.25rem;
+    height: 500px;
+    margin-bottom: 20px;
+}
+.form-cols.row .col nb-card.config_cards {
+  border: none;
+  border-radius: 0;
+}
+.content{
+  position: relative;
+  z-index: 0;
+}
+
+::ng-deep .table_config nb-tabset .tabset {
+  margin-bottom: 1.5rem !important;
+}
+
+
+.add-edit-form-title{
+  text-align: left;
+  margin-bottom: 15px;
+}
+.add-edit-form-title input.col.uploaded {
+  padding-left: 0;
+}
+.add-edit-form-title label {
+  margin-right: 15px;
+  min-width: 105px;
+}
+.add-edit-form-title input {
+  max-width: 300px !important;
+}
+nb-card.config_cards.row {
+  height: auto;
+  flex-direction: inherit;
+  min-height: calc(100vh - 175px);
+  margin-bottom: 0;
+}
+nb-card.config_cards {
+  height: auto;
+  box-shadow: none;
+  border: none;
+  padding: 0 !important;
+  overflow-y: hidden;
+}
+

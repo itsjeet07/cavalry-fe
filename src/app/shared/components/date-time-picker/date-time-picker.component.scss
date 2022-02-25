@@ -1,0 +1,65 @@
+.date-time-inp-cus{
+     min-height: 61px;
+line-height: 61px;
+}
+button.btn.btn-outline-secondary {
+  border: none;
+}
+input.form-control.date-time-inp-cus[_ngcontent-rvi-c365] {
+  outline: 0px solid rgba(0, 0, 0, 0.5);
+  border: 1px solid #e7e5e7;
+  box-shadow: none;
+  border-radius: 0.25rem;
+  margin-right: -45px;
+  width: 10px !important;
+  display: block !important;
+  max-width: inherit !important;
+  min-width: inherit !important;
+}
+.date-time-pic-cus {
+  max-width: 40%;
+}
+input.form-control.date-time-inp-cus:hover {
+    outline: 0px solid rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.8) !important;
+    box-shadow: none;
+}
+input.form-control.date-time-inp-cus:focus {
+  outline: 0px solid rgba(0, 0, 0, 0.5);
+  border: 1px solid #007bff !important;
+  box-shadow: none;
+}
+button.btn.btn-outline-secondary, button.btn.btn-outline-secondary:hover {
+  background: transparent !important;
+}
+body button.btn.btn-outline-secondary {
+  margin-left: -1px;
+  position: relative;
+  right: 44px;
+  z-index: 9999;
+}
+.btn:hover, .btn:hover, .btn:focus, .btn:active{
+color: #212529 !important;
+outline: none !important;
+border: none!important;
+box-shadow: none !important;
+}
+.input-group-append{
+  position: relative;
+  z-index: 999;
+  left: -43px;
+}
+span.cal_done {
+  float: right;
+  position: relative;
+  top: -40px;
+  right: 20px;
+}
+span.cal_done a {
+  text-decoration: underline;
+  font-family: 'DM Sans';
+  font-weight: 500;
+}
+span.cal_done a:hover {
+  text-decoration: underline;
+}

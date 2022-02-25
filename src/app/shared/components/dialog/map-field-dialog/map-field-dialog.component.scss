@@ -1,0 +1,91 @@
+@import '../../../../@theme/styles/themes';
+
+@include nb-install-component() {
+  input {
+    width: 100%;
+  }
+
+  .cancel {
+    margin-right: 1rem;
+  }
+}
+
+nb-card{
+  width: 600px;
+  height: 350px;
+}
+
+.status-max-height {
+  max-height: 260px;
+  overflow-y: auto;
+}
+.add_but{
+  position: relative;
+  left: 465px;
+  bottom: 35px
+}
+.example-list{
+width: 500px;
+max-width: 100%;
+min-height: 60px;
+display: block;
+background: white;
+border-radius: 4px;
+overflow: hidden;
+cursor: pointer;
+}
+.cursor{
+  cursor: pointer;
+}
+.add-date-time-form{
+  overflow: hidden;
+}
+.add-date-time-form nb-select, .add-date-time-form input {
+  max-width: 100% !important;
+  width: 100%;
+}
+.add-date-time-form .col-md-5, .add-date-time-form .col-md-2{
+  margin-top: 8px;
+}
+.add-item-icon{
+  text-align: center;
+}
+.add-item-icon i.fa.fa-plus {
+  margin-top: 13px;
+}
+.add-date-time-form{
+  overflow: hidden;
+}
+.scroll-div{
+  max-height: 330px;
+  overflow-y: auto !important;
+  background: transparent;
+  padding: 0;
+  height: 193px;
+  /* margin-bottom: 15px; */
+  padding-bottom: 7px;
+}
+.scroll-div::-webkit-scrollbar {
+  width: 10px;
+
+
+}
+
+/* Track */
+.scroll-div::-webkit-scrollbar-track {
+  box-shadow: inset 0px 0px 0px #eaeaef;
+  border-radius: 10px;
+  background: #e3e6ed;
+
+}
+/* Handle */
+.ng-chat-window .ng-chat-messages::-webkit-scrollbar-thumb, .scroll-div::-webkit-scrollbar-thumb{
+  background: #fff;
+  border-radius: 10px;
+  max-height: 15px;
+  border: 2px solid #e3e6ed;
+  box-shadow: none;
+  }
+.remove-row {
+  margin-right: 10px;
+}

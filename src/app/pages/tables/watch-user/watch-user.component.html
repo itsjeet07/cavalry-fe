@@ -1,0 +1,14 @@
+<span class="li-head">
+  <span class="icon-mar-lft" *ngIf="inviteOther === false" (click)="inviteOther = true">
+    <i class="fa fa-user-plus"></i>&nbsp;&nbsp;
+    Invite others
+  </span>
+<input *ngIf="inviteOther === true" #autoInput nbInput type="text" (input)="onChange($event)" [(ngModel)]="userValue"
+  [ngModelOptions]="{standalone: true}" [placeholder]="'Invite Users'" [nbAutocomplete]="auto" />
+
+<nb-autocomplete #auto (selectedChange)="onSelectionChange($event)">
+  <nb-option *ngFor="let option of options" [value]="option">
+    {{ option.firstName + ' ' + option.lastName }}
+  </nb-option>
+</nb-autocomplete>
+</span>

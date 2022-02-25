@@ -1,0 +1,24 @@
+.mat-select-trigger{
+  width: 100%;
+}
+
+.no-options{
+  color: red;
+}
+
+.scroll{
+  overflow-x: scroll;
+  overflow-y: scroll;
+  height: 310px;
+}
+table {
+  width: 100%;
+}
+
+button {
+  margin: 16px 8px;
+}
+table, th, td {
+  border: 1px solid black;
+  padding: 7px;
+}

@@ -1,0 +1,40 @@
+<nb-card>
+  <nb-card-header>Add LookUp
+    <button class="right btn btn-primary btn-sm" (click)="mapFields()">Map Fields</button>&nbsp;
+    &nbsp;&nbsp;
+    <button class="margin-right right btn btn-primary btn-sm" (click)="filter()">Filters</button>
+  </nb-card-header>
+
+  <nb-card-body>
+    <div>
+      <nb-checkbox [(ngModel)]="isLookupRepPrimaryObject" style="display: none;">
+        <label class="label">Represents primary information</label>
+      </nb-checkbox>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <label class="label">Table Name</label>
+        <nb-radio-group [(ngModel)]="tableId">
+          <nb-radio *ngFor="let item of tableData" (valueChange)="onChange($event)" [value]="item._id">
+            {{ item.tableName }}
+          </nb-radio>
+        </nb-radio-group>
+      </div>
+      <div class="col-md-6" *ngIf="columnList.length">
+        <label class="label">Lookup Fields</label>
+        <div class="validation-checkboxes">
+          <span *ngFor="let item of columnList">
+            <nb-checkbox status="success" [value]="item._id" [checked]="selectedColumnId?.includes(item._id)"
+              (change)="onCheck(item._id, item.name)">{{ item.label }}</nb-checkbox><br>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+
+  <nb-card-footer>
+    <button class="cancel" nbButton matRipple status="danger" (click)="cancel()">Cancel</button>
+    <button nbButton matRipple status="success" [disabled]="!selectedColumnId?.length"
+      (click)="submit()">Submit</button>
+  </nb-card-footer>
+</nb-card>

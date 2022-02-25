@@ -1,0 +1,25 @@
+
+
+.main_layout {
+  width: 500px;
+  .inner_body {
+    width: 100%;
+  }
+}
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  .cancel {
+    background-color: #fff !important;
+    border: 1px solid#007bff !important;
+    color: #007bff !important;
+    font-family: 'Roboto-Bold' !important;
+    margin-right: 10px;
+  }
+  .save {
+    background-color: #007bff !important;
+    border: 1px solid #007bff !important;
+    color: #fff !important;
+    font-family: 'Roboto-Bold' !important;
+  }
+}

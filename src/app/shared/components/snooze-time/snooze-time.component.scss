@@ -1,0 +1,43 @@
+.time-div {
+  border: 0px solid;
+  padding: 9px 10px;
+  width: 100%;
+  text-align: center;
+  border-radius: 25px;
+  cursor: pointer;
+  font-family: 'DM Sans';
+  color: #262B44;
+  opacity: 0.50;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+nb-card.snooze-reminder {
+  width: 220px;
+  height: 331px;
+  border-radius: 6px;
+  box-shadow: 0px 3px 12px rgba(0, 0, 0, 0.29);
+  border: none;
+}
+nb-card.snooze-reminder nb-card-header {
+  font-family: 'DM Sans' !important;
+  color: #5C77EA;
+  font-size: 18px;
+  font-weight: 500;
+  padding: 16px 16px;
+}
+nb-card.snooze-reminder nb-card-header img.close-btn {
+  float: right;
+  position: relative;
+  top: 7px;
+  width: 12px !important;
+  cursor: pointer;
+}
+nb-card.snooze-reminder .time-row {
+  margin-bottom: 7px;
+  border: 1px solid rgba(38, 43, 68, 0.25);
+  border-radius: 5px;
+}
+nb-card.snooze-reminder .nb-card-body{
+  padding: 16px;
+}

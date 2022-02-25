@@ -1,0 +1,568 @@
+<nb-card [nbSpinner]="loading" nbSpinnerSize="large" nbSpinnerStatus="primary">
+  <form [formGroup]="myform" (keydown.enter)="$event.preventDefault()">
+    <nb-card>
+      <nb-card-header>{{ title }}</nb-card-header>
+      <nb-card-body>
+        <div class="col-md-12 form-group">
+          <input
+            type="text"
+            (keypress)="onKeypressEvent($event)"
+            [readonly]="tableId"
+            nbInput
+            placeholder="Table Name"
+            fullWidth
+            formControlName="tableName"
+            class="col-md-4 mr-2"
+          />
+          <!-- [status]="(f.name.errors && f.name.touched) ? 'danger' : '' " -->
+          <!-- <img src="https://cavalry.s3.amazonaws.com/Howe-Tools.png"  style="height: 50px;width: 50px;" alt="image">   -->
+          <button
+            nbButton
+            status="primary"
+            (click)="addColumn()"
+            [disabled]="myform.get('columns').status == 'INVALID'"
+            class="col-md-2 mr-3"
+          >
+            Add New Column
+          </button>
+          <button
+            type="submit"
+            [disabled]="myform.invalid"
+            (click)="onSubmit()"
+            nbButton
+            status="primary"
+            class="col-md-2"
+          >
+            Save
+          </button>
+          <span
+            *ngIf="f.tableName.errors && f.tableName.touched"
+            class="text-danger ml-2"
+          >
+            <div *ngIf="f.tableName.errors.required">
+              Table Name is required.
+            </div>
+          </span>
+        </div>
+        <hr />
+        <ng-container formArrayName="columns">
+          <div
+            id="scroll_vertical"
+            cdkDropList
+            class="example-list"
+            (cdkDropListDropped)="drop($event)"
+            (cdkDropListSorted)="dragStart($event)"
+          >
+              <mat-expansion-panel (opened)="panelOpenState = true"
+                                   (closed)="panelOpenState = false"
+                                   cdkDrag
+                                   *ngFor="let group of columnsArr.controls; let i = index" [formGroupName]="i">
+                <mat-expansion-panel-header class="right-aligned-header">
+                  <mat-panel-title>
+                    {{ group.get('label')?.value }}
+                  </mat-panel-title>
+                  <mat-panel-description>{{ getFieldValue(group.get('type')?.value) }}</mat-panel-description>
+                  <mat-icon *ngIf="group.dirty" class="check_circle_custom">check_circle</mat-icon>
+                </mat-expansion-panel-header>
+                <div
+              class="example-box"
+            >
+              <div
+                [ngClass]="{
+                  'even-columns': (i + 1) % 2 == 0,
+                  'odd-columns': (i + 1) % 2 != 0
+                }"
+              >
+                <div class="row">
+                  <div class="col-sm-3">
+                    <div class="form-group">
+                      <label for="label" class="label">Label</label>
+                      <input
+                        type="text"
+                        formControlName="label"
+                        nbInput
+                        fullWidth
+                        id="label"
+                        (change)="onFieldLabelChange($event.target.value, i)"
+                        placeholder="Label"
+                        required
+                      />
+                      <div
+                        *ngIf="
+                          group.get('label').errors &&
+                          group.get('label').touched
+                        "
+                        class="text-danger ml-2"
+                      >
+                        <div *ngIf="group.get('label').errors.required">
+                          Label is required
+                        </div>
+                        <div *ngIf="group.get('label').errors.duplicate">
+                          Label with the name is already been used.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-sm-3">
+                    <div class="form-group">
+                      <label for="priority" class="label"
+                        >Name (Internal Use Only)</label
+                      >
+                      <input
+                        type="text"
+                        formControlName="name"
+                        readonly
+                        nbInput
+                        fullWidth
+                        placeholder="Name"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col-sm-3">
+                    <div class="form-group with-plus-icon float-none">
+                      <label for="type" class="label">Type</label>
+                      <select
+                        class="form-control"
+                        formControlName="type"
+                        fullWidth
+                        (change)="typeSelected($event, i)"
+                      >
+                        <option matRipple value="text">Text Box</option>
+                        <option matRipple value="area">Text Area</option>
+                        <option matRipple value="richTextArea">
+                          Rich Text Area
+                        </option>
+                        <option matRipple value="checkbox">Check Box</option>
+                        <option matRipple value="radio">Radio</option>
+                        <option matRipple value="dropdown">Dropdown</option>
+                        <option matRipple value="dropdownWithImage">
+                          Dropdown With Image
+                        </option>
+                        <option matRipple value="recordType">
+                          Record Type
+                        </option>
+                        <option matRipple value="date">Date</option>
+                        <option matRipple value="dateTime">Date Time</option>
+                        <option matRipple value="lookup">LookUp</option>
+                        <option matRipple value="number">Number</option>
+                        <option matRipple value="file">File</option>
+                        <option matRipple value="status">Status</option>
+                        <option matRipple value="autoNumber">
+                          Auto Number
+                        </option>
+                        <option matRipple value="time">Time</option>
+                        <option matRipple value="section">Section</option>
+                        <option matRipple value="injectSubForm">
+                          Inject Sub-form
+                        </option>
+                        <option matRipple value="formula">Formula</option>
+                        <option matRipple value="rollUp">Roll Up</option>
+                        <option matRipple value="refButton">
+                          Reference Button
+                        </option>
+                        <option matRipple value="gadget">Gadget</option>
+                      </select>
+
+                      <div
+                        *ngIf="
+                          myform.value.columns[i].type == 'formula' ||
+                          myform.value.columns[i].type == 'rollUp'
+                        "
+                      >
+                        <div class="form-group with-plus-icon float-none">
+                          <a id="add-plus-icon{{i}}"
+                            class="plus-icon"
+                            (click)="addOptions(i)"
+                            style="cursor: pointer"
+                            ><i class="fa 2x fa-plus"></i
+                          ></a>
+                        </div>
+                      </div>
+
+                      <a id="add-plus-icon{{i}}"
+                        class="plus-icon"
+                        (click)="addOptions(i)"
+                        *ngIf="showAddButton(i)"
+                        style="cursor: pointer"
+                        ><i class="fa 2x fa-plus"></i
+                      ></a>
+                      <img id="add-plus-icon{{i}}"
+                        src="../../../../assets/images/dateAdd.png"
+                        class="with-add-date-icon"
+                        (click)="addOptions(i)"
+                        *ngIf="showAddDateButton(i)"
+                        style="cursor: pointer"
+                      /><i></i>
+                      <input
+                        type="number"
+                        class="auto_number"
+                        formControlName="startValue"
+                        *ngIf="showTextBox(i)"
+                        nbInput
+                        fullWidth
+                        placeholder="Auto Number"
+                      />
+                      <div *ngIf="showDatePicker(i)" class="mt-4">
+                        <mat-select
+                          class="form-control"
+                          placeholder="Related Date fields"
+                          formControlName="relatedDate"
+                        >
+                          <mat-option
+                            *ngFor="let filters of relatedDateFields"
+                            [value]="filters._id"
+                          >
+                            {{ filters.label }}
+                          </mat-option>
+                        </mat-select>
+                      </div>
+                      <div *ngIf="showGadget(i)" class="mt-4">
+                        <mat-select
+                          class="form-control"
+                          placeholder="Gadgets"
+                          formControlName="gadget"
+                        >
+                          <mat-option
+                            *ngFor="let gadget of recordGadgets"
+                            [value]="gadget.name"
+                          >
+                            {{ gadget.name }}
+                          </mat-option>
+                        </mat-select>
+                      </div>
+                      <div *ngIf="showIsPhone(i, group)" class="phone-div">
+                        <nb-checkbox
+                          formControlName="isPhone"
+                          (checkedChange)="onChanges(i, $event)"
+                          >Is Phone
+                        </nb-checkbox>
+                      </div>
+                      <div *ngIf="showIsNumber(i, group)" class="number-div">
+                        <div>
+                          <label for="label" class="label">Fraction</label>
+                          <input
+                            formControlName="fraction"
+                            (keypress)="numberOnly($event)"
+                            min="0"
+                            type="number"
+                            autocomplete="off"
+                            nbInput
+                            fullWidth
+                            placeholder="Fraction"
+                          />
+                        </div>
+                        <div class="iscurrency-div">
+                          <nb-checkbox
+                            formControlName="isCurrency"
+                            (checkedChange)="onCurrencyChecked(i, $event)"
+                            >Is Currency</nb-checkbox
+                          >
+                        </div>
+                      </div>
+                      <div *ngIf="showLineBox(i)" class="number-div">
+                        <div>
+                          <label for="label" class="label">No. of Lines</label>
+                          <input
+                            formControlName="textAreaLines"
+                            (keypress)="numberOnly($event)"
+                            min="0"
+                            type="number"
+                            autocomplete="off"
+                            nbInput
+                            fullWidth
+                            placeholder="No. of Lines"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label for="label" class="label">Icon : </label>
+                        <img
+                          *ngIf="imageURL[i] && imageURL[i] != ''"
+                          [src]="imageURL[i] | sanitize"
+                          height="20"
+                          width="20"
+                          alt="icon"
+                        />
+                        <input
+                          type="file"
+                          (change)="onFileChange($event, i)"
+                          accept="image/svg+xml+png"
+                          nbInput
+                          fullWidth
+                        />
+                      </div>
+                      <!-- <div class="imagePreview" *ngIf="imageURL[i] && imageURL[i]!=''">
+                        <img [src]="imageURL[i] | sanitize"  height="20" width="20" alt="icon">
+                      </div> -->
+
+                      <div *ngIf="showSubFormTable(i)" class="mt-4">
+                        <mat-select
+                          class="form-control"
+                          placeholder="Select SubForm Table"
+                          formControlName="subFormTableName"
+                        >
+                          <mat-option
+                            *ngFor="let name of subFormTableNames"
+                            [value]="name.tableName"
+                          >
+                            {{ name.tableName }}
+                          </mat-option>
+                        </mat-select>
+                      </div>
+
+                      <!-- <nb-select formControlName="type" fullWidth>
+                        <nb-option matRipple value="text">Text Box</nb-option>
+                        <nb-option matRipple value="area">Text Area</nb-option>
+                        <nb-option matRipple value="richTextArea">Rich Text Area</nb-option>
+                        <nb-option matRipple value="checkbox">Check Box</nb-option>
+                        <nb-option matRipple value="radio">Radio</nb-option>
+                        <nb-option matRipple value="dropdown">Dropdown</nb-option>
+                        <nb-option matRipple value="date">Date</nb-option>
+                        <nb-option matRipple value="lookup">LookUp</nb-option>
+                        <nb-option matRipple value="currency">Currency</nb-option>
+                        <nb-option matRipple value="file">File</nb-option>
+                      </nb-select> -->
+                      <div
+                        *ngIf="
+                          group.get('type').errors && group.get('type').touched
+                        "
+                        class="text-danger ml-2"
+                      >
+                        <div *ngIf="group.get('type').errors.required">
+                          Type is required
+                        </div>
+                      </div>
+
+                      <div *ngIf="checkColumnValidation(i)"></div>
+                      <div
+                        *ngIf="
+                          group.get('type')?.value == 'lookup' &&
+                          (columnArray.get('lookupTableId').errors ||
+                            columnArray.get('lookupTableFields').errors ||
+                            columnArray.get('lookupTableName').errors ||
+                            columnArray.get('lookupTableFieldNames').errors)
+                        "
+                      >
+                        <div
+                          *ngIf="
+                            columnArray.get('lookupTableId').errors?.required ||
+                            columnArray.get('lookupTableFields').errors
+                              ?.required ||
+                            columnArray.get('lookupTableName').errors
+                              ?.required ||
+                            columnArray.get('lookupTableFieldNames').errors
+                              ?.required
+                          "
+                          class="text-danger ml-2"
+                        >
+                          Lookup field must have table name and fields
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- <div class="col-sm-1" style="margin-top: 35px; margin-left: -20px">
+
+                  </div> -->
+
+                  <div class="col-sm-2">
+                    <div class="form-group">
+                      <label for="isRequired" class="label">Is Required</label>
+                      <!-- <nb-select formControlName="isRequired" fullWidth>
+                        <nb-option matRipple [value]="true">Yes</nb-option>
+                        <nb-option matRipple [value]="false">No</nb-option>
+                      </nb-select> -->
+                      <select
+                        class="form-control"
+                        formControlName="isRequired"
+                        fullWidth
+                      >
+                        <option matRipple [value]="true">Yes</option>
+                        <option matRipple [value]="false">No</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-sm-1 setting-icon">
+                    <i
+                      class="fa fa-cog fa-2x"
+                      style="cursor: pointer"
+                      (click)="openForm(i)"
+                    ></i>
+                  </div>
+                </div>
+                <div class="row">
+                  <!-- <div class="col-sm-3">
+                        <div class="form-group">
+                          <label for="priority" class="label">Display Priority</label>
+                          <input type="text" formControlName="displayPriority" nbInput fullWidth id="priority" placeholder="Priority">
+                        </div>
+                      </div> -->
+                  <div class="col-sm-3">
+                    <div class="form-group">
+                      <label for="section" class="label">Section</label>
+                      <!-- <nb-select formControlName="section" fullWidth>
+                        <nb-option matRipple value="default">Default</nb-option>
+                      </nb-select> -->
+                      <select
+                        class="form-control"
+                        formControlName="section"
+                        fullWidth
+                      >
+                        <option matRipple value="default">Default</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-sm-3">
+                    <div class="form-group">
+                      <label for="fieldSize" class="label">Field Size</label>
+                      <!-- <nb-select formControlName="fieldSize" fullWidth>
+                        <nb-option matRipple value="tiny">Tiny</nb-option>
+                        <nb-option matRipple value="small">Small</nb-option>
+                        <nb-option matRipple value="medium">Medium</nb-option>
+                        <nb-option matRipple value="large">Large</nb-option>
+                      </nb-select> -->
+                      <select
+                        class="form-control"
+                        formControlName="fieldSize"
+                        fullWidth
+                      >
+                        <option matRipple value="tiny">Tiny</option>
+                        <option matRipple value="small">Small</option>
+                        <option matRipple value="medium">Medium</option>
+                        <option matRipple value="large">Large</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div
+                    class="col-sm-3"
+                    style="margin-top: 30px"
+                    *ngIf="isTypeFile(i)"
+                  >
+                    <div class="form-group">
+                      <div class="validation-checkboxes">
+                        <nb-checkbox
+                          formControlName="isProfileImage"
+                          name="isProfileImage"
+                          status="success"
+                          >Is Profile Image
+                        </nb-checkbox>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-sm-3" style="margin-top: 30px">
+                    <div class="form-group">
+                      <div class="validation-checkboxes">
+                        <nb-checkbox
+                          formControlName="displayInRelatedPageView"
+                          name="displayInRelatedPageView"
+                          status="success"
+                          >Display in related Page view
+                        </nb-checkbox>
+                        <div
+                          class="d-flex justify-content-between w-75"
+                          *ngIf="getType(i)"
+                        >
+                          <nb-radio-group
+                            status="success"
+                            formControlName="isLookUpList"
+                            name="isLookUpList"
+                            class="d-flex"
+                          >
+                            <nb-radio [value]="false"> Record </nb-radio>
+                            <nb-radio [value]="true"> List </nb-radio>
+                          </nb-radio-group>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-sm-3" style="margin-top: 30px">
+                    <div class="form-group">
+                      <div class="validation-checkboxes">
+                        <nb-checkbox
+                          formControlName="isASubFormField"
+                          name="isASubFormField"
+                          status="success"
+                        >
+                          Is a subform field?
+                        </nb-checkbox>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-sm-3" *ngIf="showVisibility(i)">
+                    <div class="form-group with-plus-icon">
+                      <label for="type" class="label"
+                        >Is Visibility Depends On :
+                      </label>
+                      <mat-select
+                        class="form-control"
+                        (selectionChange)="
+                          onDependentDropdownChanged($event.value, i, 0)
+                        "
+                        placeholder="Visibility Depends"
+                        formControlName="visibilityData"
+                      >
+                        <mat-option
+                          *ngFor="let filters of visibleFieldData"
+                          [value]="filters._id"
+                        >
+                          {{ filters.label }}
+                        </mat-option>
+                      </mat-select>
+                    </div>
+                  </div>
+
+                  <div
+                    class="col-sm-3"
+                    *ngIf="
+                      showVisibility(i) &&
+                      fieldValues[i] &&
+                      fieldValues[i].length > 0
+                    "
+                  >
+                    <div class="form-group with-plus-icon">
+                      <label for="type" class="label"
+                        >Is Visibility field/value:
+                      </label>
+                      <mat-select
+                        class="form-control"
+                        formControlName="fieldValuesData"
+                        placeholder="Depends Field Value"
+                        multiple
+                      >
+                        <mat-option
+                          *ngFor="let data of fieldValues[i]"
+                          [value]="data"
+                        >
+                          {{ data }}
+                        </mat-option>
+                      </mat-select>
+                    </div>
+                  </div>
+
+                  <div class="add-delete-btn form-group">
+                    <div class="validation-checkboxes">
+                      <i
+                        class="fa 4x fa-trash delete_icon_trash text-danger cursor-pointer"
+                        title="Delete Column"
+                        *ngIf="i > 0"
+                        (click)="removeColumn(i)"
+                      ></i>
+                    </div>
+                  </div>
+                </div>
+                <hr />
+              </div>
+            </div>
+              </mat-expansion-panel>
+          </div>
+        </ng-container>
+      </nb-card-body>
+    </nb-card>
+  </form>
+</nb-card>

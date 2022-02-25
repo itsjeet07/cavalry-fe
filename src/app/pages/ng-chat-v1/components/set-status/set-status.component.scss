@@ -1,0 +1,34 @@
+.set-status-main{
+  text-align: center;
+  max-width: 250px;
+}
+.status-btns button {
+  white-space: break-spaces;
+  line-height: inherit !important;
+}
+.scroll-div {
+  height: 330px;
+  margin-top: 15px;
+  padding-top: 14px;
+}
+.scroll-div::-webkit-scrollbar {
+  width: 10px;
+
+
+}
+
+/* Track */
+.scroll-div::-webkit-scrollbar-track {
+  box-shadow: inset 0px 0px 0px #eaeaef;
+  border-radius: 10px;
+  background: #e3e6ed;
+
+}
+/* Handle */
+.scroll-div::-webkit-scrollbar-thumb{
+  background: #fff;
+  border-radius: 10px;
+  max-height: 15px;
+  border: 2px solid #e3e6ed;
+  box-shadow: none;
+  }

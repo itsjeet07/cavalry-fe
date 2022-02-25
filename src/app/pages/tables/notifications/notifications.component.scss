@@ -1,0 +1,83 @@
+.item-remind-date-time{
+  float: right;
+  width: 100%;
+  text-align: right;
+}
+.item-remind-date-time img {
+  max-width: 15px;
+}
+.reminder-con {
+  display: block;
+  max-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.item-date{
+  float: right;
+    font-size: 13px;
+    font-weight: 400;
+    color: #747477af;
+    font-family: 'Roboto';
+    margin-top: 2px;
+}
+.notification-item{
+  cursor: pointer;
+}
+a.notification-item {
+  display: block;
+  float: left;
+  width: 100%;
+}
+span.event-con {
+  float: left;
+  width: 73%;
+  border: 0px solid;
+}
+span.event-dt-con {
+  float: right;
+  width: 23%;
+  border: 0px solid;
+}
+span.select-check {
+  float: left;
+  width: 3%;
+  text-align: center;
+}
+/* Need to add this class with unread messages*/
+nb-list-item.main-listing.unread-msg {
+  background: #4279ee;
+}
+nb-list-item.main-listing.unread-msg *, nb-list-item.main-listing.unread-msg p{
+  color: #fff !important;
+}
+nb-list-item.main-listing.unread-msg img{
+  -webkit-filter: invert(1);
+}
+nb-list-item.main-listing.unread-msg span.item-con.item-description *, nb-list-item.main-listing.unread-msg span.item-con.item-description p {
+  color: #fff;
+}
+nb-list-item.main-listing{
+  border-radius: 6px;
+  box-shadow: 0 3px 3px 2px rgba(44, 51, 73, 0.05);
+  margin-bottom: 5px;
+}
+nb-card.own-scroll{
+  background: transparent;
+  border: none;
+}
+.nb-theme-default p, .nb-theme-default .paragraph{
+  color: #fff !important;
+}
+.main-listing{
+  font-weight: bold;
+}
+.unread-message{
+  background: #cbe1ec94;
+}
+.read-message{
+  background: #fff;
+}
+.btn-all-read{
+  width:20%;
+  margin:10px
+}

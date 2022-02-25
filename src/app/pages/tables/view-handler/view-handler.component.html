@@ -1,0 +1,8 @@
+<ng-container *ngIf="viewInModal && apiCalled">
+    <ngx-dynamic-tree-table style="display: block;" [directViewFlag]="true" [directTableName]="tableName"
+        [rowId]="id"></ngx-dynamic-tree-table>
+</ng-container>
+
+<ng-container *ngIf="!viewInModal && apiCalled">
+    <ngx-dynamic-table-view></ngx-dynamic-table-view>
+</ng-container>

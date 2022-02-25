@@ -1,0 +1,81 @@
+@import '../@theme/styles/themes';
+
+@include nb-install-component() {
+  ::ng-deep router-outlet + * {
+    display: block;
+    animation: fade 1s;
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+::ng-deep .menu-items {
+  padding: 10px !important;
+}
+
+::ng-deep .nb-theme-default nb-menu .menu-item a {
+  color: #9B9FB3AF;
+}
+
+::ng-deep .nb-theme-default nb-menu .menu-item a.active {
+  color: #4279EE;
+  background-color: #4279EE19;
+  border-radius: 8px;
+}
+
+::ng-deep .menu-title {
+  font-size: 18px;
+  font-family: 'Roboto-Light';
+}
+
+::ng-deep .menu-item {
+
+  &:hover {
+    background-color: #4279EE19;
+    border-radius: 8px;
+  }
+}
+::ng-deep .nb-theme-default nb-menu .menu-item a{
+  font-family: 'Roboto-Bold';
+.menu-icon{
+  margin: 0 20px 0.7rem 0;
+  &:hover {
+    color: #4279EE;
+  }
+  }
+}
+
+::ng-deep .nb-theme-default nb-sidebar {
+  width: 18rem !important;
+}
+
+::ng-deep .nb-theme-default nb-sidebar.compacted {
+  width: 3.5rem !important;
+}
+
+::ng-deep .nb-theme-default nb-sidebar.expanded {
+  width: 18rem !important;
+}
+
+::ng-deep .nb-theme-default nb-sidebar .main-container {
+  width: 18rem !important;
+}
+
+::ng-deep .nb-theme-default nb-sidebar.compacted .main-container {
+  width: 3.5rem !important;
+}
+
+::ng-deep .nb-theme-default nb-menu .menu-item a{
+  height: 53px !important;
+  border-bottom: 1px solid #9b9fb338;
+  padding: 0.75rem 0rem 0.75rem 0.75rem;
+}
+

@@ -1,0 +1,38 @@
+<div class="input-group mr-2 date-pickk">
+  <input id="date" [ngClass]="ngControl?.valid ? 'ng-valid' : 'ng-invalid'" class="form-control date-time-inp-cus" (blur)="inputBlur($event)"
+    [ngModel]="dateString | dateCustomPipe" (change)="onInputChange($event)" [disabled]="disabled" type="search" autocomplete="off"
+    (focusout)="focusChanged(false)" (focusin)="focusChanged(true)" [ngbPopover]="calendarContent" placement="auto" #p="ngbPopover" (document:click)="p.close()" (click)="$event.stopPropagation()"/>
+
+  <div class="input-group-append">
+    <button class="btn btn-outline-secondary" [ngbPopover]="calendarContent" placement="auto" [disabled]="disabled" type="button" #p1="ngbPopover" (document:click)="p1.close()" (click)="$event.stopPropagation()">
+      <i class="fa fa-calendar"></i>
+    </button>
+  </div>
+</div>
+
+<ng-template #calendarContent>
+  <div>
+    <div>
+      <img class="close-btn" src="/assets/images/ic_close_24px.svg" style="cursor: pointer;" (click)="close()">
+      <ngb-datepicker [minDate]="minDate" id="dp" #dp name="datepicker" [ngModel]="datetime" (ngModelChange)="onDateChange($event, dp)" (click)="$event.stopPropagation()">
+      </ngb-datepicker>
+      <!-- <button class="btn btn-block btn-outline-secondary" [disabled]="!datetime?.day" [ngbPopover]="timePickerContent"
+        type="button" (click)="toggleDateTimeState($event)">
+        <i class="fa fa-clock"></i>
+      </button> -->
+    </div>
+    <div>
+      <!-- <button class="btn btn-block btn-outline-secondary" [ngbPopover]="calendarContent" type="button"
+        (click)="toggleDateTimeState($event)">
+        <i class="fa fa-calendar"></i>
+      </button> -->
+      <div class="mt-auto">
+        <ngb-timepicker #tp name="timepicker" [ngModel]="datetime" (ngModelChange)="onTimeChange($event)" (click)="$event.stopPropagation()"
+          [seconds]="seconds" [hourStep]="hourStep" [minuteStep]="minuteStep" [meridian]="true"
+          [secondStep]="secondStep">
+        </ngb-timepicker>
+        <span class="cal_done"><a href="" (click)="close()">Done</a></span>
+      </div>
+    </div>
+  </div>
+</ng-template>

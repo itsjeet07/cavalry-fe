@@ -1,0 +1,63 @@
+<link *ngIf="customTheme" rel="stylesheet" [href]='customTheme | sanitize'>
+<!-- *ngIf="!isDisabled && isBootstrapped && !unsupportedViewport" -->
+<div id="ng-chat"  [ngClass]="theme">
+    <ng-chat-friends-list
+        [localization]="localization"
+        [shouldDisplay]="!hideFriendsList"
+        [userId]="userId"
+        [totalUnreadMessage]="totalUnreadMessage"
+        [isCollapsed]="isCollapsed"
+        [searchEnabled]="searchEnabled"
+        [participants]="participants"
+        [participantsResponse]="participantsResponse"
+        [participantsInteractedWith]="participantsInteractedWith"
+        [windows]="windows"
+        [allowClickFlag]="allowClickFlag"
+        [currentActiveOption]="currentActiveOption"
+        [enableSound]="audioEnabled"
+        [addPeopleFromParticipant]="addPeopleParticipant"
+        [addPeopleFromFlag]="addPeopleFlag"
+        (onParticipantClicked)="onParticipantClickedFromFriendsList($event)"
+        (onOptionPromptCanceled)="onOptionPromptCanceled()"
+        (onOptionPromptConfirmed)="onOptionPromptConfirmed($event)"
+        (onChangeSoundOption)="onChangeSoundOption($event)"
+    >
+    </ng-chat-friends-list>
+
+    <div  *ngFor="let window of windows; let i = index" cdkDrag
+          [ngClass]="{'ng-chat-window': true,
+                     'primary-outline-color': true,
+                     'ng-chat-window-collapsed': window.isCollapsed,
+                     'external-window-open': windowOpenClose(window.participant.id),
+                     'center-pos':dragPosition[i] && window.participant.participantType == 0}"
+                     [ngStyle]="{'right': (!hideFriendsList ? friendsListWidth : 0) + 20 + windowSizeFactor * i + 'px'}">
+      <ng-chat-window
+            #chatWindow
+
+            [localization]="localization"
+            [userId]="userId"
+            [window]="window"
+            [showOptions]="groupAdapter"
+            [emojisEnabled]="emojisEnabled"
+            [linkfyEnabled]="linkfyEnabled"
+            [showMessageDate]="showMessageDate"
+            [messageDatePipeFormat]="messageDatePipeFormat"
+            [hasPagedHistory]="hasPagedHistory"
+            [participantsResponse]="participantsResponse"
+            [windowIndex]="i"
+            [openedWindow]="alreadyOpenedWindow"
+            (onWindowClicked)="onParticipantClickedFromWindowList($event)"
+            (onMessagesSeen)="onWindowMessagesSeen($event,window)"
+            (onMessageSent)="onWindowMessageSent($event)"
+            (onTabTriggered)="onWindowTabTriggered($event)"
+            (onChatWindowClosed)="onWindowChatClosed($event)"
+            (onOptionTriggered)="onWindowOptionTriggered($event)"
+            (onLoadHistoryTriggered)="fetchMessageHistory($event)"
+            (onPushSendMessage)="pushSendMessage($event)"
+            (onParticipantListUpdate)="changeParticipantPosOnMessage($event)"
+            (onAddPeople)="addPeopleClicked($event)"
+            (existinPopClose)="isWindowOpen($event)"
+        >
+        </ng-chat-window>
+    </div>
+</div>

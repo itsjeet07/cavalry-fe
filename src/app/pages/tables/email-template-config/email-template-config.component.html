@@ -1,0 +1,156 @@
+<nb-card class="config_cards">
+  <nb-card-header>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-10">
+          Email Template : {{ tableDetails.tableName }}
+        </div>
+        <div class="col-md-2 icon-space">
+          <i
+            class="fa fa-plus"
+            nbTooltip="Add Email Template"
+            style="cursor: pointer"
+            nbTooltipStatus="primary"
+            (click)="addNewEmailTemplate()"
+          ></i>
+          <a
+            nbTooltip="Back to tables listing"
+            nbTooltipStatus="primary"
+            routerLink="/pages/tables/list"
+          >
+            <nb-icon icon="arrow-back-outline"></nb-icon>
+          </a>
+          <i
+            class="nb-edit"
+            nbTooltip="Edit Columns"
+            style="cursor: pointer"
+            nbTooltipStatus="primary"
+            (click)="onEdit()"
+          ></i
+          >&nbsp;&nbsp;
+        </div>
+      </div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <nb-tabset fullWidth>
+      <!-- <div *ngIf="dataList && dataList.length"> -->
+      <nb-tab
+        tabTitle="Data Based Rules"
+        *ngIf="dataList && dataList.length"
+        active="true"
+      >
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Source</th>
+              <th scope="col">Old Values</th>
+              <th scope="col">New Values</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <ng-container>
+            <!-- *ngFor="let column of emailTemplateList; let columnIndex = index" -->
+            <tbody>
+              <tr *ngFor="let col of dataList; let i = index">
+                <td scope="row">
+                  <b *ngIf="col.columnDetails[0]">{{
+                    col.columnDetails[0].label | uppercase
+                  }}</b>
+                  <b *ngIf="!col.columnDetails[0]">ANY</b>
+                </td>
+                <td>
+                  <div *ngIf="!col.event.oldValue.length">&nbsp; &nbsp;ANY</div>
+                  <ng-container *ngIf="col.event.oldValue">
+                    <div *ngFor="let fields of col.event.oldValue">
+                      &nbsp; &nbsp;{{ fields }}
+                    </div>
+                  </ng-container>
+                </td>
+                <td>
+                  <div *ngIf="!col.event.newValue.length">&nbsp; &nbsp;ANY</div>
+                  <ng-container *ngIf="col.event.newValue">
+                    <div *ngFor="let fields of col.event.newValue">
+                      &nbsp; &nbsp;{{ fields }}
+                    </div>
+                  </ng-container>
+                </td>
+                <td>
+                  <div
+                    class="col-md-1 mt-2 mr-2 edit_but"
+                    style="cursor: pointer"
+                    (click)="editTemplate(col._id, i, 'data')"
+                  >
+                    <i class="fas fa-pencil-alt"></i>
+                  </div>
+                  <div
+                    class="col-md-1 mt-2 mr-2 edit_but"
+                    style="cursor: pointer"
+                    (click)="deleteTemplate(col._id, i)"
+                  >
+                    <i class="fas fa-trash-alt"></i>
+                  </div>
+                  <!-- <button nbButton status="primary" size="tiny" (click)="fireTestEmail(col._id)">Test Email</button> -->
+                </td>
+              </tr>
+            </tbody>
+          </ng-container>
+        </table>
+      </nb-tab>
+      <!-- </div> -->
+      <!-- <div *ngIf="timeList && timeList.length"> -->
+      <nb-tab
+        *ngIf="timeList && timeList.length"
+        tabTitle="Schedule Based Rules"
+      >
+        <table class="table">
+          <tr>
+            <th scope="col">Source</th>
+            <th scope="col">Time Unit</th>
+            <th scope="col">Length</th>
+            <th scope="col">Before / After</th>
+            <th scope="col">Action</th>
+          </tr>
+          <ng-container>
+            <!-- *ngFor="let column of emailTemplateList; let columnIndex = index" -->
+            <tr *ngFor="let col of timeList; let i = index">
+              <td scope="row">
+                <b *ngIf="col.columnDetails[0]">{{
+                  col.columnDetails[0].label | uppercase
+                }}</b>
+                <b *ngIf="!col.columnDetails[0]">ANY</b>
+              </td>
+              <td>
+                <b>{{ col.timeUnit }}</b>
+              </td>
+              <td>
+                <b>{{ col.length }}</b>
+              </td>
+              <td>
+                <b>{{ col.beforeAfter }}</b>
+              </td>
+              <td>
+                <div
+                  class="col-md-1 mt-2 mr-2 edit_but"
+                  style="cursor: pointer"
+                  (click)="editTemplate(col._id, i, 'time')"
+                >
+                  <i class="fas fa-pencil-alt"></i>
+                </div>
+                <div
+                  class="col-md-1 mt-2 mr-2 edit_but"
+                  style="cursor: pointer"
+                  (click)="deleteTemplate(col._id, i)"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </div>
+                <!-- <button nbButton status="primary" size="tiny" (click)="fireTestEmail(col._id)">Test Email</button> -->
+              </td>
+            </tr>
+          </ng-container>
+        </table>
+      </nb-tab>
+      <!-- </div> -->
+    </nb-tabset>
+  </nb-card-body>
+</nb-card>

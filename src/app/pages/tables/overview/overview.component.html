@@ -1,0 +1,79 @@
+<div class="overview-container">
+  <div class="overview-con-left">
+    <div class="container-fluid">
+      <!-- <div class="row two-col-row mb-10">
+        <div class="col-grey-2-col">
+          <div class="over-grey-con">
+            <div class="con-title">Tasks
+              <span class="see-all-link"><a href="#">See all ></a></span>
+            </div>
+            <div class="con-content">
+              <div class="status-list">
+                <ul>
+                  <li><span class="status-dot green"></span> Active - 44</li>
+                  <li><span class="status-dot red"></span> Overdue - 13</li>
+                  <li><span class="status-dot purple"></span> Upcoming - 51</li>
+                </ul>
+              </div>
+              <div class="status-graph">
+                <div class="circle-graph"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-grey-2-col">
+          <div class="over-grey-con">
+            <div class="con-title">Invoices
+              <span class="see-all-link"><a href="#">See all ></a></span>
+            </div>
+            <div class="con-content">
+              <div class="con-content-left">
+                <div class="outstanding-amount">$2,000.00</div>
+                <div class="outstanding-title">Outstanding</div>
+              </div>
+              <div class="con-content-right">
+                <div class="overdue-amount">$750.00</div>
+                <div class="overdue-title">Overdue</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> -->
+
+      <div *ngFor="let over of overview" class="row">
+        <div class="col-grey-1-col">
+          <div class="over-grey-con">
+            <div class="con-title">{{over.tableName}}     
+              <span class="plusicon" title="Add New" (click)="openForm(over.tableName)">+</span>                                      
+              <span class="see-all-link" title="See all" (click)="redirectToListing(over.tableName)">See all ></span>              
+            </div>
+            <div *ngIf="over.value && over.value.length" class="con-content">
+              <div *ngFor="let val of over.value | slice:0:2" class="white-full-con">
+                <div class="project-title">{{val.idField}}</div>
+                <div class="project-discription" [innerHTML]="val.others"></div>
+                <div class="project-status" *ngIf="val.status">
+                  <span href="#" [ngStyle]="{'color': val.statusColor }">{{val.status}}
+                    <!-- <span>44%</span> -->
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="overview-con-right">
+    <!-- <ngx-chat-tab [viewCallLog]="true" class="w-100"
+        [chatOpened]="true" [tableInfo]="tableInfo" [fromTask]="true"
+        [createdRecordDate]="clientData['createdAt']" [createdBy]="clientData['createdBy']" [recordData]="clientData"
+        [columnData]="tempParentTableHeader">
+      </ngx-chat-tab> -->
+
+    <ngx-activity-watchers [showChats]="showChats" [tableInfo]="tableInfo" [subscribers]="subscribers"
+      [subscriptionText]="subscriptionText" [isSelfSubscribed]="isSelfSubscribed" [tableName]="tableName"
+      [Data]="clientData" [dynamicData]="tempParentTableHeader"></ngx-activity-watchers>
+  </div>
+</div>

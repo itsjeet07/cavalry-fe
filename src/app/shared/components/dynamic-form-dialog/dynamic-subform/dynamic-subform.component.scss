@@ -1,0 +1,132 @@
+@import '~@ng-select/ng-select/themes/default.theme.css';
+
+.add-sub-form{
+  float: right;
+}
+
+.border-btm form{
+  border-bottom: 1px solid;
+}
+.sub-form-con-main {
+  border: 1px solid #e4e9f2;
+  border-radius: 7px;
+  overflow: hidden;
+}
+table.sub-form-table {
+  width: 100%;
+}
+tr.table-head {
+  background: #f9f9f9;
+  border-radius: 8px;
+  height: 48px;
+  border: 0px solid red;
+  overflow: hidden;
+}
+tr.table-head th{
+  text-transform: uppercase;
+}
+tr.table-head th, tr.table-head th span {
+  font-size: 14px;
+  color: #393B44;
+  font-weight: 500;
+  font-family: 'Roboto';
+}
+table.sub-form-table th, table.sub-form-table td {
+  border-right: 1px solid #e4e9f2;
+  font-family: "Roboto";
+  font-weight: 400;
+  font-size: 14px;
+  display: table-cell;
+}
+table.sub-form-table td .mat-form-field-infix{
+  width: auto;
+}
+table.sub-form-table td nb-checkbox#check {
+  display: block;
+}
+table.sub-form-table th span.sub-form-th {
+  max-height: 35px;
+  float: left;
+  overflow: hidden;
+}
+table.sub-form-table tr {
+  border-bottom: 1px solid #e4e9f2;
+}
+table.sub-form-table th:last-child, table.sub-form-table td:last-child {
+  border-right: 0px solid #e4e9f2;
+}
+table.sub-form-table tr:last-child {
+  border-bottom: 0px solid #e4e9f2;
+}
+table.sub-form-tabl th.s-no ,table.sub-form-tabl td.s-no{
+  width: 50px;
+}
+table.sub-form-table tr td
+.button_show button {
+  background: transparent !important;
+  color: #4279EE !important;
+  border: 1px solid #4279EE !important;
+  font-family: 'Roboto';
+  font-size: 14px !important;
+  font-weight: 500;
+  min-width: 145px;
+  height: 33px;
+  line-height: 36px;
+}
+.button_show {
+  margin-top: 22px;
+  float: left;
+  width: 100%;
+}
+.button_show .button-col {
+  margin-right: 10px;
+  float: left;
+  display: inline-table;
+}
+
+table.sub-form-table td .edit_but{
+  padding: 0;
+    line-height: 44px;
+}
+table.sub-form-table td i.fas.fa-trash-alt{
+    color: #ABABAE !important;
+}
+td.dots-icon {
+  width: 54px;
+  text-align: center;
+}
+td.dots-icon img {
+  width: 21px;
+}
+td.s-no, th.s-no {
+  width: 2.5%;
+  line-height: 50px;
+}
+table.sub-form-table td .select-new {
+  margin-top: -30px;
+}
+table.sub-form-table th {
+  padding: 0 5px;
+}
+.nb-theme-default .toastr-overlay-container{
+  z-index: 1000 !important;
+}
+img.mat-icon.notranslate.material-icons.mat-icon-no-color{
+  position: relative;
+      top: 0px;
+      margin-top: 0;
+      margin-right: 5px;
+      max-width: 24px;
+      max-height: 24px;
+      opacity: 1;
+      margin-left: -5px;
+    }
+img.mat-icon.notranslate.material-icons.mat-icon-no-color.top11{
+  top: -4px;
+}
+img.mat-icon.notranslate.material-icons.mat-icon-no-color.top04{
+  top: 4px;
+}
+mat-icon.mat-icon.notranslate.money_icon.material-icons.mat-icon-no-color {
+  top: 0;
+}

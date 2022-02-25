@@ -1,0 +1,71 @@
+img.pull-right{cursor: pointer;}
+.filter-modal{
+  min-height: 100px;
+  background: transparent;
+  padding: 0;
+}
+.filter-content-row {
+  position: relative;
+  display: block;
+
+}
+.add-item-icon.pull-right {
+  position: relative;
+  /* right: -25px; */
+  margin-top: 32px;
+  margin-right: 0;
+  float: right;
+  display: inline-block;
+  width: 47px;
+}
+.add-item-icon span.remove-row {
+  margin-right: 8px;
+}
+.filter-mod-main nb-card-header img.close-btn {
+  margin: 16px 0 0 0;
+}
+.filter-mod-main nb-card-body .field-col label.label {
+  width: 100%;
+  font-size: 12px !important;
+  text-transform: uppercase;
+  color: #9295a1 !important;
+  letter-spacing: 0.3px !important;
+  margin-bottom: 3px;
+  font-weight: normal;
+}
+.filter-mod-main nb-card-body{
+  max-height: 4000px;
+}
+.field-col nb-select, .field-col input {
+  max-width: 100% !important;
+  width: 100%;
+}
+.field-col {
+  margin-bottom: 15px;
+  display: inline-block;
+}
+.add-item-icon i.fa {
+  cursor: pointer;
+}.add-item-icon i.fa {
+  cursor: pointer;
+}.add-item-icon i.fa {
+    cursor: pointer;
+}
+.filter-mod-main nb-card-header{
+padding: 13px 20px;
+    color: #5c77ea;
+    font-size: 18px;
+    font-family: "DM Sans", sans-serif !important;
+    font-weight: normal;
+    line-height: 40px;
+  }
+
+  .filter-mod-main i.fa{
+    font-family: 'FontAwesome' !important;
+    color: #9295a1 !important;
+  }
+  .filter-mod-main i.fa:hover{
+    color: #262b44 !important;
+    cursor: pointer;
+  }
+

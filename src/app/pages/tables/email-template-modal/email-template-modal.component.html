@@ -1,0 +1,247 @@
+<div class="main_layout" style="z-index: 99999;" [nbSpinner]="loading" nbSpinnerSize="large" nbSpinnerStatus="primary">
+  <nb-card class="email_modal">
+    <nb-card-header>
+      <div class="row">
+        <div class="col-md-11">
+          Email Template
+        </div>
+        <div class="col-md-1" (click)="closeModal()" style="cursor: pointer;">
+          <strong>X</strong>
+        </div>
+      </div>
+      ​
+    </nb-card-header>
+    <nb-card-body style="height: 640px; overflow-y:scroll; flex: none;">
+
+      <nb-radio-group [(ngModel)]="option">
+        <nb-radio *ngFor="let option of options" [value]="option.value" (valueChange)="triggerEvent($event)">
+          {{ option.label }}
+        </nb-radio>
+      </nb-radio-group>
+
+      ​<form #myForm="ngForm">
+        <ng-container *ngIf="dataFlag">
+
+          <label>Source Field(Update)</label>
+          <div style="width:50%">
+            <mat-select class="form-control mr_10 select" placeholder="Source Field"
+              (selectionChange)="setSrcOptionList()" [disabled]="editFlag || isNewRecordCheckBox"
+              [(ngModel)]="soruceColumnId" name="srcColumnType">
+              <mat-option value="any">Any Field</mat-option>
+              <mat-option *ngFor="let column of columnList" [value]="column._id">{{column.name}}</mat-option>
+            </mat-select>
+          </div><br />
+
+          <div *ngIf="!isAnyField">
+            <nb-checkbox name="isAnyChangeCheckBox" (checkedChange)="isAnyChangechecked($event)"
+              [(ngModel)]="isAnyChangeCheckBox" [disabled]="isNewRecordCheckBox">Any change</nb-checkbox>
+          </div><br />
+
+          <fieldset [disabled]="this.isAnyChangeCheckBox">
+            <ng-container *ngIf="isSrcFieldSelected && this.soruceColumnId != 'any'">
+
+              <mat-form-field class="mb-20" appearance="outline" *ngIf="selectedColumnObj.type == 'text'">
+                <mat-label>{{selectedColumnObj.label}} changes from</mat-label>
+                <input matInput placeholder="{{selectedColumnObj.label}}" name="oldVal" [type]="selectedColumnObj.type"
+                  [placeholder]="selectedColumnObj.label" [(ngModel)]="oldInputValue">
+              </mat-form-field>
+              ​
+              <mat-form-field class="mb-20" *ngIf="selectedColumnObj.type == 'area'" appearance="outline">
+                <mat-label>{{selectedColumnObj.label}} changes from</mat-label>
+                <textarea matInput placeholder="{{selectedColumnObj.label}}" name="oldVal"
+                  [placeholder]="selectedColumnObj.label" [(ngModel)]="oldInputValue"></textarea>
+              </mat-form-field>
+              ​
+              <div *ngIf="selectedColumnObj.type === 'richTextArea' || selectedColumnObj.type == 'file'"
+                class="container no-options">
+                <span>No options available for selected field!</span>
+              </div>
+
+              <ng-container
+                *ngIf="selectedColumnObj.type === 'dropdown' || selectedColumnObj.type == 'status' || selectedColumnObj.type == 'checkbox' || selectedColumnObj.type == 'radio'">
+                <ng-container *ngIf="addFlag || (editFlag && srcOptions)">
+                  ​<ng-container *ngIf="srcOptions && srcOptions.length">
+                    <label>​Choose old value</label>
+                    <div class="d-flex flex-column w-50 mt-3" *ngIf="srcOptions[0].status == undefined">
+                      <nb-checkbox *ngFor="let option of srcOptions"
+                        [checked]="editFlag? (oldfieldsSelected.indexOf(option) > -1) : false"
+                        (checkedChange)="oldValueCheckedItems($event, option)">{{option}}
+                      </nb-checkbox>
+                    </div>
+                    <div class="d-flex flex-column w-50 mt-3" *ngIf="srcOptions[0].status">
+                      <nb-checkbox *ngFor="let option of srcOptions"
+                        [checked]=" editFlag? (oldfieldsSelected.indexOf(option.status) > -1) : false"
+                        (checkedChange)="oldValueCheckedItems($event, option.status)">{{option.status}}
+                      </nb-checkbox>
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+
+              <mat-form-field class="mb-20 due-date-col" *ngIf="selectedColumnObj.type == 'date'" appearance="outline">
+                <mat-label>{{selectedColumnObj.label}} changes from</mat-label>
+                <input matInput [matDatepicker]="formpicker" name="oldVal" [placeholder]="selectedColumnObj.label"
+                  [(ngModel)]="oldInputValue">
+                <mat-datepicker-toggle matSuffix [for]="formpicker"></mat-datepicker-toggle>
+                <mat-datepicker #formpicker></mat-datepicker>
+              </mat-form-field>
+              ​
+              <div class='date-time-pic-cus mb-20' *ngIf="selectedColumnObj.type == 'dateTime'">
+                <span class='date-time-pic-cus-title'
+                  [ngClass]="{'title-active':dateTimePickerToggeledOn}">{{selectedColumnObj.label}}
+                  :</span>
+                <app-date-time-picker name="oldVal" [(ngModel)]="oldInputValue"></app-date-time-picker>
+              </div>
+            </ng-container>
+
+
+            <ng-container *ngIf="isSrcFieldSelected && this.soruceColumnId != 'any'">
+              <mat-form-field class="mb-20" appearance="outline" *ngIf="selectedColumnObj.type == 'text'">
+                <mat-label>Changes to {{selectedColumnObj.label}}</mat-label>
+                <input matInput placeholder="{{selectedColumnObj.label}}" [type]="selectedColumnObj.type"
+                  [placeholder]="selectedColumnObj.label" name="newVal" [(ngModel)]="newInputValue">
+              </mat-form-field>
+
+              <mat-form-field class="mb-20" *ngIf="selectedColumnObj.type == 'area'" appearance="outline">
+                <mat-label>Changes to {{selectedColumnObj.label}}</mat-label>
+                <textarea matInput placeholder="{{selectedColumnObj.label}}" name="newVal"
+                  [placeholder]="selectedColumnObj.label" [(ngModel)]="newInputValue"></textarea>
+              </mat-form-field>
+
+              <div
+                *ngIf="selectedColumnObj.type === 'richTextArea' || selectedColumnObj.type == 'file' || selectedColumnObj.type == 'lookup'"
+                class="container no-options">
+                <span>No options available for selected field!</span>
+              </div>
+              <ng-container *ngIf="selectedColumnObj.type === 'dropdown' || selectedColumnObj.type == 'status' || selectedColumnObj.type == 'checkbox' || selectedColumnObj.type == 'radio'
+                 || selectedColumnObj.type == 'recordType'">
+                <ng-container *ngIf="isSrcFieldSelected && (addFlag || (editFlag && srcOptions))">
+                  <ng-container *ngIf="srcOptions && srcOptions.length">
+                    <div class="d-flex flex-column w-50 mt-3" *ngIf="srcOptions[0].status == undefined">
+                      <label>​Choose new value</label>
+                      <nb-checkbox *ngFor="let option of srcOptions | NewValue : emailEventObject.event.oldValue"
+                        [checked]="editFlag? (newfieldsSelected.indexOf(option) > -1) : false"
+                        (checkedChange)="newValueCheckedItems($event, option)">{{option}}
+                      </nb-checkbox>
+                    </div>
+                    <div class="d-flex flex-column w-50 mt-3" *ngIf="srcOptions[0].status">
+                      <label>​Choose new value</label>
+                      <nb-checkbox *ngFor="let option of srcOptions | NewValue : emailEventObject.event.oldValue"
+                        [checked]=" editFlag? (newfieldsSelected.indexOf(option.status) > -1) : false"
+                        (checkedChange)="newValueCheckedItems($event, option.status)">{{option.status}}
+                      </nb-checkbox>
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+
+              <mat-form-field class="mb-20 due-date-col" *ngIf="selectedColumnObj.type == 'date'" appearance="outline">
+                <mat-label>Changes to {{selectedColumnObj.label}}</mat-label>
+                <input matInput [matDatepicker]="formpicker" name="newVal" [placeholder]="selectedColumnObj.label"
+                  [(ngModel)]="newInputValue">
+                <mat-datepicker-toggle matSuffix [for]="formpicker"></mat-datepicker-toggle>
+                <mat-datepicker #formpicker></mat-datepicker>
+              </mat-form-field>
+              <div class='date-time-pic-cus mb-20' *ngIf="selectedColumnObj.type == 'dateTime'">
+                <span class='date-time-pic-cus-title'
+                  [ngClass]="{'title-active':dateTimePickerToggeledOn}">{{selectedColumnObj.label}}
+                  :</span>
+                <app-date-time-picker name="newVal" [(ngModel)]="newInputValue"></app-date-time-picker>
+              </div>
+            </ng-container>
+          </fieldset>
+          <div>
+          </div>
+          <br />
+
+
+        </ng-container>
+
+        <ng-container *ngIf="timeFlag">
+
+          <mat-form-field>
+            <label>Date/DateTime Field<span style="color: red;">*</span></label>
+            <mat-select class="form-control mr_10 select" name="field" [(ngModel)]="emailEventTimeTrigger.columnId">
+              <mat-option *ngFor="let field of date_dateTimeArray" [value]="field._id">
+                {{field.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field>
+            <label>Time Unit<span style="color: red;">*</span></label>
+            <mat-select class="form-control mr_10 select" required name="timeUnit"
+              [(ngModel)]="emailEventTimeTrigger.timeUnit">
+              <mat-option *ngFor="let field of timeUnitArray" [value]="field.value">
+                {{field.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+
+          <mat-form-field class="mb-20" appearance="outline">
+            <mat-label>Length<span style="color: red;">*</span></mat-label>
+            <input min="0" matInput placeholder="Length" name="length" type="number"
+              [(ngModel)]="emailEventTimeTrigger.length">
+          </mat-form-field>
+
+          <mat-form-field>
+            <label>Before/After<span style="color: red;">*</span></label>
+            <mat-select class="form-control mr_10 select" name="beforeAfter" required
+              [(ngModel)]="emailEventTimeTrigger.beforeAfter">
+              <mat-option *ngFor="let field of beforeAfterArray" [value]="field.value">
+                {{field.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+        </ng-container>
+
+
+        <div>
+          <nb-checkbox name="isNewRecordCheckBox" (checkedChange)="isNewRecordChecked($event)"
+            [(ngModel)]="isNewRecordCheckBox">New Record(create)</nb-checkbox>
+        </div><br />
+
+        <div class="row">
+          <div class="col-md-10">
+            <label>Email Config :</label>
+          </div>
+          <div class="col-md-2">
+            <button nbButton class="save_button" status="primary" (click)="openToEmailHelp()">Help</button>
+          </div>
+        </div>
+
+
+
+        <div>
+          <mat-form-field appearance="outline">
+            <mat-label>Send to: </mat-label>
+            <input class="full-width-input" [style.width.px]=327 matInput type="text"
+              placeholder="@table.assignedTo.email" name="sendTo" [(ngModel)]="emailEventObject.event.emailTo">
+          </mat-form-field>
+        </div>
+
+
+        <div>
+          <mat-form-field appearance="outline">
+            <mat-label>Email Subject</mat-label>
+            <input class="email-field full-width-input" [style.width.px]=327 matInput type="text"
+              placeholder="Hi @table.field was changed" name="subject" [(ngModel)]="emailEventObject.event.subject">
+          </mat-form-field>
+        </div>
+
+        <div class="l text-area-con mb-20">
+          <span class="position-relative with-help">Email Body &nbsp;: </span>
+
+          <editor id="editor" [init]="editorConfig" name="emailBody"
+            apiKey="3zk4lcdxv42ueqfotvbtw7lihq6uwkb0cy7l33muhxhr778z" [(ngModel)]="emailEventObject.event.body">
+          </editor>
+        </div>
+
+        <button nbButton class="save_button" status="primary" (click)="saveEmail(myForm)">save</button>
+      </form>
+
+    </nb-card-body>
+  </nb-card>
+</div>

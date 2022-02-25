@@ -1,0 +1,260 @@
+/**
+ * @license
+ * Copyright Akveo. All Rights Reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: 100%;
+}
+
+.message_div {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+
+  .delete_message {
+    display: none;
+    cursor: pointer;
+    margin-right: 0.3rem;
+  }
+
+  .sizeLess {
+    height: 18px;
+    width: 18px;
+  }
+
+  &:hover {
+
+    .delete_message {
+      display: block;
+    }
+  }
+}
+
+/* Chat Reply Design Css */
+.reply-to.bottom-reply {
+  background: #f7f9fc;
+  border-bottom: 1px solid #E3E3E3;
+  margin-left: 2px;
+  margin-bottom: -4px;
+  padding: 10px;
+  position: relative;
+  border-radius: 6px 6px 0 0;
+  box-shadow: 0px -2px 5px 0 rgba(44, 51, 73, 0.2) !important;
+  width: calc(100% - 39px);
+}
+
+.reply-to.bottom-reply .close-btn {
+  position: absolute;
+  right: 5px;
+  top: 1px;
+  font-size: 19px;
+  font-family: 'Open Sans';
+  font-weight: lighter;
+  color: #222b45;
+  cursor: pointer;
+}
+
+.reply-to {
+  border-bottom: 1px solid #fff;
+  float: left;
+  width: 100%;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+}
+
+.received-chat-message-container .reply-to {
+  border-color: #222b45;
+}
+
+.reply-to blockquote {
+  position: relative;
+  padding: 10px 0 0 15px;
+  margin: 0;
+  font-style: italic;
+  font-size: 0.8125rem;
+  font-family: 'Roboto-Light';
+  min-height: 50px;
+  word-break: break-word;
+}
+
+.reply-to sup {
+  position: absolute;
+  left: 0;
+  top: -4px;
+  font-size: 25px;
+}
+
+.reply-to span.reply-user-date {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+#ng-chat.light-theme .sent-chat-message-container .reply-to blockquote, #ng-chat.light-theme .received-chat-message-container .reply-to blockquote {
+  font-weight: normal !important;
+}
+
+#ng-chat.light-theme .sent-chat-message-container .reply-to sup .fa, #ng-chat.light-theme .received-chat-message-container .reply-to sup .fa, .reply-to sup .fa {
+  font-family: 'FontAwesome' !important;
+  font-size: 13px;
+}
+
+.reply span {
+  background: rgba(0, 0, 0, 0.2);
+  display: inline-block;
+  font-size: 0.8125rem;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-family: 'Roboto-Light';
+  border-radius: 0px 5px 5px 5px;
+}
+
+.reply i.fa {
+  margin-left: 5px;
+  font-size: 15px;
+}
+
+.sent-chat-message-container .trash-icon {
+  margin-right: 5px;
+}
+span.sender-call-nor-txt {
+  display: inline-block;
+  color: #9FA8B3;
+}
+/* Chat Reply Design Css */
+
+.sender-call {
+  width: 100%;
+  display: block;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  font: normal normal normal 12px DM Sans !important;
+  letter-spacing: 0px;
+  color: #5C77EA !important;
+  opacity: 1;
+  margin-bottom: 10px;
+  position: relative;
+  padding-right: 60px;
+
+  time {
+    width: auto;
+    text-align: right;
+    font: normal normal normal 12px DM Sans !important;;
+    letter-spacing: 0px;
+    color: #9FA8B3 !important;;
+    opacity: 1;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
+
+.call-logs {
+  width: 100%;
+
+  p {
+    width: 100%;
+    background-color: white !important;
+    color: #2B4058 !important;
+    border-radius: 5px !important;
+  }
+
+  i {
+    position: absolute;
+    font-size: 18px;
+  }
+
+  img {
+    position: absolute;
+    right: 20px;
+    margin-right: 10px !important;
+  }
+}
+
+.call-logs-1 {
+  position: relative;
+  justify-content: flex-end;
+  flex-direction: initial;
+
+  .delete_message{
+    margin-left: 0.3rem !important;
+  }
+
+  p {
+    width: 100%;
+    border-radius: 5px !important;
+  }
+
+  i {
+    bottom: 10px;
+    font-size: 18px;
+  }
+
+  img {
+    position: absolute;
+    right: 20px;
+    margin-right: 10px !important;
+  }
+}
+
+.call-log-date {
+  width: 100%;
+  font: normal normal bold 12px/18px DM Sans;
+  letter-spacing: 0px;
+  color: #2B4058;
+  opacity: 1;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  height: 25px;
+  justify-content: space-between;
+
+  span {
+    height: 1px;
+    background: #c7c7c7;
+    width: calc(100% - 50px);
+  }
+}
+
+.sender-call-quote {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  font: normal normal normal 12px DM Sans !important;
+  letter-spacing: 0px;
+  color: #5C77EA !important;
+  opacity: 1;
+  margin-bottom: 10px;
+  text-transform: capitalize;
+  .call-quote {
+    color: #9FA8B3;
+    text-transform: initial;
+  }
+  .call-message-id {
+    font: normal normal normal 12px DM Sans;
+    letter-spacing: 0px;
+    color: #5C77EA;
+    opacity: 1;
+  }
+
+  time {
+    // width: 100%;
+    text-align: right;
+    font: normal normal normal 12px DM Sans !important;;
+    letter-spacing: 0px;
+    color: #9FA8B3 !important;;
+    opacity: 1;
+  }
+}
+
+.call-height {
+  height: calc(100% - 40px);
+}
+

@@ -1,0 +1,44 @@
+<nb-card
+    [ngClass]="'custom_height info-card notification-card'"
+    [nbSpinner]="loading" nbSpinnerSize="large" nbSpinnerStatus="primary" class="reminder-new-popup">
+    <nb-card-header>
+    
+        <span *ngIf="dialogType && (dialogType == 'notification' || dialogType == 'reminder')">
+            <img class="header-icon" src="/assets/images/alarm-clock-icon.png">
+            Reminder - {{ triggerDate }} - {{ triggerTime }}
+        </span>
+    </nb-card-header>
+
+  <nb-card-body *ngIf="dialogType && (dialogType == 'notification' || dialogType == 'reminder')">
+    <ng-container *ngIf="this.notification && !this.text.includes('due yet')">
+      <div class="menu_action" style="cursor: pointer;">
+        <img [nbPopover]="templateRef" class="option-image" nbPopoverTrigger="click" nbPopoverPlacement="bottom"
+          src="/assets/images/more-vertical-outline.svg">
+      </div>
+
+      <ng-template #templateRef>
+        <nb-icon style="width: 35px;height: 30px;cursor: pointer;" icon="edit-outline" (click)="openReminderModal()"></nb-icon>
+      </ng-template>
+      <div class="notifi-row reminder-title">{{this.notification.reminderDetails.notes}} </div>
+      <div class="notifi-row reminder-id" *ngIf="notification.reminderDetails && notification.reminderDetails.tableId" (click)="remindNavigate(notification)">
+        <img [src]="notification.tableIcon[notification.tableName]"> {{ notification.reminderDetails.tableName }} {{ notification.reminderDetails.toDisplay }}
+      </div>
+      <div class="notifi-row reminder-text">{{this.notification.reminderDetails.details}} </div>
+    </ng-container>
+  </nb-card-body>
+
+  <nb-card-footer>
+    <button type="button"
+      (click)="openSnoozeModal(this.notification)" nbButton status="basic" class="btn btn-cancel">
+      <img class="snooze-img-icon" src="/assets/images/snooze-icon-img.png">
+      Snooze
+    </button>
+
+    <button 
+      class="save pull-right btn btn-primary btn-save" type="submit" 
+      (click)="markComplete(this.notification)" nbButton
+      status="primary">Mark Complete
+    </button>
+
+  </nb-card-footer>
+</nb-card>

@@ -1,0 +1,167 @@
+.nb-tra-bg{
+  background: white;;
+}
+
+.remindar-main {
+  width: 1000px;
+}
+
+.modal-title {
+  color: royalblue;
+}
+
+.left-side-calendar {
+  padding-right: 15px;
+  border-right: 1px solid royalblue;
+}
+
+.reminder-list-loop {
+  border: 2px solid royalblue;
+  border-radius: 10px;
+  margin-right: 3px;
+  padding-right: 15px;
+  margin-bottom: 2px;
+}
+
+// .right-side-rmdr-list {
+//   overflow-y: scroll;
+// }
+
+.add-remimnder-btn{
+  float: right;
+  align-items: flex-end;
+  margin-top: 15px;
+  margin-right: 3px;
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  bottom: 4px;
+  z-index: 5;
+}
+.remindar-main nb-card-body .row.main-reminder-hgt {
+  // max-height: 500px;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  min-height: 500px;
+}
+.remindar-main h3 {
+  font-size: 16px;
+}
+.remindar-main .left-side-calendar {
+  border-right: 1px solid #e3deea;
+}
+.remindar-main .reminder-list-loop{
+  border: 2px solid #e3deea;
+  border-radius: 4px;
+  margin-bottom: 10px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    font-weight: 600;
+    min-height: 36px;
+    line-height: 25px;
+    width: 100%;
+    z-index: 6;
+    position: relative;
+}
+
+.reminderrr-date {
+  width: 100%;
+  /* margin-right: 0 !important; */
+  padding-right: 0 !important;
+  width: 100%;
+  max-width: calc(100% - 14px);
+    position: absolute;
+    background: #fff;
+    z-index: 998;
+}
+.contet-blur .main-reminder-hgt{
+  opacity: 0.1 !important;
+}
+
+.remindar-main button.close {
+  outline: none;
+}
+.remindar-main .cal-month-view .cal-day-badge {
+  display: none;
+}
+
+.display-flex{
+  display: inline-flex;
+}
+.delete-reminder{
+  cursor: pointer;
+}
+.remindar-main .add-notes{
+  padding: 0px !important;
+}
+.add-notes-top-main {
+  float: left;
+  width: 100%;
+}
+.add-notes-top-left {
+  float: left;
+  width: 80%;
+}
+.alert-notification.add-notes-top-right {
+  float: right;
+  width: 20%;
+  top: -9px;
+    cursor: pointer;
+}
+.notes-row {
+  float: left;
+  width: 100%;
+  margin-left: 15px;
+  margin-bottom: 15px;
+}
+.notes-row-full {
+  float: left;
+  width: 100%;
+}
+.remindar-main .notes-row-full span.calen-tab {
+  width: 100%;
+}
+.remindar-main .notes-row-full span.calen-tab .mat-form-field{
+  width: 100%;
+}
+.notes-row-full button.note-save-btn {
+  float: right;
+  margin: 5px 10px -10px 0;
+}
+.selected-date{
+  float: right;
+  font-weight: 600;
+  margin-right: 3px;
+  width: 100%;
+  text-align: right;
+  display: block;
+  margin-bottom: 8px;
+}
+.remindar-main span.modal-title {
+  font-size: 15px;
+  font-weight: 500;
+  font-family: 'Roboto';
+  color: #4279ee;
+}
+nb-layout.notification-page nb-layout-column {
+  padding-left: 0 !important;
+}
+nb-layout.notification-page nb-card.remindar-main {
+  width: 100% !important;
+}
+nb-layout.notification-page nb-layout-column:nth-child(2) {
+  max-width: 55%;
+  width: 100%;
+}
+
+nb-layout.notification-page nb-layout-column:first-child {
+  max-width: 45%;
+}
+nb-layout.notification-page .reminder-list-bottom{
+display: none;
+}
+// .row.add-remimnder-btn.pos-rel{
+//   position: relative;
+//   top: 0;
+// }
+

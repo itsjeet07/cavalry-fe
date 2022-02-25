@@ -1,0 +1,396 @@
+<div class="header_inner" *ngIf="!isSearchPage">
+  <div class="search_main" *ngIf="!fromRecordPage">
+    <div class="d-flex flex-row ">
+      <i class="fas fa-bars mr-1 menu_icon" (click)="toggel()"></i>
+      <div class="search_icon_set">
+        <input nbInput class="search-input" placeholder="Search " #search [(ngModel)]="searchString"
+          (keyup.enter)="onSearch(search.value,'')">
+        <i class="fa fa-search icon" aria-hidden="true"></i>
+      </div>
+
+      <mat-slide-toggle color="primary" (change)="viewClosedEvent($event)" class="viewClosedToggleCl"
+        [(ngModel)]="viewAllRecords" *ngIf="statuses.length > 0">
+        <span>{{ viewAllRecords ? 'Hide Closed' : 'View Closed' }}</span>
+      </mat-slide-toggle>
+
+      <ng-container *ngFor="let column of parentTableHeader">
+        <ng-container *ngIf="column.type && column.type === 'status'">
+          <div class="d-flex align-items-center select-dropdown">
+            <div class="status-con">
+              <span class="label-main-filter-status">
+                <span class="label-filter-status">
+                  <label *ngIf="filteredStatus.length == 0" for="stat">{{column.label}}</label>
+                </span>
+              </span>
+              <nb-select optionsListClass="filter-option123" #statusSelect class="filter-select"
+                [(ngModel)]="filteredStatus" multiple (selectedChange)="statusSelected($event,column.name)">
+                <nb-option optionsListClass="filter-option" *ngFor="let status of column.statusOptions"
+                  [value]="status.status">{{status.status}}</nb-option>
+              </nb-select>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+
+      <span id="filterDiv" class="btn-span">
+        <button type="button" class="btn btn-outline-default btn-sm btn-custom" (click)="hideFilters = !hideFilters">
+          <img src="/assets/images/Group 50.svg"> &nbsp; Filter
+        </button>
+        <mat-icon *ngIf="!hideFilters">arrow_drop_up</mat-icon>
+
+        <ngx-filter *ngIf="!hideFilters" [searchFlag]=true [hideFilters]="hideFilters" [tableName]="tableName"
+          [filterObject]="filterObject" [finalList]="finalList" [usersWithIds]="usersWithIds"
+          (emitFilterObject)="getDataForFilterObject($event)" (emitHideFilter)="hideFilterData($event)"
+          [dynamicFilterData]="dynamicFilterData"></ngx-filter>
+
+      </span>
+      <!--Filters ends -->
+    </div>
+    <span class="button-margins-set">
+      <ng-container *ngFor="let field of allFilters, let i = index">
+        <button class="new_design_filters" [ngClass]="{'active_filter' : defaultStyleFlag == i}"
+          (click)="defaultFilterSelection(field)">
+          {{field?.name}}
+        </button>
+      </ng-container>
+    </span>
+    <span class="position-relative top-right-btns">
+      <button *ngIf="canAddNewRecord && recordTypes.length == 0" type="button" class="btn btn-outline-primary btn-sm"
+        (click)="onAddUpdate()"><i class="fa fa-plus add_but" aria-hidden="true">
+        </i> New
+        {{ tableNameWithoutS }}
+      </button>
+      <button *ngIf="canAddNewRecord && recordTypes.length > 0" [nbContextMenu]="recordTypes" type="button"
+        class="btn btn-outline-primary btn-sm"><i class="fa fa-plus add_but" aria-hidden="true"></i> Add New
+        {{ tableNameWithoutS }}</button>
+      <button *ngIf=" currentUser.isTableExport" type="button" class="btn btn-outline-primary btn-sm ml-1"
+        (click)="onExport()"> Export
+      </button>
+      <ngx-help class="help-icon" *ngIf="tutorial" [tutorial]="tutorial"></ngx-help>
+    </span>
+  </div>
+</div>
+
+<ng-container *ngIf="tagList && tagList.length">
+  <div class="filter-by-row">
+    <label for="">Filter By : </label>
+    <div class="filter-by-col">
+      <div class="tag-style-con">
+        <div class="tag-style" *ngFor="let field of tagList">
+          <span *ngIf="field.type !== 'lookup' && field.type !== 'watchedBy'">
+            <span class="filter-by-title">{{field.name}}</span> :
+            <span class="filter-by-val">{{field.value}}</span>
+            <img (click)="removeText(field.name,field.type)" src="assets/images/ic_close_24px.png">
+          </span>
+          <span *ngIf="field.type == 'lookup'">
+            <span class="filter-by-title">{{field.name}} : </span>
+            <span class="filter-by-val" *ngFor="let val of field.value">{{val}}</span>
+            <img (click)="removeText(field.name,field.type)" src="assets/images/ic_close_24px.png">
+          </span>
+          <span *ngIf="field.type == 'watchedBy'">
+            <span class="filter-by-title">{{field.name}} : </span>
+            <span class="filter-by-val" *ngFor="let val of field.value">{{val}}</span>
+            <img (click)="removeText(field.name,field.type)" src="assets/images/ic_close_24px.png">
+          </span>
+        </div>
+        <div class="filter-by-clear-all" (click)="clearAll(false)">Clear All</div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<nb-card [nbSpinner]="loading" nbSpinnerSize="large" nbSpinnerStatus="primary" [style.height]="loading ? '300px' : ''" class="main-card">
+  <nb-card-body class="card-body">
+    <div class="main_tree">
+      <div class="right_side_tree" *ngIf="showArea && filterDisplay.length">
+        <div class="inner_menu" *ngFor="let fList of filterDisplay">
+          <div class="s_menu">
+            <span class="data" (click)="searchOnFilter(fList.filterList)">{{ fList.filterName }}</span>
+            <i class="fa fa-remove" (click)="onDeleteFList(fList)" aria-hidden="true"></i>
+            <nb-checkbox class="checkbox_d" [(ngModel)]="fList.isDefaultList" (change)="onCheckFilter($event, fList)">
+            </nb-checkbox>
+          </div>
+        </div>
+      </div>
+      <div class="right_side_tree" *ngIf="showArea && !filterDisplay.length">
+        <div class="inner_menu">
+          <span class="data">No Filter Found</span>
+        </div>
+      </div>
+
+      <div class="left_side_tree">
+        <!-- <div *ngIf="masterSearchTab.length > 0 && isSearchPage">
+          <nb-tabset (changeTab)="onSearchtabChanged($event)">
+            <nb-tab class="custom_tab" [tabTitle]="tab.title | pluralize"
+              *ngFor="let tab of masterSearchTab ;let i=index" badgeStatus="success"
+              badgeText="{{ tab.parentTableData.length > 0 ? tab.parentTableData.length : '' }}">
+            </nb-tab>
+          </nb-tabset>
+        </div> -->
+
+        <div *ngIf="recordTypes.length > 0">
+          <nb-tabset (changeTab)="ontabChanged($event)">
+            <nb-tab class="custom_tab" [tabTitle]="tab.title | pluralize" *ngFor="let tab of recordTypes ;let i=index">
+            </nb-tab>
+          </nb-tabset>
+        </div>
+        <div class=" p_0 ">
+          <div class="table-responsive">
+            <table class="table table_border ">
+              <thead class="log_head">
+                <tr>
+                  <th scope="col w_50">
+                    <!-- <div class="d-flex justify-content-center" #eyeIcon (click)="onMyWatchedIssues(!watchedIssue)">
+                    <nb-icon icon="eye-outline" nbTooltip="Toggle To Display Watched Only" *ngIf="canShowEyeToolTip"
+                      nbTooltipTrigger="hover" class="reminder-btn" status="{{watchedIssue ? 'info' : 'basic'}}">
+                    </nb-icon>
+                  </div> -->
+                  </th>
+                  <ng-container *ngFor="let column of parentTableHeader">
+                    <ng-container *ngIf="column.name && column.name === 'callType'">
+                      <th scope="col w_50">
+                      </th>
+                    </ng-container>
+                  </ng-container>
+                  <th scope="col w_50" class="cursor toogle-heading">
+                    <!-- <nb-toggle nbTooltip="Toggle To Display With Tasks Only" [(ngModel)]="taskedRecordsOnly"
+                    status="primary" labelPosition="start"
+                    (checkedChange)="onFilterSearch($event,'tasksRecordsOnly')"></nb-toggle> -->
+                  </th>
+                  <th scope="col" class="icon_center cursor wrap_icon_main"
+                    *ngFor="let column of parentTableHeader; let i = index" appResizable id={{column._id}}
+                    [ngStyle]="condition[i]  && {'min-width':headerWidth}" (widthResize)="onWidthChange(i,column._id)">
+                    <div class="wrap_icon">
+                      <span (click)="onSort(column)"
+                        *ngIf="hideColumn[column.name] === true &&  showFilterBox[column.name] != true">{{
+                        column.label
+                        | normalText}} </span>
+                      <div class="ml_10 filter-btn">
+                        <i (click)="onSort(column)"
+                          [ngClass]="column.direction == 'desc' ? 'fas fa-caret-down' : column.direction == 'asc' ? 'fas fa-caret-up' : 'fas fa-sort'"></i>
+                      </div>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody *ngIf="parentTableData.length && !loading">
+                <ng-container *ngFor="let item of parentTableData;let rowIndex=index">
+                  <tr>
+                    <td class="w_50 cursor dot-eye" style="vertical-align: middle;">
+                      <div class="d-flex justify-content-center eye-container w-50">
+                        <img nbTooltip="You are watching this record" class="reminder-btn"
+                          *ngIf="(!loading && watchedIssue) || item?.watchedIssue" src="./assets/images/check.jfif"
+                          (click)="item?.watchedIssue ? cancelSubscription(item._id) : activateSubscription(item._id) " />
+                      </div>
+                      <div class="menu_action" [nbContextMenu]="actionItems" (click)="onAction(item)">
+                        <img src="/assets/images/more-vertical-outline.svg">
+                      </div>
+                    </td>
+                    <ng-container *ngFor="let column of parentTableHeader">
+                      <ng-container *ngIf="column.name && column.name === 'callType'">
+                        <td class=" w_50 cursor dot-eye" style="vertical-align: middle;text-align: center;">
+                          <ng-container *ngFor="let optionValues of column.options">
+                            <ng-container *ngIf="optionValues.title && optionValues.title === item.callType">
+                              <img class="icon-call-type" [src]="optionValues['image']">
+                            </ng-container>
+                          </ng-container>
+                        </td>
+                      </ng-container>
+                    </ng-container>
+                    <td class="expand-button collapsed w_50 cursor" data-toggle="collapse" data-parent="#accordion"
+                      [attr.href]="'#collapse'+item._id" aria-expanded="true" [attr.aria-controls]="'collapse'+item._id"
+                      (click)="item.expand = !item.expand"
+                      *ngIf="resColData && resColData[0] && resColData[0].allowSubtree;else taskCount">
+                      <ngx-task-count class="lft-cir-con" *ngIf="taskData.length" [taskStatus]="taskStatus"
+                        [taskData]="taskData" [resId]="item._id">
+                      </ngx-task-count>
+                      <i class="fas fa-caret-down expand_b" [ngClass]="item.expand? 'expand-button1' : ''"></i>
+                    </td>
+
+                    <ng-template #taskCount>
+                      <td class="w_50">
+                        <ngx-task-count class="lft-cir-con" *ngIf="taskData.length" [taskStatus]="taskStatus"
+                          [taskData]="taskData" [resId]="item._id">
+                        </ngx-task-count>
+                      </td>
+                    </ng-template>
+
+                    <td *ngFor="let column of parentTableHeader;let i =index" style="cursor: pointer;"
+                      (click)="tdClick(this.tableId,this.tableName,item._id, column['type'], item[column.name])"
+                      [ngClass]="{'ref-container' : column['type'] == 'refButton'}">
+                      <div *ngIf="column['type'] != 'lookup' && column['type'] != 'refButton' && column['type'] != 'file'  && item[column.name] != 'Yes' && item[column.name] != 'No'
+                      && item[column.name] != 'Completed' && item[column.name] != 'Closed' && item[column.name] != 'Started'
+                      && item[column.name] != 'Pending'"
+                        [ngClass]="getStatusColor(item[column.name]) ? 'status-dot': ''"
+                        [ngStyle]="{'background-color' : getStatusColor(item[column.name])}">
+                      </div>
+                      <ng-container *ngIf="column['type'] != 'lookup' && column['type'] != 'refButton'  && column['type'] != 'gadget' && column['type'] != 'file'  && item[column.name] != 'Yes' && item[column.name] != 'No'
+                       && item[column.name] != 'Completed' && item[column.name] != 'Closed' && item[column.name] != 'Started'
+                       && item[column.name] != 'Pending'">
+                        <span class="time-call-logs" *ngIf="(column['type'] == 'date' ||  column['type'] == 'dateTime')"
+                          [innerHTML]=" ((column['type'] == 'date' ||  column['type'] == 'dateTime') ? ((item[column.name]  | date : 'shortTime')) : '')">
+                        </span>
+                        <span
+                          [ngClass]="(column['type'] == 'date' ||  column['type'] == 'dateTime') ? 'date-call-logs' : ''"
+                          [innerHTML]=" ((column['type'] == 'date' ||  column['type'] == 'dateTime') ? ((item[column.name]  | dateFormatWithTimeZone : 'date')) : getUrl( item[column.name], column)) || '&nbsp;'">
+                        </span>
+                      </ng-container>
+
+                      <a *ngIf="column['type'] != 'lookup' && column['type'] != 'file' && item[column.name] === 'Yes'">
+                        <span class="yes">{{ (column['type'] == 'date' || column['type'] == 'dateTime') ?
+                          (item[column.name] | dateFormatWithTimeZone : column['type']) :
+                          item[column.name]}}</span>
+                      </a>
+
+                      <a *ngIf="column['type'] != 'lookup' && column['type'] != 'file' && item[column.name] === 'No'">
+                        <span class="no">{{ (column['type'] == 'date' || column['type'] == 'dateTime') ?
+                          (item[column.name] | dateFormatWithTimeZone : column['type']) :
+                          item[column.name]}}</span>
+                      </a>
+
+                      <a
+                        *ngIf="column['type'] != 'lookup' && column['type'] != 'file' && item[column.name] === 'Completed'">
+                        <span class="completed">{{ (column['type'] == 'date'
+                          ||
+                          column['type'] == 'dateTime') ?
+                          (item[column.name] | dateFormatWithTimeZone : column['type']) :
+                          item[column.name]}}</span>
+                      </a>
+
+                      <a
+                        *ngIf="column['type'] != 'lookup' && column['type'] != 'file' && item[column.name] === 'Closed'">
+                        <span class="close1">{{ (column['type'] == 'date' || column['type'] == 'dateTime') ?
+                          (item[column.name] | dateFormatWithTimeZone : column['type']) :
+                          item[column.name]}}</span>
+                      </a>
+
+                      <a
+                        *ngIf="column['type'] != 'lookup' && column['type'] != 'file' && item[column.name] === 'Started'">
+                        <span class="started">{{ (column['type'] == 'date' || column['type'] == 'dateTime') ?
+                          (item[column.name] | dateFormatWithTimeZone : column['type']) :
+                          item[column.name]}}</span>
+                      </a>
+
+                      <a
+                        *ngIf="column['type'] != 'lookup' && column['type'] != 'file' && item[column.name] === 'Pending'">
+                        <span class="pending">{{ (column['type'] == 'date' || column['type'] == 'dateTime') ?
+                          (item[column.name] | dateFormatWithTimeZone : column['type']) :
+                          item[column.name]}}</span>
+                      </a>
+
+                      <ng-container *ngIf="column['type'] == 'file' && item[column.name]">
+                        <span *ngFor="let urlData of item[column.name]">
+                          <a (click)="onFilePreivew(urlData, item)" style="color: #598bff;">
+                            <span class="{{getFileExtension(urlData)}}" style="margin-top: 10px;"></span>&nbsp;&nbsp;
+                            <span> {{ getFileName(urlData) }} </span>
+                          </a>
+                        </span>
+                      </ng-container>
+
+                      <ng-container *ngIf="column['type'] == 'refButton' && item[column.label]">
+                        <ng-container *ngIf="item[column.label] && item[column.label].length">
+                          <a *ngFor="let itm of item[column.label]" class="call-reference-link">
+                            <span class="dot_line call-reference-text">
+                              <span>{{itm.lookupName}} :</span> {{ itm.lookupVal ? itm.lookupVal : '' }}
+                            </span>
+                            <!-- <i class="fa fa-external-link" aria-hidden="true"
+                              (click)="onShowLookupDetail(itm, column.name,item); $event.stopPropagation()"></i> -->
+                          </a>
+                        </ng-container>
+                      </ng-container>
+
+                      <ng-container *ngIf="column['type'] == 'gadget'">
+                        <div class="edit-class-form" *ngIf="gadgetFieldValue && gadgetFieldValue.length">
+                          <span [innerHTML]="gadgetFieldValue[rowIndex]"></span>
+                        </div>
+                      </ng-container>
+
+                      <!-- [routerLink]="item[column.name+ '_link']" -->
+                      <span *ngIf="column['type'] == 'lookup'">
+                        <ng-container *ngIf="item[column.name] && item[column.name].length">
+                          <a *ngFor="let itm of item[column.name]" (click)="onShowLookupDetail($event, i,itm, column.name,item)"
+                             [ngbPopover]="templateRef1" placement="bottom" container="body">
+                            <span class="dot_line">
+                              {{ itm.lookupVal ? itm.lookupVal : '' }}
+                            </span>
+                          </a>
+
+                          <ng-template #templateRef1>
+                            <ngx-lookup-modal-detail *ngIf="lookupDetailClicked[lookupDetailDisplayCount]"
+                              [data]="lookupDetailItem" [name]="column.name" [tableData]="tableData"
+                              [dataForLookupDetail]="dataForLookupDetail" [tableName]="tableForLookupDetail"
+                              [viewInModal]="viewInModal">
+                            </ngx-lookup-modal-detail>
+                          </ng-template>
+                        </ng-container>
+                      </span>
+                    </td>
+
+                  </tr>
+                  <tr class="hide-table-padding">
+                    <td class=p_0></td>
+                    <td colspan="4" class="p_0">
+                      <div [id]="'collapse'+item._id" role="tabpanel" [attr.aria-labelledby]="'heading'+item._id"
+                        class="p-3 in collapse" [ngClass]="item.expand? 'show' : ''">
+                        <nb-card-body>
+                          <!-- <button type="button" class="right btn btn-primary btn-sm">Add New</button>-->
+                          <table class="table inner_table" *ngFor="let expandTree of item.displayInTree">
+                            <thead>
+                              <tr>
+                                <th class="border_bottom" scope="col"
+                                  *ngFor="let th of expandTree.headerField; let i = index">{{ th }}</th>
+                                <th style="display: none;" class="border_bottom"></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <td scope="col" *ngFor="let tr of expandTree.displayValue | slice:1; let i = index">
+                                {{ tr }}</td>
+                              <td class="w_50" style="display: none;">
+                                <div class="menu_action">
+                                  <img src="/assets/images/more-vertical-outline.svg">
+                                </div>
+                              </td>
+                            </tbody>
+                          </table>
+                        </nb-card-body>
+                      </div>
+                    </td>
+                    <td class=p_0></td>
+                  </tr>
+                </ng-container>
+              </tbody>
+              <tbody *ngIf="!parentTableData.length && noDataFound">
+                <tr class="trHeight">
+                  <td [colSpan]="parentTableHeader.length" class="centerNotFound">
+                  <span>
+                    Data Not Found
+                  </span>
+                </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination_div" *ngIf="parentTableData.length">
+            <ul *ngIf="pager.pages && pager.pages.length" class="pagination">
+              <li [ngClass]="pager.currentPage == 1? 'disabled' : 'active_icon cursor'" (click)="onPage(1)">
+                <a><span>{{ '<<' }}</span></a>
+              </li>
+              <li *ngIf="pager.currentPage !== 1" [ngClass]="pager.currentPage == 1? 'disabled' : 'active_icon cursor'"
+                (click)="onPage(pager.currentPage - 1)"><a><span>{{ '<' }}</span></a></li>
+              <li class="cursor" *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}"
+                (click)="onPage(page)"><a><span>{{page}}</span></a></li>
+              <li *ngIf="pager.totalPages !== pager.currentPage"
+                [ngClass]="pager.currentPage == pager.totalPages? 'disabled' : 'active_icon cursor'"
+                (click)="onPage(pager.currentPage+1)"><a><span>></span></a></li>
+              <li [ngClass]="pager.currentPage == pager.totalPages? 'disabled' : 'active_icon cursor'"
+                (click)="onPage(pager.totalPages)"><a><span>>></span></a></li>
+            </ul>
+            <button type="button" class="right btn btn-outline-primary btn-sm" (click)="onSaveFilterValue()">
+              <i class="fas fa-save save_icon"></i> Save As
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>

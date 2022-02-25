@@ -1,0 +1,62 @@
+.message-list-container {
+  overflow-y: scroll;
+  max-height: 200px;
+  border: 1px solid lightgrey;
+  margin:5px;
+}
+
+.action-card-body {
+  overflow-y: scroll;
+  max-height: 550px;
+  width: 1000px;
+}
+
+.action-card-header {
+  height: 50px;
+}
+
+.action-card-footer {
+  float: right;
+}
+
+.msg-list-action {
+  float: right;
+  display: flex;
+  flex-direction: row;
+  align-content: stretch;
+  justify-content: center;
+  align-items: center;
+}
+.action-card-body .mat-form-field {
+  width: 100%;
+}
+.action-card-body .message-list-container {
+  margin-left: 15px;
+    width: 100% !important;
+    padding-right: 15px;
+    max-width: calc(100% - 15px);
+    padding-top: 15px;
+    border-radius: 4px;
+}
+.action-card-body .message-list-container .custom-edit-msg label{
+width: 100%;
+}
+.action-card-body .message-list-container .custom-edit-msg textarea {
+  width: 100%;
+}
+.action-card-body .message-list-container .custom-edit-msg .edit_but {
+  float: right;
+  margin: 38px 15px 0 0;
+}
+.action-card-body  .hor-line
+{
+  border-bottom: 1px solid #e6e4e6;
+    margin-bottom: 15px;
+    margin-top: 5px;
+    float: left;
+    width: calc(100% - 30px);
+    margin-left: 15px;
+}
+.action-card-body .CodeMirror {
+  height: 150px !important;
+}

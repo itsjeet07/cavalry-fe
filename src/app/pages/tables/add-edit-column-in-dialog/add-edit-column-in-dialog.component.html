@@ -1,0 +1,176 @@
+<nb-card>
+  <nb-card-header>Edit Columns</nb-card-header>
+  <nb-card-body>
+    <form [formGroup]="myform">
+      <input type="hidden" formControlName="tableId" class="col-md-4 mr-2">
+      <div class="row">
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label for="inputFirstName" class="label">Label</label>
+            <input type="text" (change)="onFieldLabelChange($event.target.value)" formControlName="label" nbInput
+              fullWidth id="label" placeholder="Label" required>
+            <div *ngIf="f.label.errors && f.label.touched" class="text-danger ml-2">
+              <div *ngIf="f.label.errors.required">Label is required</div>
+              <div *ngIf="f.label.errors.duplicate">Duplicate label name.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label for="priority" class="label">Name (Internal Use Only)</label>
+            <input type="text" formControlName="name" readonly nbInput fullWidth placeholder="Name">
+          </div>
+        </div>
+
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label for="inputLastName" class="label">Type</label>
+            <nb-select formControlName="type" fullWidth>
+              <nb-option matRipple value="text">Text Box</nb-option>
+              <nb-option matRipple value="area">Text Area</nb-option>
+              <nb-option matRipple value="checkbox">Check Box</nb-option>
+              <nb-option matRipple value="radio">Radio</nb-option>
+              <nb-option matRipple value="dropdown">Dropdown</nb-option>
+              <nb-option matRipple value="recordType">Record Type</nb-option>
+              <nb-option matRipple value="date">Date</nb-option>
+              <nb-option matRipple value="dateTime">Date Time</nb-option>
+              <nb-option matRipple value="lookup">LookUp</nb-option>
+              <nb-option matRipple value="currency">Currency</nb-option>
+              <nb-option matRipple value="file">File</nb-option>
+              <nb-option matRipple value="status">Status</nb-option>
+            </nb-select>
+            <div *ngIf="f.type.errors && f.type.touched" class="text-danger ml-2">
+              <div *ngIf="f.type.errors.required">Type is required</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-1" style="margin-top: 35px; margin-left: -20px">
+          <a (click)="addOptions()" *ngIf="showAddButton()"><i class="fa 2x fa-plus"></i></a>
+          <img src="../../../../assets/images/dateAdd.png" class="with-add-date-icon" (click)="addOptions()"
+          *ngIf="showAddDateButton()" style="cursor:pointer">
+        </div>
+
+        <div class="col-sm-2" style="margin-left: -40px">
+          <div class="form-group">
+            <label for="inputEmail" class="label">Is Required</label>
+            <nb-select formControlName="isRequired" fullWidth>
+              <nb-option matRipple [value]="true">Yes</nb-option>
+              <nb-option matRipple [value]="false">No</nb-option>
+            </nb-select>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label for="inputFirstName" class="label">Section</label>
+            <nb-select formControlName="section" fullWidth>
+              <nb-option matRipple value="default">Default</nb-option>
+            </nb-select>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label for="inputEmail" class="label">Field Size</label>
+            <nb-select formControlName="fieldSize" fullWidth>
+              <nb-option matRipple value="tiny">Tiny</nb-option>
+              <nb-option matRipple value="small">Small</nb-option>
+              <nb-option matRipple value="medium">Medium</nb-option>
+              <nb-option matRipple value="large">Large</nb-option>
+            </nb-select>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="form-group">
+            <br>
+            <br>
+            <div class="validation-checkboxes">
+              <nb-checkbox formControlName="displayInList" status="success">Display in List</nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="form-group">
+            <br>
+            <br>
+            <div class="validation-checkboxes">
+              <nb-checkbox formControlName="isSearchable" status="success">Is Searchable</nb-checkbox>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox formControlName="displayInTreeTable" status="success">Display in Tree Table</nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox formControlName="allowMultipleValues" status="success">Allow Multiple Values</nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox formControlName="idField" status="success">ID Field</nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox formControlName="isWorkFlowField" status="success">Is Work Flow Field</nb-checkbox>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-3">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox formControlName="displayInRelatedPageView" name="displayInRelatedPageView" status="success">
+                Display in related Page view
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-3">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox formControlName="loadAsDropDown" name="loadAsDropDown" status="success">
+                Load as Drop-down
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-3">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox formControlName="recordHistory" name="recordHistory" status="success">
+                Record History
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </form>
+
+  </nb-card-body>
+
+  <nb-card-footer>
+    <button class="cancel" nbButton matRipple status="danger" (click)="cancel()" class="mt-3 mr-1" mr-1>Cancel</button>
+    <!-- <button nbButton matRipple status="success" (click)="submit()">Submit</button> -->
+    <button nbButton matRipple type="submit" [disabled]="myform.invalid" (click)="submit()" nbButton status="primary"
+      class="mt-3">Save</button>
+  </nb-card-footer>
+</nb-card>

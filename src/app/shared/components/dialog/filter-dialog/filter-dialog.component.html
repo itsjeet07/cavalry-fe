@@ -1,0 +1,64 @@
+<nb-card class="filter-field" size="small">
+  <nb-card-header>Filter Fields</nb-card-header>
+  <nb-card-body class="add-date-time-form">
+
+    <i style="float: right;" class="fa fa-plus" (click)="addNewRow()">
+    </i>
+
+    <div class="scroll-div">
+
+        <ng-container *ngFor="let field of filters; let i = index;">
+          <div class="filter-row row">
+          <div class="col-md-2">
+            <mat-label class="label">Filter By</mat-label>
+            <nb-select (selectedChange)="filterByChange($event,i)" [(ngModel)]="field.filterBy" name="filyerBy">
+              <nb-option *ngFor="let field1 of lookupData" [value]="field1.name">{{field1.label}}</nb-option>
+            </nb-select>
+          </div>
+
+          <div class="col-md-2">
+            <mat-label class="label">Base Table Field</mat-label>
+            <nb-select (selectedChange)="baseTableByChange($event,i)" [(ngModel)]="field.baseTableField"
+              name="baseTableField">
+              <nb-option *ngFor="let field1 of currentTableData" [value]="field1.name">{{field1.label}}</nb-option>
+            </nb-select>
+          </div>
+
+          <div class="col-md-2">
+            <mat-label class="label">Operation</mat-label>
+            <nb-select [disabled]="field.disable" [(ngModel)]="field.operation">
+              <nb-option *ngFor="let opr of operations" value="{{opr.val}}">{{opr.name}}</nb-option>
+            </nb-select>
+          </div>
+
+          <div class="col-md-2">
+            <mat-label>Filter text</mat-label>
+            <input [disabled]="field.disable" nbInput [type]="'text'" name="filterText" [placeholder]=""
+              [(ngModel)]="field.text">
+          </div>
+            <div class="col-md-2">
+              <nb-checkbox (change)="checkChanged($event)" class="inner_checkbox" [checked]="field.showErrorMessage"
+                [(ngModel)]="field.showErrorMessage">Display but provide error
+              </nb-checkbox>
+            </div>
+            <div class="col-md-2 form-group" *ngIf="field.showErrorMessage">
+                <mat-label>Error Message</mat-label>
+                <input matInput type="text" placeholder="Enter Message"
+                  [(ngModel)]="field.errorMessageForCheckBox">
+              <div class="add-item-icon">
+                <span class="remove-row"><i class="fa fa-minus" (click)="removeRow(i)"></i></span>
+              </div>
+
+            </div>
+
+          </div>
+      </ng-container>
+
+    </div>
+
+  </nb-card-body>
+  <nb-card-footer>
+    <button class="cancel" nbButton matRipple status="danger" (click)="cancel()">Cancel</button>
+    <button nbButton matRipple status="success" (click)="submit()">Submit</button>
+  </nb-card-footer>
+</nb-card>

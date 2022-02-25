@@ -1,0 +1,189 @@
+<nb-card style="width: 460px;" class="filter-mod-main">
+    <nb-card-header>
+        Filter
+        <img class="close-btn pull-right" src="/assets/images/ic_close_24px.svg" (click)="close()">
+    </nb-card-header>
+    <nb-card-body>
+        <div class="scroll-div filter-modal">
+            <div class="filter-content-row row">
+
+              <ng-container *ngFor="let filter of filterList; let i = index;">
+
+                <div class="col-md-5 field-col">
+                  <label class="label">Field : </label>
+
+                  <nb-select [(ngModel)]="filter.fieldName" name="filter{{i}}"
+                    (selectedChange)="fieldSelected($event,i)">
+                    <nb-option *ngFor="let value of fileds" value="{{value.name}}">{{value.label}}
+                    </nb-option>
+                  </nb-select>
+                </div>
+
+                <div class="col-md-5 field-col" *ngIf="filter.fieldName">
+                  <label class="label">Filter</label>
+
+                  <ng-container *ngIf="filter.type == 'dropdownWithImage'">
+                    <ng-select appendTo="body" placeholder="{{filter.label}}" [(ngModel)]="filter.option">
+                      <ng-option *ngFor="let val of filter.valueOptions" [value]="val.title">
+
+                        <div class="col-md-12 drop-down-img-col">
+
+                          <img [src]="val.image" alt="" height="18" width="18">
+                          <span class="select-text">{{val.title}}</span>
+                        </div>
+                      </ng-option>
+                    </ng-select>
+                  </ng-container>
+
+                  <ng-container
+                    *ngIf="inputFields.includes(filter.type)">
+                    <input class="" nbInput #search [(ngModel)]="filter.option" [type]="filter.type" [placeholder]="filter.label">
+                  </ng-container>
+
+                  <ng-container *ngIf="filter.type === 'dropdown'">
+                    <nb-select class="status-dropdown" [placeholder]="filter.label" [(ngModel)]="filter.option">
+                      <nb-option *ngFor="let option of filter.valueOptions" matRipple [value]="option">
+                        {{ option }}
+                      </nb-option>
+                    </nb-select>
+                  </ng-container>
+
+                  <ng-container *ngIf="filter.type === 'number' || filter.type == 'autoNumber'">
+
+                    <div class="checkbox listing-search-popup">
+                      <nb-select class="status-dropdown mb-2" [placeholder]="'Operator'" [(ngModel)]="numberOperation">
+                        <nb-option *ngFor="let option of operations" matRipple [value]="option.val">
+                          {{ option.name }}
+                        </nb-option>
+                      </nb-select>
+
+                      <input class="" nbInput #searchNumber [(ngModel)]="filter.option"
+                        [type]="filter.type" [placeholder]="filter.label" [(ngModel)]="textValue[filter.fieldName]">
+
+                    </div>
+
+                  </ng-container>
+
+                  <ng-container *ngIf="filter.type == 'checkbox'">
+                    <div class="checkbox">
+                      <ng-container *ngFor="let item of filter.valueOptions; let i = index">
+                        <nb-checkbox class="inner_checkbox" id="check{{i}}" (change)="checkboxChange($event,filter)" [checked]="getChecked(filter.valueOptions,filter,item)">
+                          {{ item }}
+                        </nb-checkbox>
+                      </ng-container>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="filter.type == 'radio'">
+                    <div class="checkbox radio-filter">
+                      <nb-radio-group [(ngModel)]="filter.option" class="radio" name="my-radio-group-{{filter.fieldName}}">
+                        <nb-radio  *ngFor="let item of filter.valueOptions"
+                          [value]="item">
+                          {{ item }}
+                        </nb-radio>
+                      </nb-radio-group>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="filter.type == 'date'">
+
+                    <div class="date-toggle">
+                      <mat-datepicker-toggle matSuffix [for]="formpicker">
+                      </mat-datepicker-toggle>
+                    </div>
+                    <mat-date-range-input [rangePicker]="formpicker"
+                      style="width:1px; visibility: hidden;">
+                      <input matStartDate placeholder="start date" [(ngModel)]="dayStart">
+                      <input matEndDate placeholder="end date" [(ngModel)]="dayEnd"
+                        (dateChange)="dateRangeChange($event,filter)">
+                    </mat-date-range-input>
+
+                    <!-- <mat-datepicker #formpicker></mat-datepicker> -->
+                    <mat-date-range-picker #formpicker></mat-date-range-picker>
+                  </ng-container>
+
+                  <ng-container *ngIf="filter.type == 'formula'">
+                    <div class="checkbox listing-search-popup">
+                      <nb-select class="status-dropdown mb-2" [placeholder]="'Operator'" [(ngModel)]="formulaOperation">
+                        <nb-option *ngFor="let option of operations" matRipple [value]="option.val">
+                          {{ option.name }}
+                        </nb-option>
+                      </nb-select>
+
+                      <input class="" nbInput #searchNumber
+                        [(ngModel)]="filter.option"
+                        [type]="filter.type" [placeholder]="filter.label">
+
+                    </div>
+                  </ng-container>
+
+
+                  <!-- <ng-container
+                          *ngIf="filter.type == 'lookup' && filter.loadAsDropDown">
+                          <div style="position: relative;display: inline-block;">
+
+                            <ng-select [items]="filteredOptions[filter.name]" bindLabel="value" #autoInput
+                              appendTo="body" (ngModelChange)="updatedVal($event, filter.name)"
+                              [ngModelOptions]="{standalone: true}" [id]="filter.name" placeholder="{{filter.label}}"
+                              (change)="onSelectionChange($event,filter.name)" [(ngModel)]="lookupValue[filter.name]"
+                              clearable="true" class="ng-select-latest">
+
+                            </ng-select>
+
+                          </div>
+
+                        </ng-container>
+
+                        <ng-container
+                          *ngIf="filter.type == 'lookup' && !filter.loadAsDropDown">
+                          <div style="position: relative;display: inline-block;">
+
+                            <ng-select [items]="filteredOptions[filter.name]" bindLabel="value" #autoInput
+                              appendTo="body" (keyup)="dynamicSearch($event,filter)"
+                              [ngModelOptions]="{standalone: true}" [id]="filter.name" placeholder="{{filter.label}}"
+                              (change)="onSelectionChange($event,filter.name)" [(ngModel)]="lookupValue[filter.name]"
+                              clearable="true" class="ng-select-latest">
+
+                            </ng-select>
+
+                          </div>
+
+                        </ng-container> -->
+
+                  <ng-container *ngIf="filter.type === 'recordType'">
+                    <nb-select [placeholder]="filter.label" [(ngModel)]="filter.option">
+                      <nb-option *ngFor="let option of filter.valueOptions" matRipple [value]="option">
+                        {{ option }}
+                      </nb-option>
+                    </nb-select>
+
+                  </ng-container>
+
+                  <ng-container *ngIf="filter.type == 'dateTime'">
+                    <div class="date-toggle">
+                      <mat-datepicker-toggle matSuffix [for]="formpicker">
+                      </mat-datepicker-toggle>
+                    </div>
+                    <mat-date-range-input [rangePicker]="formpicker"
+                      style="width:1px; visibility: hidden;">
+                      <input matStartDate placeholder="start date" [(ngModel)]="dtStart">
+                      <input matEndDate placeholder="end date" [(ngModel)]="dtEnd"
+                        (dateChange)="dateTimeRangeChange($event,filter)">
+                    </mat-date-range-input>
+                    <mat-date-range-picker #formpicker></mat-date-range-picker>
+                  </ng-container>
+                </div>
+
+                <div class="add-item-icon pull-right">
+                  <span class="remove-row"><i class="fa fa-trash" aria-hidden="true" (click)="removeRow(i)"></i></span>
+                  <i class="fa fa-plus" (click)="addNewRow()">
+                  </i>
+                </div>
+
+              </ng-container>
+            </div>
+          </div>
+        </nb-card-body>
+        <nb-card-footer>
+          <button nbButton status="primary" (click)="filterDone()">Apply Filter</button>&nbsp;
+          <button nbButton status="basic" (click)="clearFilter()">Clear All</button>
+        </nb-card-footer>
+</nb-card>

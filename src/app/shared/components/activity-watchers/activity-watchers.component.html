@@ -1,0 +1,48 @@
+<div class="activity-watches-tab">
+  <nb-tabset class="tabs-content-area">
+    <nb-tab *ngIf="showChats" tabTitle="Activity">
+      <div class="tabs-inner-con"></div>
+      <div *ngIf="tableInfo" class="chat-wrapper" style="overflow: auto">
+        <ngx-chat-tab (subscriber)="getSubscribers($event)" 
+          [viewCallLog]="true" class="w-100" 
+          [chatOpened]="true"
+          [tableInfo]="tableInfo"
+          [fromTask]="true" 
+          [createdRecordDate]="Data['createdAt']"
+          [createdBy]="Data['createdBy']" 
+          [recordData]="recordData" [columnData]="dynamicData">
+        </ngx-chat-tab>
+      </div>
+    </nb-tab>
+    <nb-tab tabTitle="Watchers" class="watchers-tab">
+      <button nbButton status="info" aria-hidden="true" class="watcher" [matMenuTriggerFor]="menu"
+        (menuOpened)="watcherMenuOpened()" (menuClosed)="watcherMenuClosed()">
+        Action ({{ subscribers.length }})
+      </button>
+
+      <mat-menu #menu="matMenu" yPosition="below">
+        <button mat-menu-item first-top>
+          <span class="li-head curson-pointer" (click)="selfSubsription()">
+            <span class="icon-mar-lft"></span> {{ subscriptionText }}
+          </span>
+        </button>
+
+        <button style="background-color: #ececf0" mat-menu-item class="last-bottom" (click)="$event.stopPropagation()"
+          (keydown)="$event.stopPropagation()" class="curson-pointer">
+          <ngx-watch-user [tableInfo]="tableInfo" [matMenu]="trigger" parentForm="dynamicForm"
+            (valueChanged)="updateSubscribers($event)"></ngx-watch-user>
+        </button>
+      </mat-menu>
+
+      <ul *ngIf="subscribers && subscribers.length">
+        <li *ngFor="let sub of subscribers">
+          {{ sub.firstName }} {{ sub.lastName }}
+
+          <span class="left-margin curson-pointer" (click)="cancelSubscription(sub._id)">
+            <i class="fa fa-times" aria-hidden="true"></i></span>
+        </li>
+      </ul>
+      <span *ngIf="subscribers && subscribers.length == 0" class="no-watches">No Watchers found</span>
+    </nb-tab>
+  </nb-tabset>
+</div>

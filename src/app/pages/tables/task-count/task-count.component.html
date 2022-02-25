@@ -1,0 +1,7 @@
+<span class="single-cir" *ngFor="let item of status">
+  <span nbTooltip="{{'Total ' + item.count +  ' tasks ' + (item.count > 1 ? 'are ' : 'is ') + item.status}}"
+        [style.backgroundColor]="getColor(item.status)" class="circle"
+      >
+    <strong>{{item.count}}</strong>
+  </span>
+</span>

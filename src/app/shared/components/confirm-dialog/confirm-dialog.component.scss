@@ -1,0 +1,23 @@
+@import '../../../@theme/styles/themes';
+
+@include nb-install-component() {
+  .cancel {
+    margin-right: 1rem;
+    border: 1px solid #3366ff !important;
+    background-color: #fff !important;
+    color: #3366ff !important;
+  }
+
+  button {
+    align-items: center;
+    width: 100px;
+  }
+
+  .export-buttons {
+    width: 8rem;
+  }
+}
+
+.setWidth{
+  width:300px;
+}

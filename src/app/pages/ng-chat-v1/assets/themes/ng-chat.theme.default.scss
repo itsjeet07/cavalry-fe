@@ -1,0 +1,89 @@
+$primary-color: #FFF;
+$secondary-color: #E3E3E3;
+$text-color: #5C5C5C;
+
+%text-definition {
+    color: #5C5C5C;
+    font-family: 'Roboto-Bold';
+}
+
+#ng-chat.light-theme
+{
+    @extend %text-definition;
+
+    .primary-background
+    {
+        background-color: $primary-color !important;
+    }
+    .secondary-background
+    {
+        background-color: #E3E3E3;
+    }
+    .primary-outline-color
+    {
+        border-color:#A3A3A3;
+    }
+    .primary-text
+    {
+        @extend %text-definition;
+    }
+    .search-wth-icon{
+      background-color: #fafafa;
+      border-color: #e4e9f2;
+      color: #222b45;
+      float: left;
+      width: 90%;
+      margin-left: 2.5%;
+      padding: 5px 10px;
+      border-radius: 35px;
+      margin-top: 10px;
+      }
+      .search-wth-icon:hover, .friends-search-bar:focus{
+        background-color: #edf1f7;
+        border-color: #e4e9f2;
+      }
+      .friends-search-bar {
+        background-color: transparent;
+        border-color: transparent;
+        color: #222b45;
+        width: calc(100% - 19px);
+        display: inline-block;
+        margin: 0;
+        /* padding: 0; */
+        top: 0;
+      }
+    .friends-search-bar
+    {
+            background-color: transparent;
+    border-color: transparent;
+    color: #222b45;
+    }
+    .friends-search-bar:hover, .friends-search-bar:focus{
+    background-color: transparent;
+    border-color: transparent;
+    outline: none;
+  }
+    .unread-messages-counter-container, .ng-chat-people-action, .ng-chat-people-action > i
+    {
+        color: $text-color;
+        background-color: $secondary-color;
+    }
+    .load-history-action
+    {
+        background-color: $secondary-color;
+    }
+    .chat-window-input
+    {
+        background-color: $primary-color;
+    }
+    .sent-chat-message-container,  .file-message-container
+    {
+        background-color:$secondary-color;
+        border-color: $secondary-color;
+    }
+    .received-chat-message-container, .file-message-container.received
+    {
+        background-color:$primary-color;
+        border-color: $secondary-color;
+    }
+}

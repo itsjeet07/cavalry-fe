@@ -1,0 +1,351 @@
+<div class="table_config">
+  <nb-card class="config_cards row">
+    <nb-menu [items]="items" class="col-3">
+    </nb-menu>
+    <div *ngIf="showTableDetails" class="col-9" [ngSwitch]="selectedItem">
+      <form [formGroup]="myform" class="table_config">
+        <nb-card class="config_cards" *ngSwitchCase="'TableConfiguration'">
+
+          <nb-card-header>
+            <div class="container">
+              <div class="row">
+                <div class="col-md-11">
+                  Table Configuration for : {{ tableDetails?.tableName }}
+                </div>
+                <div class="col-md-1 icon-space">
+                  <a nbTooltip="Back to tables listing" nbTooltipStatus="primary" routerLink="/pages/tables/list">
+                    <nb-icon icon="arrow-back-outline"></nb-icon>
+                  </a>
+                  <i class="nb-edit" nbTooltip="Edit Columns" style="cursor: pointer;" nbTooltipStatus="primary"
+                    (click)="onEdit()"></i>&nbsp;&nbsp;
+                </div>
+              </div>
+            </div>
+          </nb-card-header>
+          <nb-card-body>
+
+            <div class="row add-edit-form-title">
+              <div class="col-md-8">
+                <input type="number" nbInput placeholder="Tab Order" fullWidth formControlName="tabOrder"
+                  class="inputclass">
+              </div>
+              <div class="col-md-4">
+                <button style="float: right;cursor: pointer;" (click)="openPublishModal()"
+                  class="btn btn-primary">Publish</button>
+              </div>
+            </div>
+            <div class="row add-edit-form-title">
+              <div class="col-md-12">
+                <input type="file" class="col uploaded" (change)="onFileChange($event)" accept="image/svg+xml">
+              </div>
+            </div>
+            <div class="row add-edit-form-title">
+              <div class="col-md-12">
+                <label>Add Form Title : </label>
+                <input type="text" nbInput placeholder="Add Title" fullWidth formControlName="customLabelForAddForm"
+                  class="inputclass">
+              </div>
+
+            </div>
+            <div class="row add-edit-form-title">
+              <div class="col-md-12">
+                <label>Edit Form Title
+                  <span
+                    nbPopover="This is a JS editor support template variables, so any static string should be wrapped inside quotes. Exa  <code> 'Edit ' +  $Table.status</code>"
+                    nbPopoverTrigger="click" nbPopoverPlacement="top">
+                    <i class="fas fa-question-circle"></i>
+                  </span> : </label>
+                <input type="text" nbInput placeholder="Edit Title" fullWidth formControlName="customLabelForEditForm"
+                  class="inputclass">
+              </div>
+
+            </div>
+
+            <div class="row add-edit-form-title">
+              <div class="col-md-12">
+                <label>Form Height in px : </label>
+                <input type="number" min="0" nbInput placeholder="Height in px" fullWidth formControlName="formHeight"
+                  class="inputclass">
+                <small><i> (Height can be minimum 100 and can be max 2000)</i></small>
+              </div>
+            </div>
+
+            <div class="row add-edit-form-title">
+              <div class="col-md-12">
+                <label>Form Width in px : </label>
+                <input type="number" min="0" nbInput placeholder="Width in px" fullWidth formControlName="formWidth"
+                  class="inputclass">
+                <small><i> (Width can be minimum 460 and can be max 3000)</i></small>
+              </div>
+            </div>
+
+            <div class="row add-edit-form-title">
+              <div class="col-md-12">
+                <label>Alignment of fields : </label>
+                <nb-select placeholder="Select Alignment" formControlName="fieldAlignment">
+                  <nb-option value="default">Default</nb-option>
+                  <nb-option value="left">Left</nb-option>
+                  <nb-option value="center">Center</nb-option>
+                  <nb-option value="right">Right</nb-option>
+                </nb-select>
+              </div>
+            </div>
+
+            <div class="d-flex flex-column w-100 mt-3">
+              <nb-checkbox formControlName="displayInMenu">Create menu tab</nb-checkbox>
+              <nb-checkbox formControlName="showChats">Show Chats</nb-checkbox>
+              <nb-checkbox formControlName="includeTasks">Create To Do Tab</nb-checkbox>
+              <nb-checkbox formControlName="viewInModal">View In Modal</nb-checkbox>
+              <nb-checkbox formControlName="allowSubtree">Allow Subtree Records</nb-checkbox>
+              <nb-checkbox formControlName="addRecordFromMainListing">Add record from main listing</nb-checkbox>
+              <nb-checkbox formControlName="addRecordFromRelatedListing">Add record from related listing</nb-checkbox>
+              <nb-checkbox formControlName="quickAction">Quick Action</nb-checkbox>
+              <div>
+                <nb-checkbox formControlName="masterDetail" (change)="showMasterDetail($event)">Master Detail
+                </nb-checkbox>
+                <i class="add-sub-form fa fa-plus icon-right-side pull-right" (click)="addSubFormData()"></i>
+                <ng-container *ngIf="displayTable && lookupTable.length">
+                  <ng-container *ngFor="let form of subFormData;let i = index">
+                    <div class="row">
+                      <div class="col-md-5">
+                        <mat-form-field appearance="outline" class="ml-2">
+                          <mat-select [(value)]="form.tableName" name='"parentLookup"+i'
+                            [compareWith]="compareSearchByOption" required (selectionChange)="onTableSelect($event)">
+                            <mat-option
+                              *ngFor="let item of lookupTable | filterSubFormLookup : form.tableName : subFormData : pipeRefreshCount"
+                              [value]="item.lookupTableName">
+                              {{item.lookupTableName}}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-5">
+                        <mat-form-field appearance="outline" class="ml-2">
+                          <mat-select matNativeControl name='"parentLookupField"+i' [(value)]="form.lookupName"
+                            [compareWith]="getLookupName" (selectionChange)="null" required>
+                            <mat-option
+                              *ngFor="let item of lookupTable | filterSubFormLookupFields : form.tableName : pipeRefreshCount"
+                              [value]="item.name">
+                              {{item.name}}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="col-md-1 mt-2 mr-2 edit_but" style="cursor: pointer;"
+                          (click)="deleteSubFormLookup(i)"><i class="fas fa-trash-alt"></i></div>
+                      </div>
+                    </div>
+
+                  </ng-container>
+                </ng-container>
+              </div>
+            </div>
+          </nb-card-body>
+          <div class="w-100 d-flex flex-row end">
+            <button type="submit" nbButton status="primary" class="col-md-2 m-3" (click)="onSubmit()">Save</button>
+          </div>
+        </nb-card>
+        <ngx-email-template-config *ngSwitchCase="'EmailTemplate'" [tableDetails]="tableDetails"
+          (getTableDetails)="getTableDetails()">
+        </ngx-email-template-config>
+
+        <ngx-default-filters *ngSwitchCase="'default-filters'" [tableDetails]="tableDetails"
+          (getTableDetails)="getTableDetails()">
+        </ngx-default-filters>
+
+        <ngx-actions-template-config *ngSwitchCase="'Actions'" [tableDetails]="tableDetails"
+          (getTableDetails)="getTableDetails()">
+        </ngx-actions-template-config>
+        <nb-card class="config_cards" *ngSwitchCase="'Dependencies'">
+          <nb-card-header>
+            <div class="container">
+              <div class="row">
+                <div class="col-md-10">
+                  Dependencies for : {{ tableDetails?.tableName }}
+                </div>
+                <div class="col-md-2 icon-space">
+                  <i class="fa fa-plus" nbTooltip="Add Dependencies" style="cursor: pointer;" nbTooltipStatus="primary"
+                    (click)="addNewDependency()"></i>
+                  <a nbTooltip="Back to tables listing" nbTooltipStatus="primary" routerLink="/pages/tables/list">
+                    <nb-icon icon="arrow-back-outline"></nb-icon>
+                  </a>
+                  <i class="nb-edit" nbTooltip="Edit Columns" style="cursor: pointer;" nbTooltipStatus="primary"
+                    (click)="onEdit()"></i>&nbsp;&nbsp;
+                </div>
+              </div>
+            </div>
+          </nb-card-header>
+          <nb-card-body>
+            <div>
+              <ng-container>
+
+                <div *ngIf="dependenciesList && dependenciesList.length > 0">
+                  <table>
+                    <tr>
+                      <th>Source</th>
+                      <th>Source Fields</th>
+                      <th>Target Fields</th>
+                      <th>Last Modified time</th>
+                      <th>Action</th>
+                    </tr>
+                    <ng-container *ngFor="let column of dependenciesList; let columnIndex = index">
+                      <tr *ngFor="let depend of column.dependencies; let i = index;">
+                        <td>
+                          <b>{{column.name | uppercase}}</b>
+                        </td>
+                        <td>
+                          <div *ngFor="let fields of depend.fields">
+                            &nbsp; &nbsp;{{fields}}
+                          </div>
+                        </td>
+
+                        <td>
+                          <div *ngFor="let q of depend.query | keyvalue">
+                            <strong>{{q.key | uppercase}}:</strong>
+                            <div *ngFor="let fields of q.value">
+                              &nbsp; &nbsp;{{fields}}
+                            </div>
+                          </div>
+                        </td>
+
+                        <td *ngIf="depend.updatedAt">{{ formatDate(depend.updatedAt) }}</td>
+                        <td *ngIf="!depend.updatedAt" style="text-align: center;"> - </td>
+                        <td>
+                          <div class="col-md-1 mt-2 mr-2 edit_but" style="cursor: pointer;"
+                            (click)="editDependency(column._id, i)"><i class="fas fa-pencil-alt"></i></div>
+                          <div class="col-md-1 mt-2 mr-2 edit_but" style="cursor: pointer;"
+                            (click)="deleteDependency(column._id, i)"><i class="fas fa-trash-alt"></i></div>
+                        </td>
+                      </tr>
+
+                    </ng-container>
+
+                  </table>
+                </div>
+              </ng-container>
+            </div>
+          </nb-card-body>
+        </nb-card>
+        <nb-card class="card config_cards" *ngSwitchCase="'Charts'">
+          <nb-card-header>
+            <div class="container">
+              <div class="row">
+                <div class="col-md-11">
+                  <nb-checkbox formControlName="displayChart" (change)="showChatCard($event)">Charts for : {{
+                    tableDetails?.tableName }}</nb-checkbox>
+                </div>
+                <div class="col-md-1 icon-space">
+                  <a nbTooltip="Back to tables listing" nbTooltipStatus="primary" routerLink="/pages/tables/list">
+                    <nb-icon icon="arrow-back-outline"></nb-icon>
+                  </a>
+                  <i class="nb-edit" nbTooltip="Edit Columns" style="cursor: pointer;" nbTooltipStatus="primary"
+                    (click)="onEdit()"></i>&nbsp;&nbsp;
+                </div>
+              </div>
+            </div>
+          </nb-card-header>
+          <nb-card-body>
+            <div class="" *ngIf="displayChart">
+              <ng-container formArrayName="charts">
+                <div class="drop" *ngFor="let chart of chartList.controls; let i = index" [formGroupName]="i">
+                  <label class="mr_10">
+                    <input class="form-control " type="text" formControlName="name" nbInput placeholder="Chart"
+                      required />
+                  </label>
+                  <mat-select class="form-control mr_10 select " (selectionChange)="onGroupByChanged($event.value,i,0)"
+                    placeholder="Group By fields" formControlName="groupByField">
+                    <mat-option *ngFor="let filters of groupByFields" [value]="filters._id">
+                      <div>
+                        <img *ngIf="filters.icon" [src]="filters.icon" alt="" height="20" width="20">&nbsp;
+                        <span class="select-text">{{filters.label}}</span>
+                      </div>
+                    </mat-option>
+                  </mat-select>
+
+                  <mat-select class="form-control select " placeholder="Group By Value" multiple
+                    formControlName="groupByValue">
+                    <ng-container *ngIf="isLookup[i] === false">
+                      <mat-option value=''>Null</mat-option>
+                      <mat-option *ngFor="let data of groupByValues[i]" [value]="data">
+                        {{data}}
+                      </mat-option>
+                    </ng-container>
+                    <ng-container *ngIf="isLookup[i] === true">
+                      <mat-option value=''>Null</mat-option>
+                      <mat-option value="all">All</mat-option>
+                      <mat-option *ngFor="let data of groupByValues[i]" [value]="data.id">
+                        {{data.value}}
+                      </mat-option>
+                    </ng-container>
+                  </mat-select>
+                  <div class="col-md-1 mt-2"><i class="fa fa-minus pointer" (click)="removeChart(i)"></i>
+                  </div>
+                  <div class="col-md-1 mt-2 mr-2 edit_but" (click)="onChartFilter(i)"><i class="fas fa-pencil-alt"></i>
+                  </div>
+                </div>
+                <div class="col-md-1 ml-2 add_but  mb-4 pointer"><i class="fa fa-plus " (click)="addNewChart()"></i>
+                </div>
+              </ng-container>
+            </div>
+          </nb-card-body>
+          <div class="w-100 d-flex flex-row end">
+            <button type="submit" [disabled]="!myform.get('charts').valid" nbButton status="primary"
+              class="col-md-2 m-3" (click)="onChartSave()">Save</button>
+          </div>
+        </nb-card>
+        <ngx-document-template-config *ngSwitchCase="'Documents'" [tableDetails]="tableDetails"
+          (getTableDetails)="getTableDetails()">
+        </ngx-document-template-config>
+        <ngx-record-gadgets *ngSwitchCase="'record-gadgets'" [tableDetails]="tableDetails"
+          (getTableDetails)="getTableDetails()"></ngx-record-gadgets>
+        <ngx-validation-check *ngSwitchCase="'validations'" [tableDetails]="tableDetails"
+          (getTableDetails)="getTableDetails()"></ngx-validation-check>
+
+        <nb-card class="card config_cards" *ngSwitchCase="'OverviewSetup'">
+          <nb-card-header>
+            <div class="container">
+              <div class="row">
+                <div class="col-md-11">
+                  <nb-checkbox formControlName="displayOverviewCheck" (change)="showOverviewDropdown($event)">Enable Overview For : {{
+                    tableDetails?.tableName }}</nb-checkbox>
+                </div>
+                <div class="col-md-1 icon-space">
+                  <a nbTooltip="Back to tables listing" nbTooltipStatus="primary" routerLink="/pages/tables/list">
+                    <nb-icon icon="arrow-back-outline"></nb-icon>
+                  </a>
+                  <i class="nb-edit" nbTooltip="Edit Columns" style="cursor: pointer;" nbTooltipStatus="primary"
+                    (click)="onEdit()"></i>&nbsp;&nbsp;
+                </div>
+              </div>
+            </div>
+          </nb-card-header>
+          <nb-card-body>
+            <div class="" *ngIf="displayOverviewCheck">
+              <ng-container formArrayName="overview">
+                <div class="drop" *ngFor="let over of overviewList.controls; let i = index" [formGroupName]="i">
+                  <mat-select class="form-control mr_10 select"
+                    placeholder="Select Related Table" formControlName="tableName">
+                    <mat-option *ngFor="let table of relatedTableList" [value]="table.tableName">
+                      {{table.tableName}}
+                    </mat-option>
+                  </mat-select>
+
+                  <div class="col-md-1 mt-2"><i class="fa fa-minus pointer" *ngIf="i !== 0" (click)="removeOverview(i)"></i>
+                  </div>
+                  <!-- <div class="col-md-1 mt-2 mr-2 edit_but" (click)="onChartFilter(i)"><i class="fas fa-pencil-alt"></i>
+                  </div> -->
+                </div>
+                <div class="col-md-1 ml-2 add_but  mb-4 pointer"><i class="fa fa-plus " (click)="addNewOverviewSetup()"></i>
+                </div>
+              </ng-container>
+            </div>
+          </nb-card-body>
+          <div class="w-100 d-flex flex-row end">
+            <button type="submit" [disabled]="displayOverviewCheck ? overviewDisableCheck() : false" nbButton status="primary"
+              class="col-md-2 m-3" (click)="onOverviewSave()">Save</button>
+          </div>
+        </nb-card>
+      </form>
+    </div>
+  </nb-card>

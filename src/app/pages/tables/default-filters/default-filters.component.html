@@ -1,0 +1,41 @@
+<nb-card style="min-height: 47.5vh;" [nbSpinner]="loading" nbSpinnerSize="large" nbSpinnerStatus="primary">
+  <nb-card-header>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-10">
+          <span>Default Filters For: {{tableDetails.tableName}}</span>
+        </div>
+        <div class="col-md-2 icon-space">
+          <i class="fa fa-plus " nbTooltip="Add Filters" style="cursor: pointer;" nbTooltipStatus="primary" (click)="addActions()"></i>
+          <a nbTooltip="Back to tables listing" nbTooltipStatus="primary" routerLink="/pages/tables/list">
+            <nb-icon icon="arrow-back-outline"></nb-icon>
+          </a>
+          <i class="nb-edit" nbTooltip="Edit Columns" style="cursor: pointer;" nbTooltipStatus="primary" (click)="onEdit()"></i>&nbsp;&nbsp;
+        </div>
+      </div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Is Default</th>
+        <th>Action</th>
+      </tr>
+
+      <ng-container>
+        <tr *ngFor="let item of data; let i = index">
+          <td class="text-capitalize">{{item.name}}</td>
+          <td class="text-capitalize">{{item.isDefault ? 'True' : 'False'}}</td>
+          <td>
+            <a><i class="fas fa-trash-alt" (click)="deleteFilter(item._id)"></i></a>
+            <a (click)="addActions(true, item._id, item)"><i class="fas fa-pen-alt ml-2"></i></a>
+          </td>
+        </tr>
+
+      </ng-container>
+    </table>
+
+  </nb-card-body>
+</nb-card>

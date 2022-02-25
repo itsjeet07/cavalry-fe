@@ -1,0 +1,54 @@
+<nb-card class="add-reminder-popup">
+  <nb-card-header>
+    <img class="add-reminder-img" src="/assets/images/add-reminder-alarm-img.png">
+    Add Reminder
+    <img class="close-btn" src="/assets/images/ic_close_24px.svg" (click)="close()">
+
+  </nb-card-header>
+  <nb-card-body>
+    <div class="container">
+      <div class="row field-row">
+        <div class="col-md-12">
+          <label for="title">Title <span style="color: red;">*</span> </label>
+        </div>
+        <div class="col-md-12">
+          <input class="field-area" type="text" matRipple placeholder="Enter Title" name="title"
+            [(ngModel)]="reminder.notes">
+        </div>
+      </div>
+
+      <div class="row field-row">
+        <div class="col-md-12">
+          <label for="title">Details <span style="color: red;">*</span> </label>
+        </div>
+        <div *ngIf="fromViewPage" class="col-md-12">
+          <div class="field-area call-log-field">
+            <img *ngIf="tableIcon" class="tableIcon" [src]="tableIcon" />
+            <span class="call-log-title">{{tableName}}</span>
+            <span>#{{IdFieldData}}</span>
+            <img class="close-btn" src="/assets/images/ic_close_24px.svg" (click)="closeTableReference()">
+          </div>
+        </div>
+        <div class="col-md-12">
+          <textarea class="field-area" type="text" matRipple placeholder="Enter Details" name="details"
+            [(ngModel)]="reminder.details" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="row field-row last-field-row">
+        <div class="col-md-12">
+          <label for="dateTime">Date/Time <span style="color: red;">*</span> </label>
+        </div>
+        <div class="col-md-12">
+          <app-date-time-picker name="dateTime" [(ngModel)]="reminder.dueDate" pla>
+          </app-date-time-picker>
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer>
+    <div class="row">
+      <button class="btn btn-cancel" (click)="close()">Cancel</button>
+      <button class="btn btn-primary btn-save" (click)="saveReminder()" [disabled]="isSaveDisable">Save</button>
+    </div>
+  </nb-card-footer>
+</nb-card>

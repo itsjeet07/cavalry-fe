@@ -1,0 +1,38 @@
+<div class="dashboardContainer">
+  <div class="dashboardInner">
+    <div class="boysListing-con">
+      <!-- {{ status }} -->
+      <div class="colb-sm-12 status-box">
+        <div class="row">
+          <ng-container *ngFor="let stat of breadCrumbList">
+            <div class="col inline-status">
+              <!-- <div class="col-sm-12">
+                <div [ngClass]="{ 'bubble-active': stat.active, 'bubble': !stat.active }" class="bubble-active">
+                  <i [class]="stat.icon + ' main-icon'" ></i>
+                </div>
+              </div> -->
+              <div class="col-sm-8">
+                <div class="status-text" [ngStyle]="stat.active ? {'background-color' : stat.color} : ''" (click)="confirmUpdateStatus(stat)">{{ stat.label}}</div>
+<!--                <div class="status-text"  *ngIf="!stat.active" (click)="confirmUpdateStatus(stat)">{{ stat.label }}</div>-->
+                <!-- <span [class]="stat.class" [ngClass]="{ 'icon-active': stat.active }">
+                  <i class="fa fa-check-circle" *ngIf="stat.active"></i>
+                  <i class="fa fa-circle fa-check-circle" *ngIf="!stat.active"></i>
+                </span> -->
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <div class="status-box-mobile">
+        <ul class="list-group">
+          <ng-container *ngFor="let stat of breadCrumbList; let i = index;">
+            <li *ngIf="showAllStatus" class="list-group-item" [ngClass]="{ 'active-list-item': stat.active}"
+              (click)="confirmUpdateStatus(stat)">
+              <div class="status-label">{{ stat.label }}</div>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

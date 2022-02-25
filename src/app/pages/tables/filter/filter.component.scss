@@ -1,0 +1,114 @@
+.filter_header, .filter-footer {
+    float: left;
+    width: 100%;
+    display: block;
+    position: relative;
+    padding: 20px;
+  }
+
+  .filter_header {
+    border-bottom: 1px solid #e1e7ef;
+  }
+
+  .filter-footer {
+    border-top: 1px solid #e1e7ef;
+    margin-top: 20px;
+  }
+
+  .filter-body {
+    padding: 0 20px;
+    height: 288px;
+    float: left;
+    width: 100%;
+    overflow-y: auto;
+  }
+  .filter-body::-webkit-scrollbar {
+    width: 15px;
+  }
+
+  /* Track */
+  .filter-body::-webkit-scrollbar-track {
+    box-shadow: inset 0px 0px 0px #eaeaef;
+    border-radius: 15px;
+    background: #e3e6ed;
+  }
+
+  /* Handle */
+  .filter-body::-webkit-scrollbar-thumb {
+    background: #fff;
+    border-radius: 15px;
+    max-height: 15px;
+    border: 2px solid #e3e6ed;
+    box-shadow: 2px 2px 2px #e3e6ed;
+  }
+
+  .filter_header img.filter-icon {
+    float: left;
+    width: 18px;
+    margin-right: 13px;
+  }
+
+  .filter_header img.filter-close-icon {
+    position: absolute;
+    right: 20px;
+    width: 12px !important;
+    cursor: pointer;
+  }
+
+  .filter_header span.filter-heading {
+    font-size: 18px;
+    color: #5C77EA;
+    float: left;
+    margin-top: -4px;
+    font-family: 'DM Sans';
+    font-weight: 500;
+  }
+
+  .filter-pop-row {
+    float: left;
+    width: 100%;
+    margin-top: 23px;
+  }
+
+  .filter-label span {
+    font-family: 'DM Sans';
+    font-weight: 700;
+    color: #262B44;
+    font-size: 14px;
+  }
+
+  .filter-label span.filter-clear-all {
+    float: right;
+    font-size: 14px;
+    font-weight: 400;
+    margin-top: 0px;
+  }
+
+  .filter-label span.filter-clear-all a {
+    color: #5C77EA;
+    text-decoration: underline;
+    font-family: 'DM Sans';
+    font-weight: 400;
+
+  }
+
+  .filter-label span.filter-clear-all a:hover {
+    text-decoration: none;
+  }
+
+  .filter-label {
+    float: left;
+    width: 100%;
+    margin-bottom: 11px;
+  }
+
+  .filter-input {
+    float: left;
+    width: 100%;
+  }
+
+  .checkbox.listing-search-popup {
+    display: block !important;
+    max-width: 100% !important;
+    width: 100%;
+  }

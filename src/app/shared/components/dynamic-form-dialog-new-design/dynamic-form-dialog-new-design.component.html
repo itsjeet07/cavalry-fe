@@ -1,0 +1,1814 @@
+<nb-card [ngClass]="{
+    'modal-body': true,
+    'project-pop-up': true,
+    'enabled-view-mode': viewFlag || editViewFlag,
+    'add-form-con': addEditFlag,
+    'edit-view-mode': editViewFlag,
+    'align-set-left': fieldAlignment && fieldAlignment == 'left',
+    'align-set-center': fieldAlignment && fieldAlignment == 'center',
+    'align-set-right': fieldAlignment && fieldAlignment == 'right',
+    'align-set-default': fieldAlignment && fieldAlignment == 'default',
+    'one-row-one-col':
+      fieldAlignment &&
+      (fieldAlignment == 'right' ||
+        fieldAlignment == 'center' ||
+        fieldAlignment == 'left')
+  }" [nbSpinner]="loading" nbSpinnerSize="large" nbSpinnerStatus="primary" class="new-form-design"
+  [style.width.px]="formWidth ? formWidth : null" cdkDrag>
+  <nb-card-header>
+    <img *ngIf="tableIcon" class="tableIcon" [src]="tableIcon" />
+    {{ title }}
+    <img (click)="closeModal()" class="filter-close-icon" src="/assets/images/close-icon.svg" />
+    <button *ngIf="!viewFlag && !editViewFlag" nbButton status="info" aria-hidden="true" class="watcher" [matMenuTriggerFor]="menu"
+      (menuOpened)="watcherMenuOpened()" (menuClosed)="watcherMenuClosed()">
+      Watchers &nbsp; {{ subscribers.length }}
+    </button>
+
+    <mat-menu #menu="matMenu" yPosition="below">
+      <button mat-menu-item first-top>
+        <span class="li-head curson-pointer" (click)="selfSubsription()">
+          <span class="icon-mar-lft"></span> {{ subscriptionText }}
+        </span>
+      </button>
+
+      <div class="all-user-list">
+        <button mat-menu-item *ngFor="let option of subscribers">
+          <span class="li-head">
+            <span class="icon-mar-lft" [ngStyle]="{ 'background-color': option?.userColor }">{{ option.firstName[0] +
+              option.lastName[0] | uppercase }}</span>
+            {{ option.firstName + " " + option.lastName }}
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="left-margin curson-pointer" (click)="cancelSubscription(option._id)">
+              <i class="fa fa-times" aria-hidden="true"></i>
+            </span>
+          </span>
+        </button>
+      </div>
+
+      <button style="background-color: #ececf0" mat-menu-item class="last-bottom" (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()" class="curson-pointer">
+        <ngx-watch-user [tableInfo]="tableInfo" [matMenu]="trigger" parentForm="dynamicForm"
+          (valueChanged)="updateSubscribers($event)"></ngx-watch-user>
+      </button>
+    </mat-menu>
+  </nb-card-header>
+
+  <nb-card-body class="main_body customHeight" [style.height.px]="formHeight ? formHeight : null">
+    <div class="main-field-row"></div>
+    <ng-container class="add-edit-form">
+      <div class="container-fluid">
+        <div class="view-left-side">
+          <ng-container *ngIf="addEditFlag || editViewFlag">
+
+            <!--Without section-->
+            <ng-container *ngIf="sections.length == 0">
+              <ng-container [ngTemplateOutlet]="formFields" [ngTemplateOutletContext]="{
+                  finalArray: finalArrayForWithoutSection,
+                  section: true
+                }">
+              </ng-container>
+            </ng-container>
+
+            <!--With section-->
+            <ng-container *ngIf="sections && sections.length">
+
+              <nb-stepper class="container updated-design" orientation="horizontal" disableStepNavigation>
+
+                <nb-step label="Fields" *ngIf="finalArrayForWithoutSection.length">
+                  <ng-container [ngTemplateOutlet]="formFields" [ngTemplateOutletContext]="{
+                      finalArray: finalArrayForWithoutSection,
+                      section: true
+                    }">
+                  </ng-container>
+                  <div class="button_show custom-footer">
+                    <button class="save" nbButton (click)="getStep('0')" nbStepperNext>
+                      Next &nbsp;<i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </button>
+                    <button class="cancel" nbButton (click)="goBackToMode()">
+                      <i class="fa fa-chevron-left" aria-hidden="true"></i>&nbsp; Back
+                    </button>
+                  </div>
+                </nb-step>
+
+
+                <ng-container *ngFor="let section of sections; let secIndex = index">
+                  <nb-step *ngIf="
+                      show[section[0].name] &&
+                      section.array &&
+                      section.array.length
+                    " [label]="section[0].label">
+                    <ng-container [ngTemplateOutlet]="formFields" [ngTemplateOutletContext]="{
+                        finalArray: section.array,
+                        section: false
+                      }">
+                    </ng-container>
+                    <div class="button_show custom-footer">
+                      <button class="save" *ngIf="
+                          !viewFlag &&
+
+                          secIndex == sections.length - 1
+                        " (click)="submit()" nbButton matRipple>
+                        Save </button>
+                      <button nbButton class="save" (click)="getStep(secIndex + 1, 'Next')"
+                        *ngIf="secIndex != sections.length - 1" nbStepperNext>
+                        Next &nbsp;<i class="fa fa-chevron-right" aria-hidden="true"></i>
+                      </button>
+                      <button class="cancel" nbButton (click)="getStep(secIndex + 1, 'Back')" nbStepperPrevious>
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>&nbsp; Back
+                      </button>
+                    </div>
+                  </nb-step>
+                  <!-- <mat-expansion-panel class="w-100 mt-3" expanded *ngIf="show[section[0].name]">
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>
+                        {{section[0].label}}
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <ng-container [ngTemplateOutlet]="formFields"
+                      [ngTemplateOutletContext]="{finalArray: section.array,section:false}">
+                    </ng-container>
+                  </mat-expansion-panel> -->
+                </ng-container>
+              </nb-stepper>
+            </ng-container>
+
+          </ng-container>
+
+          <ng-container *ngIf="viewFlag">
+            <ng-container [ngTemplateOutlet]="formFields" [ngTemplateOutletContext]="{
+                finalArray: finalArrayForViewMode,
+                section: true
+              }">
+            </ng-container>
+
+            <!-- <ng-container *ngFor="let section of sections">
+              <mat-expansion-panel class="w-100 mt-3" expanded *ngIf="show[section[0].name]">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{section[0].label}}
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ng-container [ngTemplateOutlet]="formFields"
+                  [ngTemplateOutletContext]="{finalArray: section.array,section:false}">
+                </ng-container>
+              </mat-expansion-panel>
+            </ng-container> -->
+          </ng-container>
+        </div>
+
+        <div class="shadow-div" *ngIf="editViewFlag && !inlineView"></div>
+        <div class="view-right-side" *ngIf="(viewFlag || editViewFlag) && !inlineView">
+          <div class="colored-bg" [ngStyle]="{
+              'background-color': colorForRightPanel ? colorForRightPanel : ''
+            }">
+            <ng-container *ngIf="!recordGadgetValue">
+              <span class="timer-con">
+                {{title}}
+              </span>
+            </ng-container>
+            <ng-container *ngIf="recordGadgetValue">
+              <span class="timer-con" [innerHTML]="recordGadgetValue"> </span>
+            </ng-container>
+          </div>
+          <ngx-activity-watchers [showChats]="showChats" [tableInfo]="tableInfo" [subscribers]="subscribers"
+            [subscriptionText]="subscriptionText" [isSelfSubscribed]="isSelfSubscribed" [tableName]="tableName"
+            [Data]="Data" [recordData]="recordData" [dynamicData]="dynamicData"></ngx-activity-watchers>
+        </div>
+      </div>
+    </ng-container>
+  </nb-card-body>
+  <nb-card-footer *ngIf="(viewFlag || sections.length == 0) && !inlineView" class="button_show">
+    <button class="save" type="submit" *ngIf="!viewFlag && !editViewFlag && !fromOldView" (click)="continueView()"
+      nbButton matRipple>
+      Continue &nbsp;<i class="fa fa-chevron-right" aria-hidden="true"></i>
+    </button>
+    <button class="save" type="submit" *ngIf="!viewFlag && !editViewFlag" (click)="submit()" nbButton matRipple>
+      {{ button.text }}
+    </button>
+    <button class="cancel" nbButton matRipple *ngIf="!viewFlag && !editViewFlag" (click)="cancel()">
+      Cancel
+    </button>
+
+    <button (click)="changeToEditViewMode()" class="cancel" *ngIf="viewFlag" nbButton matRipple>
+      <i class="fa fa-pencil add_but" aria-hidden="true"></i>
+      Edit Details
+    </button>
+    <button (click)="submit()" class="save" *ngIf="editViewFlag" nbButton matRipple>
+      Save
+    </button>
+    <button (click)="backToView()" class="cancel" *ngIf="editViewFlag" nbButton matRipple>
+      Cancel
+    </button>
+    <button (click)="openReminderModal()" class="save" *ngIf="viewFlag" nbButton matRipple>
+      <i class="fa fa-plus add_but" aria-hidden="true"></i>
+      Add Reminder
+    </button>
+    <!-- <button class="save" *ngIf="viewFlag && showAddTask" (click)="openTaskForm()" nbButton matRipple>
+      <i class="fa fa-plus add_but" aria-hidden="true"></i>
+      Add Task
+    </button> -->
+  </nb-card-footer>
+</nb-card>
+<form [formGroup]="dynamicForm">
+  <ng-template #formFields let-finalArray="finalArray" let-section="section">
+    <ng-template #rowField let-row="row" let-rowIndex="rowIndex" let-rowColor="rowColor" let-rowHide="rowHide">
+      <div class="row new-design-row" [ngStyle]="{
+
+          'background-color': editViewFlag
+            ? sections && sections.length
+              ? ''
+              : rowColor
+            : rowColor,
+            'display' : rowHide ? 'none' : ''
+        }">
+        <div *ngFor="let field of row" [ngClass]="[
+            field.fieldSize == 'tiny' ? 'col-md-3' : '',
+            field.fieldSize == 'small' ? 'col-md-4' : '',
+            field.fieldSize == 'medium' ? 'col-md-6' : '',
+            field.fieldSize == 'large' ? 'col-md-12' : '',
+            !show[field.name] ? 'no-content' : '',
+            field.type == 'recordType' && !recordTypeFlagFromAddNew
+              ? 'no-content'
+              : '',
+            field.type == 'refButton' ? 'col-md-12' : '',
+            !field.icon && field.type != 'dropdownWithImage'
+              ? 'without-icon'
+              : ''
+          ]">
+          <div class="center-div-only">
+            <ng-container *ngIf="field.type == 'autoNumber' && field.startValue > 0">
+              <ng-container *ngIf="editViewFlag || addEditFlag">
+                <!-- Label for field type autoNumber -->
+                <span class="new-label label" [ngStyle]="{ color: showFontColor(row, rowIndex),
+                  'color' : !rowIndex ? 'white' : '' }">{{ field.label }}:
+                  <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                </span>
+
+                <!-- Field input for type autoNumber -->
+                <mat-form-field [ngClass]="[
+                    field.fieldSize == 'tiny'
+                      ? 's_s'
+                      : field.fieldSize == 'small'
+                      ? 's'
+                      : field.fieldSize == 'medium'
+                      ? 'm'
+                      : 'l',
+                    dynamicForm.get(field.name).invalid && formSubmitted
+                      ? 'mat-form-field-invalid'
+                      : ''
+                  ]" class="auto-number" appearance="outline">
+                  <mat-label [ngStyle]="{ color: showFontColor(row, rowIndex) }">{{ field.label }} <br />
+                    <small class="ultra_small">(System generated)</small>
+                  </mat-label>
+                  <input matInput [type]="'text'" placeholder="------" [formControlName]="field.name"
+                    [readonly]="true" />
+                  <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                    [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                </mat-form-field>
+              </ng-container>
+
+              <ng-container *ngIf="viewFlag">
+                <!-- Label for field type autoNumber -->
+                <span class="new-label label"
+                  [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                  }}:</span>
+
+                <!-- View Field for type autoNumber -->
+                <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                  <img class="
+                      mat-icon
+                      notranslate
+                      material-icons
+                      mat-icon-no-color
+                      top04
+                    " src="{{ field.icon }}" />
+                </div>
+                <div class="edit-class-form" *ngIf="Data[field.name]" [innerHTML]="Data[field.name]"></div>
+              </ng-container>
+            </ng-container>
+
+            <ng-container *ngIf="
+                field.type == 'rollUp' &&
+                field.options &&
+                field.options.length &&
+                show[field.name]
+              ">
+              <ng-container *ngIf="editViewFlag || addEditFlag">
+                <!-- Label for field type rollUp -->
+                <span class="new-label label"
+                  [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                  }}:
+                  <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                </span>
+
+                <!-- Field input for type rollUp -->
+                <mat-form-field [ngClass]="[
+                    field.fieldSize == 'tiny'
+                      ? 's_s'
+                      : field.fieldSize == 'small'
+                      ? 's'
+                      : field.fieldSize == 'medium'
+                      ? 'm'
+                      : 'l'
+                  ]" appearance="outline">
+                  <input matInput [type]="'text'" [placeholder]="field.label" [formControlName]="field.name"
+                    [readonly]="field.isReadOnly" [ngClass]="{ 'disable-formula-field': field.isReadOnly }" />
+                  <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                    [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                </mat-form-field>
+              </ng-container>
+
+              <ng-container *ngIf="viewFlag">
+                <!-- Label for field type rollUp -->
+                <span class="new-label label"
+                  [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                  }}:</span>
+
+                <!-- View Field for type rollUp -->
+                <div matPrefix class="mat-matPrefix">
+                  <img *ngIf="field.icon" class="
+                      mat-icon
+                      notranslate
+                      material-icons
+                      mat-icon-no-color
+                      top04
+                    " src="{{ field.icon }}" />
+                </div>
+                <div class="edit-class-form" *ngIf="Data[field.name]" [innerHTML]="Data[field.name]"></div>
+              </ng-container>
+            </ng-container>
+
+            <ng-container *ngIf="
+                field.type == 'formula' &&
+                field.options &&
+                field.options.length &&
+                show[field.name]
+              ">
+              <ng-container *ngIf="editViewFlag || addEditFlag">
+                <!-- Label for field type formula -->
+                <span class="new-label label"
+                  [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                  }}:
+                  <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                </span>
+
+                <!-- Field input for type formula -->
+                <ng-container *ngFor="let formula of field.options">
+                  <!-- For type STRING -->
+                  <ng-container *ngIf="formula.type == 'string'">
+                    <mat-form-field appearance="outline" [ngClass]="[
+                        field.fieldSize == 'tiny'
+                          ? 's_s'
+                          : field.fieldSize == 'small'
+                          ? 's'
+                          : field.fieldSize == 'medium'
+                          ? 'm'
+                          : 'l',
+                        dynamicForm.get(field.name).invalid && formSubmitted
+                          ? 'mat-form-field-invalid'
+                          : ''
+                      ]">
+                      <mat-label [ngStyle]="{ color: showFontColor(row, rowIndex) }">{{ field.label }}</mat-label>
+                      <input matInput [type]="'text'" [placeholder]="field.label" [formControlName]="field.name"
+                        [readonly]="field.isReadOnly" [ngClass]="{
+                          'disable-formula-field': field.isReadOnly
+                        }" />
+                      <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                        [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                    </mat-form-field>
+                  </ng-container>
+
+                  <!-- For type NUMBER -->
+                  <ng-container *ngIf="formula.type == 'number'">
+                    <mat-form-field appearance="outline" [ngClass]="[
+                        field.fieldSize == 'tiny'
+                          ? 's_s'
+                          : field.fieldSize == 'small'
+                          ? 's'
+                          : field.fieldSize == 'medium'
+                          ? 'm'
+                          : 'l',
+                        dynamicForm.get(field.name).invalid && formSubmitted
+                          ? 'mat-form-field-invalid'
+                          : ''
+                      ]" class="less-space">
+                      <mat-label [ngStyle]="{ color: showFontColor(row, rowIndex) }">{{ field.label }}</mat-label>
+                      <input matInput [type]="'number'" placeholder="{{ field.label }}" [formControlName]="field.name"
+                        [readonly]="field.isReadOnly" [ngClass]="{
+                          'disable-formula-field': field.isReadOnly
+                        }" />
+                      <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                        [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                    </mat-form-field>
+                  </ng-container>
+
+                  <!-- For type RADIO -->
+                  <ng-container *ngIf="formula.type == 'radio'">
+                    <div class="checkbox mb-20" [ngClass]="
+                        field.fieldSize == 'tiny'
+                          ? 's_s'
+                          : field.fieldSize == 'small'
+                          ? 's'
+                          : field.fieldSize == 'medium'
+                          ? 'm'
+                          : 'l'
+                      ">
+                      <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+                        <img class="
+                            mat-icon
+                            notranslate
+                            material-icons
+                            mat-icon-no-color
+                            top04
+                          " src="{{ field.icon }}" />
+                      </div>
+                      <nb-radio-group class="radio" name="my-radio-group-{{ field.name }}"
+                        [formControlName]="field.name" [disabled]="field.isReadOnly">
+                        <nb-radio value="yes"> Yes </nb-radio>
+                        <nb-radio value="no"> No </nb-radio>
+                      </nb-radio-group>
+                    </div>
+                  </ng-container>
+
+                  <!--  For type DATE -->
+                  <ng-container *ngIf="formula.type == 'date'">
+                    <mat-form-field class="mb-20 due-date-col" appearance="outline" [ngClass]="
+                        field.fieldSize == 'tiny'
+                          ? 's_s'
+                          : field.fieldSize == 'small'
+                          ? 's'
+                          : field.fieldSize == 'medium'
+                          ? 'm'
+                          : 'l'
+                      ">
+                      <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+                        <img class="
+                            mat-icon
+                            notranslate
+                            material-icons
+                            mat-icon-no-color
+                            top04
+                          " src="{{ field.icon }}" />
+                      </div>
+                      <input matInput [matDatepicker]="formpicker1" [placeholder]="field.label"
+                        [formControlName]="field.name" [readonly]="field.isReadOnly" [ngClass]="{
+                          'disable-formula-field': field.isReadOnly
+                        }" />
+                      <mat-datepicker-toggle matSuffix [for]="formpicker1" [disabled]="field.isReadOnly">
+                      </mat-datepicker-toggle>
+                      <mat-datepicker #formpicker1></mat-datepicker>
+                      <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                        [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                    </mat-form-field>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="viewFlag">
+                <!-- Label for field type autoNumber -->
+                <span class="new-label label"
+                  [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                  }}:</span>
+
+                <!-- View Field for type autoNumber -->
+                <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                  <img class="
+                      mat-icon
+                      notranslate
+                      material-icons
+                      mat-icon-no-color
+                      top04
+                    " src="{{ field.icon }}" />
+                </div>
+                <div class="edit-class-form" *ngIf="Data[field.name]" [innerHTML]="Data[field.name]"></div>
+              </ng-container>
+            </ng-container>
+
+            <ng-container *ngIf="field.name == 'zip'">
+              <ng-container *ngIf="addEditFlag || editViewFlag">
+                <!-- Label for field type zip -->
+                <span class="new-label label"
+                  [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                  }}:
+                  <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                </span>
+
+                <!-- Field input for type zip -->
+                <mat-form-field appearance="outline" *ngIf="field.name == 'zip'" [ngClass]="[
+                    field.fieldSize == 'tiny'
+                      ? 's_s'
+                      : field.fieldSize == 'small'
+                      ? 's'
+                      : field.fieldSize == 'medium'
+                      ? 'm'
+                      : 'l',
+                    dynamicForm.get(field.name).invalid && formSubmitted
+                      ? 'mat-form-field-invalid'
+                      : ''
+                  ]" appearance="outline">
+                  <mat-label [ngStyle]="{ color: showFontColor(row, rowIndex) }">{{ field.label }}</mat-label>
+                  <input matInput [type]="field.type" (keyup)="listCity(dynamicForm)" [formControlName]="field.name"
+                    [readonly]="field.isReadOnly" />
+                  <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                    [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                </mat-form-field>
+              </ng-container>
+
+              <ng-container *ngIf="viewFlag">
+                <!-- Label for field type zip -->
+                <span class="new-label label"
+                  [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                  }}:</span>
+
+                <!-- View Field for type zip -->
+                <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                  <img class="
+                      mat-icon
+                      notranslate
+                      material-icons
+                      mat-icon-no-color
+                      top04
+                    " src="{{ field.icon }}" />
+                </div>
+                <div class="edit-class-form" *ngIf="Data[field.name]" [innerHTML]="Data[field.name]"></div>
+              </ng-container>
+            </ng-container>
+
+            <ng-container *ngIf="field.name != 'zip'">
+              <ng-container *ngIf="inputFields.includes(field.type) && show[field.name]">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type of inputFields -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of inputFields -->
+                  <mat-form-field class="phone-number 22" class="mb-20" appearance="outline" [ngClass]="[
+                      field.fieldSize == 'tiny'
+                        ? 's_s'
+                        : field.fieldSize == 'small'
+                        ? 's'
+                        : field.fieldSize == 'medium'
+                        ? 'm'
+                        : 'l',
+                      dynamicForm.get(field.name).invalid && formSubmitted
+                        ? 'mat-form-field-invalid'
+                        : '',
+                      field.icon ? 'with-icon' : ''
+                    ]" [floatLabel]="'never'">
+                    <mat-label [ngStyle]="{ color: showFontColor(row, rowIndex) }">{{ field.label }}</mat-label>
+                    <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+                      <img class="
+                          mat-icon
+                          notranslate
+                          material-icons
+                          mat-icon-no-color
+                        " src="{{ field.icon }}" />
+                    </div>
+                    <input *ngIf="!field.isPhone" matInput placeholder="{{ field.label }}" [type]="field.type"
+                      [formControlName]="field.name" (keyup)="evalExpressionForFormulaField()"
+                      [readonly]="field.isReadOnly" />
+                    <input *ngIf="field.isPhone" #item [ngModel]="dynamicForm.get(field.name).value | phone" ngxNumberOnly
+                      matInput placeholder="{{ field.label }}" [type]="field.type" [formControlName]="field.name"
+                      [readonly]="field.isReadOnly" />
+                    <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                      [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                  </mat-form-field>
+                </ng-container>
+
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type inputFields -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type inputFields -->
+                  <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div class="edit-class-form" *ngIf="Data[field.name] && field.name !== 'phoneNumber'">
+                  <a class="value_text" href="mailto:{{Data[field.name]}}" *ngIf="matchPattern(Data[field.name])">{{Data[field.name]}}</a>
+                  <div *ngIf="!matchPattern(Data[field.name])">{{Data[field.name]}}</div>
+                  
+                  </div>
+                  <div class="edit-class-form" *ngIf="Data[field.name] && field.name == 'phoneNumber'">
+                    {{changesPhoneDashes(Data[field.name])}}</div>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="
+                  (field.type == 'number' || field.type == 'currency') &&
+                  show[field.name]
+                ">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type number -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of number -->
+                  <mat-form-field class="mb-20 unit-amount less-space 33" appearance="outline" [ngClass]="[
+                      field.fieldSize == 'tiny'
+                        ? 's_s'
+                        : field.fieldSize == 'small'
+                        ? 's'
+                        : field.fieldSize == 'medium'
+                        ? 'm'
+                        : 'l',
+                      dynamicForm.get(field.name).invalid && formSubmitted
+                        ? 'mat-form-field-invalid'
+                        : '',
+                      field.icon ? 'with-icon' : ''
+                    ]">
+                    <mat-label [ngStyle]="{ color: showFontColor(row, rowIndex) }">{{ field.label }}</mat-label>
+                    <div matPrefix *ngIf="field.isCurrency">
+                      <mat-icon class="money_icon">attach_money</mat-icon>
+                    </div>
+                    <input *ngIf="!field.isPhone" matInput placeholder="{{ field.label }}" [type]="field.type"
+                      [placeholder]="field.label" [formControlName]="field.name" [readonly]="field.isReadOnly"
+                      (keyup)="evalExpressionForFormulaField()" (change)="evalExpressionForFormulaField()" />
+                    <input *ngIf="field.isPhone" #item [value]="dynamicForm.get(field.name).value | phone" ngxNumberOnly
+                      matInput (keyup)="evalExpressionForFormulaField()" (change)="evalExpressionForFormulaField()"
+                      placeholder="{{ field.label }}" [type]="field.type" [placeholder]="field.label"
+                      [formControlName]="field.name" [readonly]="field.isReadOnly" />
+                    <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                      [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                  </mat-form-field>
+                </ng-container>
+
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type number -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type number -->
+                  <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div class="edit-class-form" *ngIf="Data[field.name]" [innerHTML]="Data[field.name]"></div>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="field.type == 'area' && show[field.name]">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type area -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of area -->
+                  <mat-form-field class="mb-20 reminder-note textarea-hght-auto" appearance="outline" [ngClass]="[
+                      field.fieldSize == 'tiny'
+                        ? 's_s'
+                        : field.fieldSize == 'small'
+                        ? 's'
+                        : field.fieldSize == 'medium'
+                        ? 'm'
+                        : 'l',
+                      dynamicForm.get(field.name).invalid && formSubmitted
+                        ? 'mat-form-field-invalid'
+                        : '',
+                      field.icon ? 'with-icon' : ''
+                    ]">
+                    <mat-label [ngStyle]="{ color: showFontColor(row, rowIndex) }">{{ field.label }}</mat-label>
+                    <textarea [rows]="field.textAreaLines" matInput [placeholder]="field.label"
+                      [formControlName]="field.name" [readonly]="field.isReadOnly"
+                      (keyup)="evalExpressionForFormulaField()"></textarea>
+                    <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                      [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                  </mat-form-field>
+                </ng-container>
+
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type area -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type area -->
+                  <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div class="edit-class-form textarea-val" *ngIf="field.type == 'area' && Data[field.name]"
+                    [innerHTML]="Data[field.name]"></div>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="field.type === 'dropdown' && show[field.name]">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type dropdown -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of dropdown -->
+                  <mat-form-field class="mb-20" appearance="outline" [ngClass]="[
+                      field.fieldSize == 'tiny'
+                        ? 's_s'
+                        : field.fieldSize == 'small'
+                        ? 's'
+                        : field.fieldSize == 'medium'
+                        ? 'm'
+                        : 'l',
+                      dynamicForm.get(field.name).invalid && formSubmitted
+                        ? 'mat-form-field-invalid'
+                        : '',
+                      field.icon ? 'with-icon' : ''
+                    ]">
+                    <mat-label [ngStyle]="{ color: showFontColor(row, rowIndex) }">{{ field.label }}</mat-label>
+                    <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+                      <img class="
+                          mat-icon
+                          notranslate
+                          material-icons
+                          mat-icon-no-color
+                          top04
+                        " src="{{ field.icon }}" />
+                    </div>
+                    <ng-container *ngIf="!field.allowMultipleValues">
+                      <mat-select [formControlName]="field.name" [disabled]="field.isReadOnly" (selectionChange)="
+                          onDependentFieldChanged(
+                            $event,
+                            field._id,
+                            field.type,
+                            field.name,
+                            section,
+                            rowIndex
+                          )
+                        ">
+                        <mat-option *ngFor="let option of field.options" [value]="option" matRipple>
+                          {{ option }}
+                        </mat-option>
+                      </mat-select>
+                    </ng-container>
+                    <ng-container *ngIf="field.allowMultipleValues">
+                      <mat-select [formControlName]="field.name" multiple [placeholder]="field.label"
+                        [disabled]="field.isReadOnly" (change)="evalExpressionForFormulaField()" (selectionChange)="
+                          onDependentFieldChanged(
+                            $event,
+                            field._id,
+                            field.type,
+                            field.name,
+                            section,
+                            rowIndex
+                          )
+                        ">
+                        <mat-option *ngFor="let option of field.options" [value]="option" matRipple>
+                          {{ option }}
+                        </mat-option>
+                      </mat-select>
+                    </ng-container>
+                  </mat-form-field>
+                  <ngx-help class="help-iconhelp-right help-dropdown" *ngIf="tutorials | helpPipe: field.label"
+                    [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                </ng-container>
+
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type dropdown -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type dropdown -->
+                  <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div class="edit-class-form textarea-val" *ngIf="Data[field.name]" [innerHTML]="Data[field.name]">
+                  </div>
+                </ng-container>
+              </ng-container>
+              <ng-container *ngIf="field.type === 'gadget' && show[field.name]">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type gadget -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of gadget -->
+                  <mat-form-field appearance="outline" [ngClass]="[
+                      field.fieldSize == 'tiny'
+                        ? 's_s'
+                        : field.fieldSize == 'small'
+                        ? 's'
+                        : field.fieldSize == 'medium'
+                        ? 'm'
+                        : 'l',
+                      dynamicForm.get(field.name).invalid && formSubmitted
+                        ? 'mat-form-field-invalid'
+                        : ''
+                    ]">
+                    <mat-label [ngStyle]="{ color: showFontColor(row, rowIndex) }">{{ field.label }}</mat-label>
+                    <input matInput [type]="'text'" [placeholder]="field.label" [formControlName]="field.name" readonly
+                      [ngClass]="{ 'disable-formula-field': field.isReadOnly }" [(ngModel)]="currentGadgetValue" />
+                    <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                      [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                  </mat-form-field>
+                  <ngx-help class="help-iconhelp-right help-dropdown" *ngIf="tutorials | helpPipe: field.label"
+                    [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                </ng-container>
+
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type gadget -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type gadget -->
+                  <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div class="edit-class-form" *ngIf="gadgetFieldValue" [innerHTML]="gadgetFieldValue"></div>
+                </ng-container>
+              </ng-container>
+
+              <ng-container class="fltt-left mb-20" *ngIf="field.type === 'dropdownWithImage' && show[field.name]">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type dropdownWithImage -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of dropdownWithImage -->
+                  <ng-container *ngIf="!field.allowMultipleValues">
+                    <div class="select-new" [ngClass]="{
+                        l: field.fieldSize == 'large',
+                        s_s: field.fieldSize == 'tiny',
+                        s: field.fieldSize == 'small',
+                        m: field.fieldSize == 'medium',
+                        'mat-form-field-invalid':
+                          dynamicForm.get(field.name).invalid && formSubmitted
+                      }">
+                      <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+                        <img class="
+                            mat-icon
+                            notranslate
+                            material-icons
+                            mat-icon-no-color
+                            top04
+                          " src="{{ field.icon }}" />
+                      </div>
+                      <mat-label [ngStyle]="{ color: showFontColor(row, rowIndex) }">{{ field.label }}</mat-label>
+                      <ng-select [formControlName]="field.name" [ngClass]="{
+                          'mat-form-field-invalid':
+                            dynamicForm.get(field.name).invalid && formSubmitted
+                        }" appendTo="body" [id]="field.name" [clearable]="false" placeholder="{{ field.label }}"
+                        (change)="
+                          onDependentFieldChanged(
+                            $event,
+                            field._id,
+                            field.type,
+                            field.name,
+                            section,
+                            rowIndex
+                          )
+                        " class="ng-select-latest single-select">
+                        <ng-option *ngFor="let val of field.options" [value]="val.title">
+                          <div class="drop-down-img-col">
+                            <img [src]="val.image" alt="" height="18" width="18" />
+                            <span class="select-text">{{ val.title }}</span>
+                          </div>
+                        </ng-option>
+                      </ng-select>
+                    </div>
+                  </ng-container>
+
+                  <ng-container *ngIf="field.allowMultipleValues" class="mat-form-field drop-down-img-col">
+                    <div class="select-new" [ngClass]="{
+                        l: field.fieldSize == 'large',
+                        s_s: field.fieldSize == 'tiny',
+                        s: field.fieldSize == 'small',
+                        m: field.fieldSize == 'medium',
+                        'mat-form-field-invalid':
+                          dynamicForm.get(field.name).invalid && formSubmitted
+                      }">
+                      <mat-label [ngStyle]="{ color: showFontColor(row, rowIndex) }">{{ field.label }}</mat-label>
+                      <ng-select [multiple]="true" [formControlName]="field.name" appendTo="body" [id]="field.name"
+                        placeholder="{{ field.label }}" (change)="
+                          onDependentFieldChanged(
+                            $event,
+                            field._id,
+                            field.type,
+                            field.name,
+                            section,
+                            rowIndex
+                          )
+                        " class="ng-select-latest">
+                        <ng-option *ngFor="let val of field.options" [value]="val.title">
+                          <div class="col-md-12 drop-down-img-col">
+                            <img [src]="val.image" alt="" height="18" width="18" />
+                            <span>{{ val.title }}</span>
+                          </div>
+                        </ng-option>
+                      </ng-select>
+                    </div>
+                  </ng-container>
+                  <ngx-help class="help-iconhelp-right help-dropdown" *ngIf="tutorials | helpPipe: field.label"
+                    [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                </ng-container>
+
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type dropdownWithImage -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type dropdownWithImage -->
+                  <div matPrefix class="mat-matPrefix">
+                    <img *ngIf="field.type == 'dropdownWithImage'" class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ imageForDropdownWithImageView }}" />
+                  </div>
+                  <div class="edit-class-form textarea-val" *ngIf="Data[field.name]" [innerHTML]="Data[field.name]">
+                  </div>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="field.type == 'date' && show[field.name]">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type date -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of date -->
+                  <mat-form-field class="mb-20 due-date-col mat-dt-picker-modal" appearance="outline" [ngClass]="[
+                      field.fieldSize == 'tiny'
+                        ? 's_s'
+                        : field.fieldSize == 'small'
+                        ? 's'
+                        : field.fieldSize == 'medium'
+                        ? 'm'
+                        : 'l',
+                      dateErrorFlag && formSubmitted
+                        ? 'mat-form-field-invalid'
+                        : ''
+                    ]">
+                    <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+                      <img class="
+                          mat-icon
+                          notranslate
+                          material-icons
+                          mat-icon-no-color
+                          top04
+                        " src="{{ field.icon }}" />
+                    </div>
+                    <input matInput [matDatepicker]="formpicker" [placeholder]="" [formControlName]="field.name"
+                      [readonly]="field.isReadOnly" (dateChange)="evalExpressionForFormulaField()"
+                      (dateInput)="evalExpressionForFormulaField()" />
+                    <mat-datepicker-toggle matSuffix [for]="formpicker">
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #formpicker></mat-datepicker>
+                    <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                      [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                  </mat-form-field>
+                </ng-container>
+
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type date -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type date -->
+                  <div matPrefix *ngIf="field.icon" matPrefixclass="mat-matPrefix">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div class="edit-class-form" *ngIf="
+                      (field.type == 'date' || field.type == 'dateTime') &&
+                      Data[field.name]
+                    ">
+                    {{ Data[field.name] | dateCustomPipe }}
+                  </div>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="field.type == 'dateTime' && show[field.name]">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type dateTime -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of dateTime -->
+                  <div class="date-time-pic-cus" [ngClass]="[
+                      field.fieldSize == 'tiny'
+                        ? 's_s'
+                        : field.fieldSize == 'small'
+                        ? 's'
+                        : field.fieldSize == 'medium'
+                        ? 'm'
+                        : 'l',
+                      dateTimeErrorFlag && formSubmitted
+                        ? 'mat-form-field-invalid'
+                        : ''
+                    ]">
+                    <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+                      <img class="
+                          mat-icon
+                          notranslate
+                          material-icons
+                          mat-icon-no-color
+                          top04
+                        " src="{{ field.icon }}" />
+                    </div>
+                    <span [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }"
+                      class="date-time-pic-cus-title" [ngClass]="{ 'title-active': dateTimePickerToggeledOn }">{{
+                      field.label }} :</span>
+                    <app-date-time-picker [formControlName]="field.name" pla
+                      (ngModelChange)="evalExpressionForFormulaField()">
+                    </app-date-time-picker>
+                    <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                      [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                  </div>
+                </ng-container>
+
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type dateTime -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type dateTime -->
+                  <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div class="edit-class-form" *ngIf="
+                      (field.type == 'date' || field.type == 'dateTime') &&
+                      Data[field.name]
+                    ">
+                    {{ Data[field.name] | dateCustomPipe }}
+                  </div>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="field.type == 'status' && show[field.name]">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type status -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of status -->
+                  <div class="status-buttonss-form possition-relative" [ngClass]="{
+                      l: field.fieldSize == 'large',
+                      s_s: field.fieldSize == 'tiny',
+                      s: field.fieldSize == 'small',
+                      m: field.fieldSize == 'medium'
+                    }">
+                    <mat-form-field appearance="outline" *ngIf="field.type == 'status' && show[field.name]" [ngClass]="[
+                        dynamicForm.get(field.name).invalid && formSubmitted
+                          ? 'mat-form-field-invalid'
+                          : '',
+                        field.icon ? 'with-icon' : ''
+                      ]">
+                      <mat-label><i class="fas fa-circle mr-1" [ngStyle]="{ color: colorSetter[field.name] }"></i>
+                        {{
+                        statuses[field.name]
+                        ? statuses[field.name]
+                        : field.label
+                        }}
+                      </mat-label>
+                      <mat-select [formControlName]="field.name">
+                        <div class="px-3">
+                          <mat-form-field>
+                            <input matInput #statusSearch placeholder="Search" (click)="$event.stopPropagation()" />
+                          </mat-form-field>
+                        </div>
+                        <mat-option [class.mat-active]="
+                            status.status === statuses[field.name]
+                          " *ngFor="
+                            let status of field.statusOptions
+                              | searchStatusOptions: statusSearch.value
+                          " [value]="status" (click)="onDone(status, field, rowIndex, section)">
+                          <i class="fas fa-circle" [ngStyle]="{ color: status.color }"></i>
+                          {{ status.status }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                      [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type status -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type status -->
+                  <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div class="edit-class-form" *ngIf="Data[field.name]" [innerHTML]="Data[field.name]"></div>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="field.type == 'checkbox' && show[field.name]">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type checkbox -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of checkbox -->
+                  <div class="checkbox mb-20" [ngClass]="{
+                      'is-invalid':
+                        field.checkBoxValidateForDynamicForm && formSubmitted
+                    }">
+                    <ng-container [formArrayName]="field.name" *ngFor="let item of field.options; let i = index">
+                      <nb-checkbox (change)="
+                          onDependentFieldChanged(
+                            $event,
+                            field._id,
+                            field.type,
+                            field.name,
+                            section,
+                            rowIndex,
+                            field
+
+                          )
+                        " class="inner_checkbox" [formControlName]="i" [disabled]="field.isReadOnly" [checked]="field">
+                        {{ item }}
+                      </nb-checkbox>
+                    </ng-container>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type checkbox -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type checkbox -->
+                  <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div class="edit-class-form" *ngIf="Data[field.name]" [innerHTML]="Data[field.name]"></div>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="
+                  field.type == 'recordType' &&
+                  show[field.name] &&
+                  recordTypeFlagFromAddNew
+                ">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type recordType -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of recordType -->
+                  <mat-form-field appearance="outline">
+                    <mat-label [ngStyle]="{ color: showFontColor(row, rowIndex) }">{{ refRecordType }} Type
+                    </mat-label>
+
+                    <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+                      <img class="
+                          mat-icon
+                          notranslate
+                          material-icons
+                          mat-icon-no-color
+                        " src="field.icon" />
+                    </div>
+
+                    <mat-select (selectionChange)="
+                    onDependentFieldChanged(
+                      $event,
+                      field._id,
+                      field.type,
+                      field.name,
+                      section,
+                      rowIndex
+                    )" [placeholder]="refRecordType" [formControlName]="field.name">
+                      <mat-option *ngFor="let option of optionRecordType" matRipple [value]="option.title">
+                        {{ option.title }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </ng-container>
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type recordType -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type recordType -->
+                  <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div class="edit-class-form" *ngIf="Data[field.name]" [innerHTML]="Data[field.name]"></div>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="field.type == 'radio' && show[field.name]">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type recordType -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of recordType -->
+                  <div class="checkbox mb-20 check-radio" [ngClass]="{
+                      'is-invalid':
+                        dynamicForm.get(field.name).invalid && formSubmitted,
+                      l: field.fieldSize == 'large',
+                      s_s: field.fieldSize == 'tiny',
+                      s: field.fieldSize == 'small',
+                      m: field.fieldSize == 'medium'
+                    }">
+                    <nb-radio-group class="radio" name="my-radio-group-{{ field.name }}" [formControlName]="field.name"
+                      [disabled]="field.isReadOnly">
+                      <nb-radio (valueChange)="
+                          onDependentFieldChanged(
+                            $event,
+                            field._id,
+                            field.type,
+                            field.name,
+                            section,
+                            rowIndex
+                          )
+                        " *ngFor="let item of field.options" [value]="item">
+                        {{ item }}
+                      </nb-radio>
+                    </nb-radio-group>
+                  </div>
+                </ng-container>
+
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type recordType -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type recordType -->
+                  <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div class="edit-class-form" *ngIf="Data[field.name]" [innerHTML]="Data[field.name]"></div>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="field.type == 'richTextArea' && show[field.name] && loadTinyMce == true">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type recordType -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of recordType -->
+                  <div class="l text-area-con mb-20">
+                    <span [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }"
+                      class="position-relative with-help">{{
+                      field.label }}&nbsp; &nbsp;:
+                      <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                        [tutorial]="tutorials | helpPipe: field.label">
+                      </ngx-help>
+                    </span>
+                    <editor [init]="{
+                        plugins: 'autoresize',
+                        toolbar: false,
+                        skin_url: 'assets/skins/lightgray'
+                      }" (ngModelChange)="evalExpressionForFormulaField()"
+                      apiKey="3zk4lcdxv42ueqfotvbtw7lihq6uwkb0cy7l33muhxhr778z" [formControlName]="field.name">
+                    </editor>
+                  </div>
+                </ng-container>
+
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type recordType -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type recordType -->
+                  <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div class="edit-class-form" *ngIf="Data[field.name]" [innerHTML]="Data[field.name]"></div>
+                </ng-container>
+              </ng-container>
+
+              <ng-container class="fltt-left mb-20" *ngIf="
+                  field.type == 'lookup' &&
+                  show[field.name] &&
+                  !field.loadAsDropDown
+                " appearance="outline">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type lookup -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of lookup -->
+                  <div class="select-new" [ngClass]="{
+                      l: field.fieldSize == 'large',
+                      s_s: field.fieldSize == 'tiny',
+                      s: field.fieldSize == 'small',
+                      m: field.fieldSize == 'medium',
+                      'mat-form-field-invalid':
+                        !this.lookupValue[field.name].length &&
+                        formSubmitted &&
+                        field.isRequired,
+                      'custom-multiple-select': field.allowMultipleValues
+                    }">
+                    <mat-label [ngStyle]="{ color: showFontColor(row, rowIndex) }">{{ field.label }}</mat-label>
+                    <ng-select [items]="filteredOptions[field.name]" bindLabel="value" #in
+                      (keyup)="dynamicSearch($event, field)" appendTo="body" [notFoundText]="dropDownText[field.name]"
+                      (ngModelChange)="updatedVal($event, field.name)" [ngModelOptions]="{ standalone: true }"
+                      [id]="field.name" placeholder="{{ field.label }}" [compareWith]="compareFn" [maxSelectedItems]="
+                        !field.allowMultipleValues ? 1 : undefined
+                      " (change)="
+                        onSelectionChange(
+                          lookupValue[field.name],
+                          field,
+                          field.sequence
+                        )
+                      " [multiple]="true" [(ngModel)]="lookupValue[field.name]" clearable="true"
+                      class="ng-select-latest" [ngClass]="{
+                        'single-select':
+                          field.allowMultipleValues == null ||
+                          field.allowMultipleValues == false
+                      }">
+                      <ng-template ng-footer-tmp>
+                        <div *ngIf="loadingAPI" [nbSpinner]="true" nbSpinnerStatus="info">
+                          Loading ...
+                        </div>
+                        <div (click)="
+                            in.close(); addSubForm(field, field.sequence)
+                          " class="hover-addnew">
+                          Add New {{ field.lookupTableName }}
+                        </div>
+                      </ng-template>
+                      <ng-template ng-label-tmp let-item="item">
+                        <div (click)="openLookupModalForDetail(item, field)">
+                          <i class="fa fa-window-close" (click)="removeSelected(item, field)">x</i>
+                          <b style="font-size: 16px">{{ item.value }}</b>
+                        </div>
+                      </ng-template>
+                    </ng-select>
+                  </div>
+                  <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                    [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                </ng-container>
+
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type lookup -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type lookup -->
+                  <div matPrefix class="mat-matPrefix" *ngIf="field.icon">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div *ngFor="let val of lookupValue[field.name]; let ind = index" class="edit-class-form">
+                    <span *ngIf="
+                        ind == 0 && ind == lookupValue[field.name].length - 1
+                      ">{{ val.value }}</span>
+                    <span *ngIf="
+                        ind != 0 && ind == lookupValue[field.name].length - 1
+                      ">{{ val.value }}</span>
+                    <span *ngIf="
+                        ind != 0 && ind != lookupValue[field.name].length - 1
+                      ">{{ val.value }},
+                    </span>
+                  </div>
+                </ng-container>
+              </ng-container>
+
+              <ng-container class="fltt-left" *ngIf="
+                  field.type == 'lookup' &&
+                  show[field.name] &&
+                  field.loadAsDropDown
+                " appearance="outline">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type lookup -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of lookup -->
+                  <div class="select-new" [ngClass]="{
+                      l: field.fieldSize == 'large',
+                      s_s: field.fieldSize == 'tiny',
+                      s: field.fieldSize == 'small',
+                      m: field.fieldSize == 'medium',
+                      'mat-form-field-invalid':
+                        !this.lookupValue[field.name].length &&
+                        formSubmitted &&
+                        field.isRequired,
+                      'custom-multiple-select': field.allowMultipleValues
+                    }">
+                    <mat-label [ngStyle]="{ color: showFontColor(row, rowIndex) }">{{ field.label }}</mat-label>
+                    <ng-select [items]="
+                        filteredOptions[field.name]
+                          | filter: lookupValue[field.name]:in.searchTerm
+                      " bindLabel="value" #in appendTo="body" [notFoundText]="'No record found'"
+                      (ngModelChange)="updatedVal($event, field.name)" [ngModelOptions]="{ standalone: true }"
+                      [id]="field.name" placeholder="{{ field.label }}" [compareWith]="compareFn" [maxSelectedItems]="
+                        !field.allowMultipleValues ? 1 : undefined
+                      " (change)="
+                        onSelectionChange(
+                          lookupValue[field.name],
+                          field,
+                          field.sequence
+                        )
+                      " [multiple]="true" [(ngModel)]="lookupValue[field.name]" clearable="true"
+                      class="ng-select-latest" [ngClass]="{
+                        'single-select':
+                          field.allowMultipleValues == null ||
+                          field.allowMultipleValues == false
+                      }">
+                      <ng-template ng-option-tmp let-item="item" let-index="index" let-item$="item$">
+                        <div *ngIf="item.value">
+                          <input type="checkbox" [checked]="item$.selected" />
+                          <span class="checkmark"></span>
+                          <label class="form-check-label ml-2">
+                            {{ item.value }}
+                          </label>
+                        </div>
+                      </ng-template>
+                      <ng-template ng-footer-tmp>
+                        <div *ngIf="loadingAPI" [nbSpinner]="true" nbSpinnerStatus="info">
+                          Loading ...
+                        </div>
+                        <div (click)="
+                            in.close(); addSubForm(field, field.sequence)
+                          " class="hover-addnew">
+                          Add New {{ field.lookupTableName }}
+                        </div>
+                      </ng-template>
+                      <ng-template ng-label-tmp let-item="item">
+                        <div (click)="openLookupModalForDetail(item, field)">
+                          <i class="fa fa-window-close" (click)="removeSelected(item, field)">x</i>
+                          <b style="font-size: 16px">{{ item.value }}</b>
+                        </div>
+                      </ng-template>
+                    </ng-select>
+                  </div>
+                </ng-container>
+
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type lookup -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type lookup -->
+                  <div matPrefix class="mat-matPrefix" *ngIf="field.icon">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div *ngFor="let val of lookupValue[field.name]; let ind = index" class="edit-class-form">
+                    <span *ngIf="
+                        ind == 0 && ind == lookupValue[field.name].length - 1
+                      ">{{ val.value }}</span>
+                    <span *ngIf="
+                        ind != 0 && ind == lookupValue[field.name].length - 1
+                      ">{{ val.value }}</span>
+                    <span *ngIf="
+                        ind != 0 && ind != lookupValue[field.name].length - 1
+                      ">{{ val.value }},
+                    </span>
+                    <span *ngIf="
+                        ind == 0 && ind != lookupValue[field.name].length - 1
+                      ">{{ val.value }},
+                    </span>
+                  </div>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="field.type == 'file' && show[field.name]">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type file -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of file -->
+                  <div class="wrap_field full-width" [ngClass]="
+                      field.fieldSize == 'tiny'
+                        ? 's_s'
+                        : field.fieldSize == 'small'
+                        ? 's'
+                        : field.fieldSize == 'medium'
+                        ? 'm'
+                        : 'l'
+                    ">
+                    <span [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }"
+                      class="position-relative with-help">{{
+                      field.label
+                      }}<ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                        [tutorial]="tutorials | helpPipe: field.label">
+                      </ngx-help>
+                    </span>
+                    <div class="file_upload">
+                      <div class="files">
+                        <div class="upload_file">
+                          <div class="droparea" (dragover)="onDragOver($event)" (drop)="onDrop($event, field.name)"
+                            (dragleave)="onDragLeave($event)" [class.active]="isActive">
+                            <input type="file" name="{{ field.name }}" class="browse-file"
+                              (change)="onSelectedFile($event, field.name)" multiple [readonly]="field.isReadOnly" />
+                            <div class="upload_img">
+                              <img src="/assets/images/file-upload.png" />
+                            </div>
+                            <span class="drop_text">Choose files or Drag and drop files here</span>
+                          </div>
+                        </div>
+                        <div class="w_100" *ngIf="
+                            field.type === 'file' &&
+                            uploadedFiles &&
+                            uploadedFiles[field.name]
+                          ">
+                          <div class="s_file">
+                            <div class="inner_files edit_file">
+                              <span class="file_name edit_file_inner" *ngFor="
+                                  let f of uploadedFiles[field.name];
+                                  let index = index
+                                ">
+                                <span class="{{ getFileExtension(f) }}"></span>&nbsp;&nbsp;
+                                <span class="text_inner">
+                                  {{ getFileName(f) }}
+                                </span>
+                                <span class="flex_space"></span>
+                                <div class="delete_icon" (click)="onDelete(index, field.name)">
+                                  <img src="assets/images/close.png" />
+                                </div>
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <nb-progress-bar class="progress_bar" *ngIf="uploadProgress > 0" aria-valuenow="25"
+                              aria-valuemin="0" aria-valuemax="100" [value]="uploadProgress" status="primary">
+                              {{ uploadProgress }}%</nb-progress-bar>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type file -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type file -->
+                  <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div class="edit-class-form" *ngIf="Data[field.name]" [innerHTML]="Data[field.name]"></div>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="field.type === 'time' && show[field.name]">
+                <ng-container *ngIf="addEditFlag || editViewFlag">
+                  <!-- Label for field type time -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:
+                    <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+                  </span>
+
+                  <!-- Field input for type of time -->
+                  <mat-form-field class="mb-20" appearance="outline" [ngClass]="[
+                      field.fieldSize == 'tiny'
+                        ? 's_s'
+                        : field.fieldSize == 'small'
+                        ? 's'
+                        : field.fieldSize == 'medium'
+                        ? 'm'
+                        : 'l',
+                      dynamicForm.get(field.name).invalid && formSubmitted
+                        ? 'mat-form-field-invalid'
+                        : '',
+                      field.icon ? 'with-icon' : ''
+                    ]">
+                    <mat-label [ngStyle]="{ color: showFontColor(row, rowIndex) }">{{ field.label }}</mat-label>
+                    <input matInput placeholder="{{ field.label }}" [type]="field.type" [placeholder]="field.label"
+                      [formControlName]="field.name" [readonly]="field.isReadOnly"
+                      (keyup)="evalExpressionForFormulaField()" (ngModelChange)="evalExpressionForFormulaField()" />
+                    <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                      [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+                  </mat-form-field>
+                </ng-container>
+
+                <ng-container *ngIf="viewFlag">
+                  <!-- Label for field type time -->
+                  <span class="new-label label"
+                    [ngStyle]="{ color: showFontColor(row, rowIndex),color : !rowIndex ? 'white' : '' }">{{ field.label
+                    }}:</span>
+
+                  <!-- View Field for type time -->
+                  <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+                    <img class="
+                        mat-icon
+                        notranslate
+                        material-icons
+                        mat-icon-no-color
+                        top04
+                      " src="{{ field.icon }}" />
+                  </div>
+                  <div class="edit-class-form" *ngIf="Data[field.name]" [innerHTML]="Data[field.name]"></div>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+
+            <ng-container class="l" appearance="outline" *ngIf="field.type === 'refButton' && show[field.name]">
+              <ng-container *ngIf="addEditFlag || editViewFlag">
+                <!-- Field for Referrence Button -->
+                <ng-container *ngIf="list && list.length">
+                  <div class="pos-rel" *ngFor="let ele of list; let i = index">
+                    <div class="row heading">
+                      <span class="new-label">{{ ele.name }}</span>
+                    </div>
+                    <div class="field-box">
+                      <div class="ui-label" *ngFor="let item of ele.value; let row = index">
+                        <span *ngFor="let val of item.idField" class="ui-content1" [innerHTML]="val"></span>
+                        <span *ngFor="let value of item.others" class="ui-content2" [innerHTML]="value"></span>
+                        <img class="cross-pos" src="/assets/images/ic_close_24px.svg"
+                          (click)="closeList(ele.value, i, row)" />
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+                <button (click)="addRef(field.name)" nbButton matRipple class="btn btn-primary">
+                  + Add Reference
+                </button>
+              </ng-container>
+
+              <ng-container *ngIf="viewFlag">
+                <ng-container *ngIf="list && list.length">
+                  <div class="pos-rel" *ngFor="let ele of list; let i = index">
+                    <div class="row heading">
+                      <span class="new-label label">{{ ele.name }}</span>
+                    </div>
+                    <div class="field-box">
+                      <div *ngFor="let item of ele.value; let row = index" class="edit-class-form">
+                        <span *ngFor="let val of item.idField" class="ui-content1" [innerHTML]="val"></span>
+                        <span *ngFor="let value of item.others" class="ui-content2" [innerHTML]="value"></span>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+                <button (click)="addRef(field.name)" nbButton matRipple class="btn btn-primary">
+                  + Add Reference
+                </button>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-container *ngFor="let row of finalArray | slice: 0:1; let rowIndex = index">
+      <ng-container [ngTemplateOutlet]="rowField" [ngTemplateOutletContext]="{
+          row: row.data,
+          rowIndex: rowIndex,
+          rowColor: (row.backgColor) ? row.backgColor : defaultBackgrounColor,
+          rowHide: row.hide
+        }">
+      </ng-container>
+    </ng-container>
+
+    <div *ngIf="finalArray.length > 1" class="left-second-container">
+      <ng-container *ngFor="let row of finalArray | slice: 1; let rowIndex = index">
+        <ng-container [ngTemplateOutlet]="rowField" [ngTemplateOutletContext]="{
+            row: row.data,
+            rowIndex: rowIndex + 1,
+            rowColor: row.backgColor,
+            rowHide: row.hide
+          }">
+        </ng-container>
+      </ng-container>
+    </div>
+  </ng-template>
+</form>

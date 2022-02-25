@@ -1,0 +1,59 @@
+<nb-card class="appear" [nbSpinner]="loading" nbSpinnerSize="large" nbSpinnerStatus="primary">
+  <nb-card-header>
+    <img class="title-icon" src="/assets/images/ic_search_24px.svg">
+    Add Reference
+    <img class="close-btn" src="/assets/images/ic_close_24px.svg" (click)="close()">
+
+  </nb-card-header>
+  <nb-card-body>
+    
+    <div class="container">
+      <div class="row appear-main-row">
+        <span class="new-label">Search by {{placehold}}....</span>
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <input matInput type="text" [(ngModel)]="searchString" (keyup)="getData($event.target.value,$event)">
+        </mat-form-field>
+      </div>
+      <div class="row refer-lookup">
+        <div class="col-md-6">
+          <div *ngIf="refFlag" class="select-lookup-refeer">
+            <!-- <span class="new-label">Select Lookup</span> -->
+            <mat-form-field>
+              <mat-select class="form-control mr_10 select" placeholder="Select Lookup" [(ngModel)]="lookupSeelcted" name="addForm" (selectionChange)="setValue($event.value)">
+                <mat-option value="1" disabled selected>
+                  <!-- Create new {{placehold}}.... -->
+                  Add New
+                </mat-option>
+                <mat-option *ngFor="let lookup of lookupArray" [value]="lookup" >
+                  {{lookup.label}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      <ng-container *ngIf="showDataFlag">
+        <div class="row result">
+          <span>{{count}} Results</span>
+        </div>
+
+        <div *ngFor="let ele of finalArray" class="ui-row-content">
+          <div class="row heading">
+            <span>{{ele.name}}</span>
+          </div>
+          <div class="row label-css" *ngFor="let item of ele.value" (click)="setData(item,ele)">
+            <!-- Add static row and design as per mockup -->
+            <span *ngFor="let val of item.idField" class="ui-content1" [innerHtml]='val'> </span>
+
+            <span *ngFor="let val of item.others" class="ui-content2" [innerHtml]='val'></span>
+            <!-- <span class="ui-content2">703 Addison Dr. Bronx, NY 10468</span> -->
+            <!-- <span class="col-md-12">{{val}}</span> -->
+
+
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="white-space"></div>
+  </nb-card-body>
+</nb-card>

@@ -1,0 +1,91 @@
+<nb-card style="width:600px; height: 500px;" class="config_cards">
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-11">
+        Dependencies
+      </div>
+      
+      <div class="col-md-1" (click)="closeModal()" style="cursor: pointer;">
+        <strong>X</strong>
+      </div>
+    </div>
+
+  </nb-card-header>
+  <nb-card-body>
+    <nb-stepper orientation="horizontal">
+      <nb-step [label]="label1">
+        <ng-template #label1>Source Field</ng-template>
+        <div>
+          <mat-select class="form-control mr_10 select" placeholder="Source Field"
+            (selectionChange)="setSrcOptionList()" [disabled]="editFlag" [(ngModel)]="soruceColumnType" name="srcColumnType">
+            <mat-option *ngFor="let column of columnList" [value]="column._id">{{column.label}}</mat-option>
+          </mat-select>
+        </div>
+        <hr>
+        <div *ngIf="isSrcFieldSelected && (addFlag || (editFlag && srcOptions))">
+          <div *ngIf="!srcOptions.length" class="container no-options">
+            <span>No options available for selected field!</span>
+          </div>
+          <div *ngIf="srcOptions.length">
+            Options
+            <div class="d-flex flex-column w-100 mt-3" *ngIf="srcOptions[0].status == undefined && !isSrcFieldLookup">
+              <nb-checkbox *ngFor="let option of srcOptions" [checked]="editFlag? (fields.indexOf(option) > -1) : false" (checkedChange)="srcCheckboxSelected($event, option)">{{option}}
+              </nb-checkbox>
+            </div>
+            <div class="d-flex flex-column w-100 mt-3" *ngIf="srcOptions[0].status == undefined && isSrcFieldLookup">
+              <nb-checkbox [(ngModel)]="chkNull" (checkedChange)="srcCheckboxSelected($event, 'Null')">Null
+              </nb-checkbox>
+              <nb-checkbox [(ngModel)]="chkNotNull" (checkedChange)="srcCheckboxSelected($event, 'Not Null')">Not Null
+              </nb-checkbox>
+            </div>
+            <div class="d-flex flex-column w-100 mt-3" *ngIf="srcOptions[0].status">
+              <nb-checkbox *ngFor="let option of srcOptions" [checked]=" editFlag? (fields.indexOf(option.status) > -1) : false" (checkedChange)="srcCheckboxSelected($event, option.status)">{{option.status}}
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div>
+
+            <button nbButton matRipple status="basic" disabled nbStepperPrevious>prev</button>
+            <button nbButton matRipple status="basic" nbStepperNext *ngIf="this.fields.length > 0" >next</button>
+
+        </div>
+      </nb-step>
+
+      <nb-step [label]="label2">
+        <ng-template #label2>Target Fields</ng-template>
+        <div *ngIf="isSrcFieldSelected" class="container">
+          <div class="row scroll">
+            <small>Set your query/condition</small>
+            <table mat-table class="mat-elevation-z8" border="2">
+              <!-- <tr> -->
+                <th mat-header-cell *ngFor="let column of (columnList | filterOutSelectedField: soruceColumnType)">
+                  {{column.label}}
+                </th>
+              <!-- </tr> -->
+              <tr>
+                <td  mat-cell *ngFor="let column of (columnList | filterOutSelectedField: soruceColumnType)">
+
+                  <div class="d-flex flex-column w-100 mt-3" *ngIf="column.type != 'status'">
+                    <nb-checkbox *ngFor="let option of column.options" [checked]="editFlag && (option | checkDependencyFilter : query : column.name)" (checkedChange)="targetCheckBoxSelected($event, option, column)">{{option}}
+                    </nb-checkbox>
+                  </div>
+                  <div class="d-flex flex-column w-100 mt-3" *ngIf="column.type == 'status'">
+                    <nb-checkbox *ngFor="let option of column.statusOptions" [checked]=" editFlag && (option.status | checkDependencyFilter : query : column.name)" (checkedChange)="targetCheckBoxSelected($event, option.status, column)">{{option.status}}
+                    </nb-checkbox>
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+          </div>
+        </div>
+        <div>
+          <button nbButton [disabled]="!isSrcFieldSelected" nbStepperPrevious>prev</button>
+          <button nbButton [disabled]="saveButtonFlag" (click)="saveDependency()">Save</button>
+        </div>
+      </nb-step>
+
+    </nb-stepper>
+  </nb-card-body>
+</nb-card>

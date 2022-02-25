@@ -1,0 +1,132 @@
+<div class="email_layout">
+  <div class="email_side_menu" [ngClass]="{'show':disableToggle}">
+    <div class="header">
+      <div class="inner_header">
+        <div class="logo">
+          <img src="../../../../favicon.png">
+        </div>
+        <span class="set_icon ml-2">triangular</span>
+        <span class="flex_space"></span>
+        <i class="fas fa-times close_icon" (click)="onChange()"></i>
+      </div>
+    </div>
+    <div class="menu_text">
+      <i class="fa fa-envelope-o email_icon" aria-hidden="true"></i>
+      <span class="set_icon">Email</span>
+      <span class="flex_space"></span>
+      <i class="set_icon fas fa-chevron-right" *ngIf="showCondition" (click)="onClick()"></i>
+      <i class="set_icon fas fa-chevron-down" *ngIf="!showCondition" (click)="onClick()"></i>
+    </div>
+    <div class="sub_menu" [ngClass]="{'sub_menu':showCondition}">
+      <div class="menu_text">
+        <span class="ml-40" >Inbox</span>
+        <span class="noti">4</span>
+      </div>
+      <div class="menu_text">
+        <span class="ml-40">Sent</span>
+        <span class="noti">13</span>
+      </div>
+      <div class="menu_text">
+        <span class="ml-40">Trash</span>
+        <span class="noti">8</span>
+      </div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="header">
+      <div class="mr-3 responsive">
+      <nb-icon icon="menu-2-outline" (click)="onChange()"></nb-icon>
+    </div>
+      <div class="inner_header">
+        <span>Email</span>
+        <i class="fa fa-chevron-right mr-2" aria-hidden="true"></i>
+        <span>Inbox</span>
+      </div>
+      <span class="flex_space"></span>
+      <nb-action class="control-item">
+        <div class="">
+          <input placeholder="search" autocorrect="off" autocapitalize="off" spellcheck="off" type="text"
+            class="form-control search-data" #search>
+        </div>
+      </nb-action>
+    </div>
+    <div class="main_body">
+      <div class="email_r">
+        <div class="email_r_inner">
+          <span class="today_text">Today</span>
+          <div class="info_card" *ngFor="let ele of array" (click)="onToggle()">
+            <div class="s_1">
+              <div class="s_1_image">
+                <img src="../../../../assets/images/camera1.jpg">
+              </div>
+            </div>
+            <div class="s_2">
+              <span class="span1">
+               {{ele.title}}
+              </span>
+              <span class="span2">
+              {{ele.subtitle}}
+              </span>
+              <span class="span3">
+              {{ele.content}}
+              </span>
+              <span class="date">{{ele.date}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="email_l">
+        <span class="no_email_text" *ngIf="showCard">No email selected</span>
+         <nb-card class="w-100 mb-0" *ngIf="!showCard">
+
+            <div class="inner_card">
+              <div class="section1">
+              <div class="card_s1">
+                  <div class="profile">
+                    <img src="../../../../assets/images/camera1.jpg">
+                  </div>
+              </div>
+              <div class="card_s2">
+                <span class="profile_name">Emmy Lueilwitz</span>
+                <span class="profile_text">Sir, With no jury or judge</span>
+            </div>
+            <div class="card_s3" (click)="onToggle()">
+              <i class="fas fa-times"></i>
+            </div>
+          </div>
+          <div class="section2">
+            <p>
+              Est quo doloremque animi consequuntur facere. Voluptas dolorum officiis fugiat eos. Rerum quia nihil sint ducimus fugiat. Harum facilis in omnis est voluptatum.
+            </p>
+          </div>
+          <div class="section3">
+            <button type="button" class="btn btn-light icon_but">
+               <i class="fa fa-reply" aria-hidden="true"></i>
+            </button>
+
+            <button type="button" class="btn btn-light icon_but">
+              <i class="fa fa-reply-all" aria-hidden="true"></i>
+           </button>
+
+           <button type="button" class="btn btn-light icon_but">
+            <i class="fa fa-arrow-right" aria-hidden="true"></i>
+         </button>
+
+         <button type="button" class="btn btn-light icon_but">
+          <i class="fa fa-trash" aria-hidden="true"></i>
+       </button>
+
+
+
+
+          </div>
+            </div>
+
+        </nb-card>
+      </div>
+      <div class="create_button" (click)="openDialog()">
+        <i class="fa fa-pencil" aria-hidden="true"></i>
+      </div>
+    </div>
+  </div>
+</div>

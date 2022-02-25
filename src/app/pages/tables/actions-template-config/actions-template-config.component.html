@@ -1,0 +1,85 @@
+<nb-card
+  style="min-height: 47.5vh"
+  [nbSpinner]="loading"
+  nbSpinnerSize="large"
+  nbSpinnerStatus="primary"
+>
+  <nb-card-header>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-10">
+          <span>Actions: {{ tableDetails.tableName }}</span>
+        </div>
+        <div class="col-md-2 icon-space">
+          <i
+            class="fa fa-plus"
+            nbTooltip="Add Actions"
+            style="cursor: pointer"
+            nbTooltipStatus="primary"
+            (click)="addActions()"
+          ></i>
+          <a
+            nbTooltip="Back to tables listing"
+            nbTooltipStatus="primary"
+            routerLink="/pages/tables/list"
+          >
+            <nb-icon icon="arrow-back-outline"></nb-icon>
+          </a>
+          <i
+            class="nb-edit"
+            nbTooltip="Edit Columns"
+            style="cursor: pointer"
+            nbTooltipStatus="primary"
+            (click)="onEdit()"
+          ></i
+          >&nbsp;&nbsp;
+        </div>
+      </div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Warning</th>
+        <th>URL</th>
+        <th>Wait time</th>
+        <th>Message list</th>
+        <th>Display condition</th>
+        <th>Action</th>
+      </tr>
+
+      <ng-container *ngIf="actions && actions.length">
+        <tr *ngFor="let action of actions; let i = index">
+          <td>{{ action.actionName }}</td>
+          <td>{{ action.warningMessage }}</td>
+          <td>{{ action.actionUrl }}</td>
+          <td>{{ action.waitTime }}</td>
+          <td>
+            <div *ngFor="let msg of action.messageList">
+              <strong>Message: </strong> {{ msg.message }}
+              <strong>Condition: </strong> {{ msg.condition }}
+            </div>
+          </td>
+          <td>{{ action.displayCondition }}</td>
+          <td>
+            <div
+              class="col-md-1 mt-2 mr-2 edit_but"
+              style="cursor: pointer"
+              (click)="editAction(i)"
+            >
+              <i class="fas fa-pencil-alt"></i>
+            </div>
+            <div
+              class="col-md-1 mt-2 mr-2 edit_but"
+              style="cursor: pointer"
+              (click)="deleteAction(i)"
+            >
+              <i class="fas fa-trash-alt"></i>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </table>
+  </nb-card-body>
+</nb-card>

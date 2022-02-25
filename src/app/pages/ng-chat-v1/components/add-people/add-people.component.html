@@ -1,0 +1,150 @@
+<nb-card class="modal-body">
+  <nb-card-header>Group</nb-card-header>
+  <nb-card-body class="main_body">
+    <div class="row">
+
+      <!-- <div class="form-group col-md-6" *ngIf="edittextFlag">
+        <label>Enter group name:</label>
+        <input id="groupName" type="text" class="form-control" placeholder="Enter group name" [(ngModel)]='groupName'>
+      </div> -->
+      <div class="form-group col-md-6">
+        <label><b>Group name : </b></label>
+        <span>{{groupName}}</span>
+      </div>
+      <!-- <div class="form-group col-md-6" *ngIf="edittextFlag">
+        <div class="list-in-popup">
+          <label>Subscribers:</label>
+          <div class="bg-popup-list">
+            <ul id="ng-chat-users" class="offset-search-popup">
+              <li *ngFor="let user of selectedUsers">
+                <span *ngIf="user.displayName">
+                  {{user.displayName}}
+                </span>
+                <span *ngIf="user.firstName">
+                  {{user.firstName}} &nbsp; {{user.lastName}}
+                </span>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div> -->
+
+      <div>
+        <button aria-hidden="true" mat-icon-button mat-button [matMenuTriggerFor]="menu"
+          aria-label="Example icon-button with a menu" class="eye-btnn" [ngClass]="{'watcherOpened': isWatcherOpened}"
+          (menuOpened)="watcherMenuOpened()" (menuClosed)="watcherMenuClosed()">
+          <span class="icon-mar-lft"><i class="fa fa-users" [ngStyle]="{color:'#598bff'}"></i>&nbsp;
+            {{selectedUsers.length}} </span>
+        </button>
+
+        <mat-menu #menu="matMenu" yPosition="below">
+
+          <div class="all-user-list" *ngIf="selectedUsers && selectedUsers.length > 0">
+            <button mat-menu-item  *ngFor="let option of selectedUsers">
+              <span class="li-head" *ngIf="option.displayName">
+                <span class="icon-mar-lft"  [ngStyle]="{'background-color': option?.userColor}">{{ (option.displayName)  ? (option.displayName.split(' ')[0] + option.displayName.split(' ')[0] | uppercase) : ''}}</span>
+                {{ option.displayName }}
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="left-margin curson-pointer" (click)="cancelSubscription(option._id)">
+                  <i class="fa fa-times" aria-hidden="true"></i>
+                </span>
+              </span>
+              <span class="li-head" *ngIf="option.firstName">
+                <span class="icon-mar-lft"  [ngStyle]="{'background-color': option?.userColor}">{{ option.firstName[0] + option.lastName[0] | uppercase : ''}}</span>
+                {{ option.firstName +' ' + option.lastName }}
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="left-margin curson-pointer" (click)="cancelSubscription(option._id)">
+                  <i class="fa fa-times" aria-hidden="true"></i>
+                </span>
+              </span>
+            </button>
+          </div>
+
+          <button mat-menu-item class="last-bottom" (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()" class="curson-pointer">
+            <ngx-watch-user [tableInfo]='tableInfo' [matMenu]="trigger" (valueChanged)="loadSubscribers($event)"></ngx-watch-user>
+          </button>
+
+        </mat-menu>
+      </div>
+
+      <!-- <div class="form-group col-md-6" *ngIf="!edittextFlag">
+        <button aria-hidden="true" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu"
+            class="eye-btnn" [ngClass]="{'watcherOpened': isWatcherOpened}" (menuOpened)="watcherMenuOpened()"
+            (menuClosed)="watcherMenuClosed()">
+            <span class="icon-mar-lft"><i class="fa fa-users" [ngStyle]="{color:uiColor}"></i>&nbsp; {{subscribers.length}} </span>
+        </button>
+
+          <mat-menu #menu="matMenu" yPosition="below">
+            <button mat-menu-item first-top>
+              <span class="li-head curson-pointer" (click)="selfSubsription()">
+                <span class="icon-mar-lft"></span> {{ subscriptionText }}
+              </span>
+            </button>
+
+            <div class="all-user-list">
+              <button mat-menu-item *ngFor="let option of subscribers">
+                <span class="li-head">
+                  <span class="icon-mar-lft">{{ option.firstName[0] + option.lastName[0] | uppercase}}</span>
+                  {{ option.firstName +' ' + option.lastName}}
+                  &nbsp;&nbsp;&nbsp;&nbsp;
+                  <span class="left-margin curson-pointer" (click)="cancelSubscription(option._id)">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                  </span>
+                </span>
+              </button>
+            </div>
+
+            <button mat-menu-item class="last-bottom" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
+              class="curson-pointer">
+              <ngx-watch-user [tableInfo]='tableInfo' [matMenu]="trigger" (valueChanged)="loadSubscribers()"></ngx-watch-user>
+            </button>
+
+          </mat-menu>
+      </div> -->
+    </div>
+
+  </nb-card-body>
+  <nb-card-footer class="button_show padding-0">
+    <button class="save" type="submit" (click)="onCreateClick()" nbButton matRipple
+      *ngIf="saveButtonFlage">Create</button>
+    <button class="cancel" style="margin-left: 10px;" nbButton matRipple (click)="onCancel()">Cancel</button>
+  </nb-card-footer>
+</nb-card>
+
+
+<!-- <div class="modal-header">
+  <h4 class="modal-title">New Group</h4>
+  <button class="close btn-foucs-none" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true" class="close-icon">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="row">
+
+      <div class="form-group col-md-6">
+          <label>Enter group name:</label>
+          <input id="groupName" type="text" class="form-control" placeholder="Enter group name"
+              [(ngModel)]='groupName'>
+      </div>
+      <div class="form-group col-md-6">
+        <div class="list-in-popup">
+          <label>Subscribers:</label>
+          <div class="bg-popup-list">
+            <ul id="ng-chat-users" class="offset-search-popup">
+              <li *ngFor="let user of selectedUsers" >{{user.displayName}}</li>
+              </ul>
+          </div>
+
+        </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary btn-sm btn-design" (click)="onCreateClick()">Create</button>
+   <button *ngIf="email==true" type="button" class="btn btn-primary btn-sm btn-design" (click)="emailSendClick()">Send e-mail</button>
+  <button *ngIf="email!=true" type="button" class="btn btn-primary btn-sm btn-design" (click)="emailClick()">E-Mail</button> -->
+<!-- <button type="button" class="btn btn-primary btn-sm btn-design" (click)="activeModal.close('Close click')">Close</button>
+</div> -->

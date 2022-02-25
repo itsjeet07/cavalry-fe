@@ -1,0 +1,36 @@
+    <nb-card [nbSpinner]="loading" nbSpinnerSize="small" nbSpinnerStatus="primary" class="pop-over">
+      <nb-card-body>
+          <div class="left_side-dynamic">
+            <div class="profile_div">
+              <span class="profile_text icon-setting">
+                <h4 *ngIf="clientData?.firstName && clientData?.lastName">
+                  {{ clientData?.firstName + ' ' + clientData?.lastName }}
+                </h4>
+                <i style="cursor: pointer;" class="fa fa-external-link pull-right" aria-hidden="true"
+                      (click)="onShowLookupDetail()"></i>
+                <h6 class="ml-3" *ngIf="clientData?.name">{{ clientData?.name }}</h6>
+              </span>
+              <br/>
+              <div class="client_info">
+                <!-- <span class="client_name">Abouts this {{ singularTableName }}</span> -->
+                <ng-container *ngFor="let item of profileData">
+                  <div [ngClass]="{'font-bold': true}" class="data_list">
+                    <span class="popover-image" *ngIf="item.icon"><img [src]="item.icon" ></span>
+                    <a *ngIf="item.type !== 'email'" class="value_text">{{item.type == 'date' ? (item.value | date) :  item.value}}</a>
+                    <a *ngIf="item.type == 'email'" class="value_text" href="mailto:{{item.value}}">{{item.value}}</a>
+                  </div>
+                </ng-container>
+                <ng-container>
+                  <div *ngIf="tableInfo.tableName == 'Users'" class="data_list" style="cursor: pointer;" (click)="mentionRedirect()">
+                    <span class="popover-image">
+                      <!-- <nb-icon icon="message-square-outline"></nb-icon> -->
+                      <img src="https://cavalry.s3.amazonaws.com/1633104795573message.png">
+                    </span>
+                    <span class="value_text">Messages</span>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>

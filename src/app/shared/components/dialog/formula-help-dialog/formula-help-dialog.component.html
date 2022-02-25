@@ -1,0 +1,55 @@
+<nb-card class="formula-help-con">
+  <nb-card-header>Formula help!
+    <span class="pull-right close-btn"><i class="fa fa-times" (click)="closeModal()"></i></span>
+  </nb-card-header>
+
+  <nb-card-body>
+    <div class="scroller">
+    <div class="formula-title">Note: Table is acessible using $Table, and it properties like : $Table.firstName</div>
+    <ul>
+
+         <li> String : (Exa. table has two fields firstName and lastName, and we need both together) :
+            <code>{{ "$Table.firstName + $Table.lastName" }}</code></li>
+         <li> Number : (Exa. table has two fields quantity and price, and we need multiplication of both) :
+            <code>{{ "$Table.quantity * $Table.price" }}</code>
+            <small>Note: Need to ensure both fields are of type number</small>
+          </li>
+         <li> Date : (Exa. we need to check if the record was created today or before )
+           <code>
+            {{ "if(new Date($Table.createdAt) > new Date()){
+              true
+            }" }}
+        </code>
+        <small>Note: To convert date into JavaScript date object, we need to wrap it inside Javascript's new Date()
+          For more info. you can check <a href="https://www.w3schools.com/js/js_dates.asp" target="_blank">here</a>
+        </small>
+         </li>
+         <li> Radio : (Exa. table has a field called age and we need to return true if value is above 18) :
+            <code>
+              {{ "if($Table.age > 18){
+                true
+              }" }}
+            </code>
+            <small>Note: we don't use return statement inside formula</small>
+         </li>
+
+        <li>How to use Lookup fields:
+          Image we have a lookup name 'plan' inside Orders table. We need to fetch plan name inside formula.
+          We can do like this : <code> $Table.plan.planName </code>
+          <small>Note: planName field should be selected inside plan lookup field </small>
+        </li>
+        <li>How to use condition logic :
+          Condition logic is most powerful feature of Formula. We can use JavaScript code here like so :
+          <code>{{ "if($Table.orderTotal > 500 && $Table.orderStatus == 'confirmed') {
+              true;
+            }"
+          }}</code>
+          This will return true which can be used to confirm if the order was premium or anything related.
+        </li>
+
+
+
+    </ul>
+  </div>
+  </nb-card-body>
+</nb-card>

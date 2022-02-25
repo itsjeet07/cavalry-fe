@@ -1,0 +1,43 @@
+<nb-card class="scroller big-chat-main" nbSpinnerStatus="primary">
+  <nb-card-header>
+    <i class="fa fa-plus" (click)="addNewTrigger()" aria-hidden="true"></i>
+  </nb-card-header>
+  <nb-card-body>
+    <div class="p-3 d-flex flex-wrap">
+
+      <div class="left">
+        <gojs-palette #myPalette [initPalette]='initPalette' [divClassName]='paletteDivClassName'
+          [nodeDataArray]='paletteNodeData' [linkDataArray]='paletteLinkData' [modelData]='paletteModelData'
+          (modelChange)='paletteModelChange($event)' [skipsPaletteUpdate]='skipsPaletteUpdate'></gojs-palette>
+      </div>
+
+      <div class="left">
+        <gojs-diagram #myDiagram [initDiagram]='initDiagram' [nodeDataArray]='diagramNodeData'
+          [linkDataArray]='diagramLinkData' [divClassName]='diagramDivClassName' [modelData]='diagramModelData'
+          [skipsDiagramUpdate]='skipsDiagramUpdate' (modelChange)='diagramModelChange($event)'>
+        </gojs-diagram>
+      </div>
+    </div>
+    <!-- <ng-container *ngFor="let trigger of triggers">
+      <div class="example-box" cdkDrag>
+        <div class="d-flex align-items-lg-center pointer w_100">
+          <span class="record_text pointer" *ngIf="onHoverId != trigger.id" (click)="onHoverId = trigger.id"> {{
+            trigger.value }}</span>
+          <ng-container *ngIf="onHoverId === trigger.id">
+            <input class="edit_input" type="text" [(ngModel)]="trigger.value" nbInput placeholder="Text field"><br>
+            <div class="all_but subject_input_open">
+              <button class="edit_but btn btn-sm btn-primary_cus  m-2">
+                <span (click)="onTriggerValueChange(trigger.value,trigger.id)"
+                  class="icon_but material-icons">done</span>
+              </button>
+              <button class="edit_but btn btn-sm btn-primary_cus  m-2 cancelbuttonstyle" (click)="onHoverId = ''">
+                <span class="icon_but material-icons">close</span>
+              </button>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container> -->
+
+  </nb-card-body>
+</nb-card>

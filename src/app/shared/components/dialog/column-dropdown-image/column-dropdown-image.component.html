@@ -1,0 +1,29 @@
+<nb-card>
+    <nb-card-header>Add Dropdown With Image
+    </nb-card-header>
+    <nb-card-body>
+        <div class="row drop-down-image" *ngFor="let item of list;let i = index">
+
+            <div class="col-md-4">
+                <label for="title" class="display-block">Title</label>
+                <input nbInput type="text" name="title" id="title" [(ngModel)]="item.title" class="min-hgt">
+            </div>
+
+            <div class="col-md-6">
+                <label for="title" class="display-block">Image</label>
+                <input nbInput (change)="onFileChange($event,i)" accept="image/svg+xml+png" type="file" name="image" id="image" class="added-input">
+                <img *ngIf="imageURL[i] && imageURL[i]!=''" [src]="imageURL[i] | sanitize"  height="35" width="35" alt="icon" class="added-img">
+            </div>
+            <div class="col-md-1 add_but d-flex align-items-center justify-content-center" (click)="addNewRow()"><i class="fa fa-plus"></i></div>
+
+            <div class="col-md-1  d-flex align-items-center justify-content-center"><i
+                    class="fa fa-minus" (click)="removeRow(i)"></i></div>
+
+        </div>
+    </nb-card-body>
+
+    <nb-card-footer>
+        <button class="cancel" nbButton matRipple status="danger" (click)="cancel()">Cancel</button>
+        <button nbButton matRipple status="success" (click)="submit()">Submit</button>
+    </nb-card-footer>
+</nb-card>

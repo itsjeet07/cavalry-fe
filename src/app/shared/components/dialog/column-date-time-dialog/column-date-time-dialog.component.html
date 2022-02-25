@@ -1,0 +1,63 @@
+<nb-card size="small">
+  <nb-card-header>Add DateTime</nb-card-header>
+  <nb-card-body class="add-date-time-form">
+    <div class="scroll-div">
+    <div class="row">
+
+    <!-- <div class="row status-max-height"> -->
+
+    <ng-container *ngFor="let dateTime of dateTimeList; let i = index;">
+      <!-- <div class="col-md-12 row">
+
+      <div class="col-md-5">
+      <div class="form-group">
+        <label  class="label">RecordType</label>
+        <select [(ngModel)]="dateTime.recordType" class="form-control"  fullWidth>
+          <option value="all" selected>All</option>
+          <option *ngFor="let record of recordType" value="{{record}}">{{record}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-5">
+      <div class="form-group">
+        <label class="label">Number of Days</label>
+        <input type="number" class="form-control" [(ngModel)]="dateTime.numberOfDays"  fullWidth>
+      </div>
+    </div>
+
+    <div class="col-md-1  d-flex align-items-center justify-content-center " *ngIf="i != 0"><i class="fa fa-minus"
+      (click)="removeRow(i)"></i></div>
+
+  <div class="col-md-1 add_but d-flex align-items-center justify-content-center" *ngIf="showAddButton(i)" (click)="addNewRow()"><i class="fa fa-plus"
+    (click)="addNewRow()"></i></div>
+
+  </div> -->
+
+
+      <div class="col-md-5">
+        <nb-select [(ngModel)]="dateTime.recordType">
+        <nb-option  value="all" selected>All</nb-option>
+        <nb-option *ngFor="let record of recordType" value="{{record}}">{{record}}</nb-option>
+        </nb-select>
+      </div>
+
+      <div class="col-md-5"><input type="number" nbInput [(ngModel)]="dateTime.numberOfDays">
+
+      </div><br/>
+
+      <div class="col-md-2 add-item-icon">
+        <span class="remove-row"><i class="fa fa-minus" (click)="removeRow(i)" *ngIf="i != 0"></i></span>
+        <i class="fa fa-plus"  *ngIf="showAddButton(i)" (click)="addNewRow()">
+        </i>
+      </div>
+
+ </ng-container>
+ </div>
+</div>
+
+  </nb-card-body>
+  <nb-card-footer>
+    <button class="cancel" nbButton matRipple status="danger" (click)="cancel()">Cancel</button>
+    <button nbButton matRipple status="success" [disabled]="getFormDateTime()" (click)="submit()">Submit</button>
+  </nb-card-footer>
+</nb-card>

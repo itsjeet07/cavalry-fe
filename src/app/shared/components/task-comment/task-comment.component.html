@@ -1,0 +1,16 @@
+<nb-card class="cardstyle">
+  <nb-card-header>Add Comment</nb-card-header>
+  <nb-card-body>
+    <form [formGroup]="commentForm" (ngSubmit)="onClick()">
+      <mat-form-field class="example-full-width w-100" appearance="outline">
+        <mat-label>Leave a comment</mat-label>
+        <textarea class="w-100" matInput formControlName="comment"></textarea>
+        <mat-error *ngIf="commentForm.controls.comment.hasError('required')"></mat-error>
+      </mat-form-field>
+      <div class="mt-3 d-flex">
+        <button class="cancel"   type="submit" nbButton matRipple (click)="ref.close()">Cancel</button>
+        <button class=" ml-2" [ngClass]="{'save':commentForm.valid}"  [disabled]="commentForm.invalid"  type="submit" nbButton matRipple >Update</button>
+      </div>
+    </form>
+  </nb-card-body>
+</nb-card>

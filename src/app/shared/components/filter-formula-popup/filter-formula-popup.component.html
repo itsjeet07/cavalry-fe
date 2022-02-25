@@ -1,0 +1,17 @@
+<nb-card>
+    <nb-card-header>Apply Filter</nb-card-header>
+    <nb-card-body>
+    </nb-card-body>
+
+    <ngx-codemirror [(ngModel)]="filter" [options]="{
+                              lineNumbers: true,
+                              theme: 'erlang-dark',
+                              mode: 'javascript',
+                              lineWrapping:true
+                            }"></ngx-codemirror>
+    <nb-card-footer>
+        <button class="save" type="submit" (click)="onSaveFilterData()" nbButton
+            matRipple>Apply</button>
+        <button class="cancel" nbButton matRipple status="primary" (click)="onCancel()">Cancel</button>
+    </nb-card-footer>
+</nb-card>

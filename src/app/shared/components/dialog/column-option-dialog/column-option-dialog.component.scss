@@ -1,0 +1,26 @@
+@import '../../../../@theme/styles/themes';
+
+@include nb-install-component() {
+  input {
+    width: 100%;
+  }
+
+  .cancel {
+    margin-right: 1rem;
+  }
+}
+.selectionedClass .tag__text{
+  color: red !important;
+}
+
+.selected-class {
+  //background: #2196f3;
+  color: #fff;
+}
+nb-card{
+  width: 600px;
+  height: 500px;
+}
+.default_note{
+  float:right;
+}

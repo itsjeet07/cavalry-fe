@@ -1,0 +1,22 @@
+<nb-card [nbSpinner]="loading" nbSpinnerSize="large" nbSpinnerStatus="primary">
+<nb-card>
+  <nb-card-header>
+    <div class="d-flex justify-content-between">
+      Table List
+      <div>
+        <button  type="button" class="btn btn-primary btn-sm mr-2" (click)="exportTable()">Export</button>
+        <button  type="button" class="btn btn-primary btn-sm mr-2"  (click)="importTable()">Import</button>
+        <a [routerLink]="['/pages/tables/add']" class="float-right">Add New</a>
+      </div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <ng2-smart-table [settings]="settings" [source]="source"
+    (edit)="onEdit($event)" 
+    (custom)="onAddColumns($event)"
+    (deleteConfirm)="onDeleteConfirm($event)"
+    class="font_familycss">
+    </ng2-smart-table>
+  </nb-card-body>
+  
+</nb-card>

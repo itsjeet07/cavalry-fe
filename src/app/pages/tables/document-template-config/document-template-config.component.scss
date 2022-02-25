@@ -1,0 +1,42 @@
+.inputclass{
+    max-width: 150px;
+  }
+  
+  .uploaded {
+    font-family: 'Roboto-Bold';
+  }
+  
+  .center {
+    align-items: center;
+  }
+  
+  .end {
+    justify-content: flex-end;
+  }
+  .drop {
+    display: flex;
+    .mr_10 {
+      margin-right: 10px;
+    }
+  }
+  .select{
+    width:50%
+  }
+  .add_but{
+    float: right;
+    position: relative;
+    bottom: 37px;
+    left: 24px;
+  }
+  .card{
+    padding-right: 27px;
+  }
+  .edit_but{
+    position: relative;
+    right: 15px;
+  }
+  table, th, td {
+    border: 1px solid black;
+    padding:5px;
+  }
+  

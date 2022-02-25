@@ -1,0 +1,35 @@
+<div class="main_layout" style="z-index: 99999;" [nbSpinner]="loading" nbSpinnerSize="large" nbSpinnerStatus="primary">
+    <nb-card class="document_modal">
+      <nb-card-header>
+        <div class="row">
+          <div class="col-md-11">
+            Email Template
+          </div>
+          <div class="col-md-1" (click)="closeModal()" style="cursor: pointer;">
+            <strong>X</strong>
+          </div>
+        </div>
+        ​
+      </nb-card-header>
+      <nb-card-body style="height: 520px; overflow-y:scroll; flex: none;">
+        ​<form #myForm="ngForm">
+    <div>
+    <mat-form-field appearance="outline">
+      <mat-label>File name</mat-label>
+      <input class="email-field full-width-input" [style.width.px]=327 matInput type="text" placeholder="Hi @table.field was changed"
+        name="subject" [(ngModel)]="emailEventObject.event.name">
+    </mat-form-field>
+  </div>
+
+  <div class="l text-area-con mb-20">
+    <span class="position-relative with-help">File body &nbsp;: </span>
+
+    <editor id="editor" [init]="editorConfig" name="emailBody"
+      apiKey="3zk4lcdxv42ueqfotvbtw7lihq6uwkb0cy7l33muhxhr778z" [(ngModel)]="emailEventObject.event.body"></editor>
+  </div>
+
+  <button nbButton class="save_button" status="primary" (click)="saveDocument(myForm)">save</button>
+</form>
+</nb-card-body>
+</nb-card>
+</div>

@@ -1,0 +1,74 @@
+<nb-card
+  style="min-height: 47.5vh"
+  [nbSpinner]="loading"
+  nbSpinnerSize="large"
+  nbSpinnerStatus="primary"
+>
+  <nb-card-header>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-10">
+          <span>Validations: {{ tableDetails.tableName }}</span>
+        </div>
+        <div class="col-md-2 icon-space">
+          <i
+            class="fa fa-plus"
+            nbTooltip="Add Validation Check"
+            style="cursor: pointer"
+            nbTooltipStatus="primary"
+            (click)="addRecord()"
+          ></i>
+          <a
+            nbTooltip="Back to tables listing"
+            nbTooltipStatus="primary"
+            routerLink="/pages/tables/list"
+          >
+            <nb-icon icon="arrow-back-outline"></nb-icon>
+          </a>
+          <i
+            class="nb-edit"
+            nbTooltip="Edit Columns"
+            style="cursor: pointer"
+            nbTooltipStatus="primary"
+            (click)="onEdit()"
+          ></i
+          >&nbsp;&nbsp;
+        </div>
+      </div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Logic</th>
+        <th>Error Message</th>
+        <th>Actions</th>
+      </tr>
+
+      <ng-container *ngIf="validations && validations.length">
+        <tr *ngFor="let record of validations; let i = index">
+          <td>{{ record[0].name }}</td>
+          <td>{{ record[0].jstextArea }}</td>
+          <td>{{ record[0].errorMessage }}</td>
+          <td>
+            <div
+              class="col-md-1 mt-2 mr-2 edit_but"
+              style="cursor: pointer"
+              (click)="editRecord(i)"
+            >
+              <i class="fas fa-pencil-alt"></i>
+            </div>
+            <div
+              class="col-md-1 mt-2 mr-2 edit_but"
+              style="cursor: pointer"
+              (click)="deleteRecord(i)"
+            >
+              <i class="fas fa-trash-alt"></i>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </table>
+  </nb-card-body>
+</nb-card>

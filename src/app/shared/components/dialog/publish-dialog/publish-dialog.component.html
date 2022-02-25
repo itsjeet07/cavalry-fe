@@ -1,0 +1,19 @@
+<nb-card>
+  <nb-card-header>
+    Publish Table
+    <img class="close-btn pull-right" src="/assets/images/ic_close_24px.svg" (click)="onClose()">
+  </nb-card-header>
+  <nb-card-body>
+    <div class="row add-edit-form-title">
+      <div class="col-md-12">
+        <label>Client : </label>
+        <nb-select placeholder="Select Client" [(ngModel)]="client">
+          <nb-option *ngFor="let client of clientList" [value]="client._id">{{client.name}}</nb-option>
+        </nb-select>
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer>
+    <button class="btn btn-primary" (click)="publish()">Publish</button>
+  </nb-card-footer>
+</nb-card>

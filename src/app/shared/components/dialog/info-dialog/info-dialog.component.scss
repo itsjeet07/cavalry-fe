@@ -1,0 +1,161 @@
+.notification-card{
+  // height: 300px;
+  width: 300px;
+}
+.notification-card nb-card-body.plainAlert nb-alert {
+  display: block;
+}
+.notification-card nb-card-body.plainAlert nb-alert i.fas {
+  float: left;
+  width: inherit;
+  display: inline-block;
+  margin: 3px 5px 0 0;
+}
+a.anchor {
+  font-weight: 400;
+  font-family: 'Roboto';
+  font-style: italic;
+  cursor: pointer;
+}
+a.anchor:hover {
+  text-decoration: none !important;
+  color: #598bff;
+}
+.notification-card .notifi-row.snnoze-row {
+  float: right;
+  text-align: right;
+}
+.notification-card .notifi-row.snnoze-row label {
+  margin-right: 7px;
+}
+.notification-card .notifi-row.snnoze-row label i.fa {
+  font-size: 30px;
+  position: relative;
+  top: 5px;
+}
+button.snooze-btn {
+  float: right;
+}
+.notification-card .notifi-row.snnoze-row nb-icon {
+  color: #fff !important;
+}
+/* New Reminder Css*/
+nb-card.info-card.notification-card.reminder-new-popup {
+  width: 380px !important;
+  margin-bottom: 0;
+  background: #fff;
+  border-radius: 6px;
+}
+.custom_height{
+  height: 341px;
+}
+nb-card.info-card.notification-card.reminder-new-popup nb-card-header {
+  color: #5C77EA;
+  font-family: 'DM Sans' !important;
+  font-size: 18px;
+  font-weight: 500;
+  opacity: 1 !important;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-bottom: 1px solid #edf1f7;
+}
+nb-card.info-card.notification-card.reminder-new-popup nb-card-header img.close-btn {
+  width: 12px;
+  height: 12px;
+  margin-top: 6px;
+  cursor: pointer;
+}
+nb-card.info-card.notification-card.reminder-new-popup nb-card-header .header-icon {
+  width: 20px;
+  height: 20px;
+  margin: 0 3px 0 0;
+  position: relative;
+  top: -2px;
+}
+nb-card.info-card.notification-card.reminder-new-popup nb-card-body .notifi-row.reminder-id img {
+  width: 16px;
+  height: 16px;
+  position: relative;
+  top: -1px;
+  transform: rotate(20deg);
+  margin-right: 2px;
+}
+nb-card.info-card.notification-card.reminder-new-popup button.btn.btn-cancel img.snooze-img-icon {
+  width: 20px;
+  height: auto;
+  margin-right: 6px;
+}
+nb-card.info-card.notification-card.reminder-new-popup nb-card-footer {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+nb-card.info-card.notification-card.reminder-new-popup button.btn.btn-primary.btn-save {
+  min-width: 100px;
+background: #5C77EA !important;
+box-shadow: 0px 2px 4px #0000001F;
+border: 1px solid #5C77EA !important;
+border-radius: 5px;
+font-family: "DM Sans";
+font-size: 14px !important;
+font-weight: 500;
+height: 40px;
+text-transform: capitalize;
+padding-left: 15px !important;
+padding-right: 15px !important;
+}
+nb-card.info-card.notification-card.reminder-new-popup button.btn.btn-cancel{
+  min-width: 100px;
+  border: 1px solid #5C77EA !important;
+  font-family: "DM Sans";
+  font-size: 14px !important;
+  font-weight: 500;
+  color: #5C77EA !important;
+  height: 40px;
+  background: #FFFFFF !important;
+  text-transform: capitalize;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+nb-card.info-card.notification-card.reminder-new-popup nb-card-body {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+nb-card.info-card.notification-card.reminder-new-popup nb-card-body .notifi-row.reminder-text {
+  font-family: 'DM Sans';
+  font-size: 14px;
+  line-height: 22px;
+  color: #262B44;
+  font-weight: 500;
+  opacity: 0.75;
+  margin-bottom: 5px;
+}
+nb-card.info-card.notification-card.reminder-new-popup nb-card-body .notifi-row.reminder-title {
+  font-size: 18px;
+  font-family: 'DM Sans';
+  color: #262B44;
+  line-height: 22px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+nb-card.info-card.notification-card.reminder-new-popup nb-card-body .notifi-row.reminder-id {
+  background: #F8FBFF;
+  border: 1px solid #D7DFE9;
+  min-height: 32px;
+  display: inline-block;
+  width: auto;
+  padding: 0 17px;
+  border-radius: 65px;
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.14);
+  font-family: 'DM Sans';
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 32px;
+  color: #262B44;
+  cursor: pointer;
+}
+
+.option-image{
+  width: 7%;
+  height: 7%;
+  float: right;
+}

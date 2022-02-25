@@ -1,0 +1,34 @@
+
+  <nb-card class="set-status-main">
+    <nb-card-header>Set Status</nb-card-header>
+    <nb-card-body>
+      <div class="scroll-div">
+        <div class="row">
+          <!-- <div class="form-group col-md-12 status-btns" *ngFor='let item of statusOptionsArray' >
+            <button nbButton [style.backgroundColor]="item.color" fullWidth
+            (click)="onDone(item)">{{item.status}}</button>
+          </div> -->
+          <!-- <i class="fas fa-circle pointer" [matMenuTriggerFor]="menu" [ngStyle]="{'color': statusColor[item.status]}"
+              (mouseover)="showStatusId = item._id" (mouseleave)="showStatusId = ''"></i> -->
+            <!-- <mat-menu #menu="matMenu">
+              <div class="icon_menu"> -->
+                <mat-form-field>
+                  <input matInput #input placeholder="Search" (input)="onChange(input.value)"
+                    (click)="$event.stopPropagation();">
+                </mat-form-field>
+                <mat-option
+                  *ngFor="let status of statusOptionsArray"
+                  [value]="status" (click)="onDone(status)">
+                  <i class="fas fa-circle " [ngStyle]="{'color': status.color}"></i>
+                  {{status.status}}
+                </mat-option>
+              <!-- </div>
+            </mat-menu> -->
+        </div>
+      </div>
+    </nb-card-body>
+    <nb-card-footer calss="set-status-footer">
+      <button nbButton (click)="onCancel()" >Cancel</button>
+    </nb-card-footer>
+  </nb-card>
+

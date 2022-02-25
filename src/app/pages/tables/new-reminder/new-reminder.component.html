@@ -1,0 +1,57 @@
+<nb-card [nbSpinner]="loading" nbSpinnerSize="large" nbSpinnerStatus="primary" class="new-form-design modal-body project-pop-up add-reminder-new">
+    <nb-card-header>
+            <mat-icon class="tableIcon">access_alarms</mat-icon>
+            Add Reminder
+            <img (click)="closeModal()" class="filter-close-icon" src="/assets/images/close-icon.svg" />
+    </nb-card-header>
+    <nb-card-body class="main_body">
+      <div class="container-fluid">
+        <div class="row new-design-row">
+            <div class="col-md-4">
+              <span class="new-label label">date:</span>
+                <mat-form-field class="mb-20 due-date-col" appearance="outline">
+                    <span class="new-label label">Date:</span>
+                    <!-- <div matPrefix class="mat-matPrefix">
+                        <img class="mat-icon notranslate material-icons mat-icon-no-color top04" src="" />
+                    </div> -->
+                    <input matInput [matDatepicker]="formpicker" placeholder="Date" [(ngModel)]="reminderObj.date">
+                    <mat-datepicker-toggle matSuffix [for]="formpicker">
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #formpicker></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-4">
+              <span class="new-label label">time</span>
+                <mat-form-field class="mb-20" appearance="outline">
+                    <span class="new-label label">Time:</span>
+                    <!-- <div matPrefix class="mat-matPrefix">
+                        <img class="mat-icon notranslate material-icons mat-icon-no-color top04" src="" />
+                    </div> -->
+                    <input matInput placeholder="Time" type="time" [(ngModel)]="reminderObj.time">
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row new-design-row">
+            <div class="col-md-12">
+              <span class="new-label label">details</span>
+                <mat-form-field class="mb-20 reminder-note textarea-hght-auto" appearance="outline">
+                    <mat-label>Details</mat-label>
+                    <!-- <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+                    <img class="mat-icon notranslate material-icons mat-icon-no-color top11" src="{{field.icon}}" />
+                    </div> -->
+                    <textarea rows="5" matInput placeholder="Description" [(ngModel)]="reminderObj.desc"></textarea>
+                </mat-form-field>
+            </div>
+        </div>
+      </div>
+
+    </nb-card-body>
+    <nb-card-footer class="button_show">
+            <button (click)="closeModal()" class="cancel" nbButton matRipple>
+                Cancel
+            </button>
+            <button (click)="saveModal()" class="save" nbButton matRipple>
+                Save
+            </button>
+    </nb-card-footer>
+</nb-card>

@@ -1,0 +1,57 @@
+<nb-card>
+  <nb-card-header>Add Status
+  </nb-card-header>
+  <nb-card-body>
+    <div class="row">
+      <div class="col-md-12 row">
+        <div class="col-md-2">
+          <label>Closed</label>
+        </div>
+        <div class="col-md-4">
+          <label>Status</label>
+        </div>
+        <div class="col-md-2">
+          <label>Color Code</label>
+        </div>
+        <div class="col-md-2">
+          <label>Label Color</label>
+        </div>
+        <div class="col-md-2">
+          <label>Default</label>
+        </div>
+      </div>
+      <div cdkDropList id="scroll_vertical" class="example-list" (cdkDropListDropped)="drop($event)">
+        <div *ngFor="let status of statusList; let i = index; trackBy: trackByField" cdkDragBoundary=".example-list"
+          cdkDrag>
+          <div class="col-md-12 row example-custom-placeholder">
+            <div class="col-md-1 d-flex align-items-center justify-content-center mt-2">
+              <nb-checkbox [(ngModel)]="status.closed" class="cursor" (checkedChange)="onChange($event,i,status)">
+              </nb-checkbox>
+            </div>
+            <div class="col-md-3">
+              <input type="text" class="form-control mt-2 cursor" [(ngModel)]="status.status" />
+            </div>
+            <div class="col-md-3"> <input type="color" class="form-control mt-2 cursor" [(ngModel)]="status.color" />
+            </div>
+            <div class="col-md-3"> <input type="color" class="form-control mt-2 cursor"
+                [(ngModel)]="status.labelColor" />
+            </div>
+            <div *ngIf="status.status" class="col-md-2"> <input type="radio" class="form-control mt-2 cursor" name="default" id="default{{i}}"
+              [(ngModel)]="status.default" (change)="radioChange(status)" [value] = "status.status"/>
+          </div>
+            <div class="col-md-1  d-flex align-items-center justify-content-center " *ngIf="i != 0"><i
+                class="fa fa-minus" (click)="removeRow(i)"></i></div>
+          </div>
+          <div class="col-md-1 add_but" *ngIf="showAddButton(i)" (click)="addNewRow()"><i class="fa fa-plus"
+              (click)="addNewRow()"></i></div>
+
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+
+  <nb-card-footer>
+    <button class="cancel" nbButton matRipple status="danger" (click)="cancel()">Cancel</button>
+    <button nbButton matRipple status="success" [disabled]="getFormStatus()" (click)="submit()">Submit</button>
+  </nb-card-footer>
+</nb-card>

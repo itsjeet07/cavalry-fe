@@ -1,0 +1,14 @@
+<nb-card class="main_layout">
+  <nb-card-header>Add filter</nb-card-header>
+  <nb-card-body>
+    <div class="margin30">
+      <div class="inner_body" >
+        <textarea  #textArea (keyup)="onChange()" [placeholder]="placeholder" [formControl]="addFilter" style="width: 100%; height: 230px;"></textarea>
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer class="footer">
+    <button class="cancel ml-2" type="submit" (click)="ref.close()" nbButton matRipple>Cancel </button>
+    <button class="save" (click)="saveFilter()" nbButton matRipple>Save</button>
+  </nb-card-footer>
+</nb-card>

@@ -1,0 +1,91 @@
+@import '../../../@theme/styles/themes';
+.fi_14 {
+  font-size: 14px;
+
+}
+.layout {
+  width: calc(100vw - 40vw);
+  min-height: unset !important;
+  background: #fff !important;
+  .header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 63px;
+    border-bottom: 1px solid #ebe9e9;
+    .header_text {
+      color: rgba(0,0,0,0.87);
+      font-size: 20px;
+    }
+  }
+  .body {
+    padding: 16px;
+    border-bottom: 1px solid #ebe9e9;
+    .inner_body {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      .s1 {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        .add {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          outline: unset;
+          background-color: transparent;
+          margin-left: 20px;
+          i {
+            color: rgba(0,0,0,0.54);
+          }
+        }
+      }
+      .email_message {
+        height: 200px;
+      }
+    }
+  }
+
+  .footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    .f_but {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+    .add {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      outline: unset;
+      background-color: transparent;
+      margin-left: 20px;
+      margin: 5px;
+      border: unset;
+      &:hover {
+        border: unset;
+      }
+      i {
+        color: rgba(0,0,0,0.54);
+      }
+  }
+    }
+  .send {
+    color: rgba(0,0,0,0.54);
+  }
+  .active {
+      color: rgb(0,188,212);
+  }
+
+  }
+}
+

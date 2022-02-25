@@ -1,0 +1,421 @@
+<!-- collapsed Window starts here -->
+<ng-container *ngIf="window && window.isCollapsed">
+  <div class="ng-chat-title secondary-background" (click)="onChatWindowClicked(window)"
+    [ngClass]="{'active-header': window.participant.totalUnreadCount > 0}" style="cursor:pointer;">
+    <div class="ng-chat-title-visibility-toggle-area" (click)="onChatWindowClicked(window)" style="cursor:pointer;">
+
+
+      <strong title="{{window.participant.displayName}}" *ngIf="window.participant.participantType != 1">
+        {{window.participant.displayName}}
+      </strong>
+
+      <a class="group_link" *ngIf="window.participant.participantType == 1">
+
+        <strong title="{{window.participant.displayName}}">
+          {{ (window.participant.displayName.length > 25) ? window.participant.displayName.substring(0,24) + '...' :
+          window.participant.displayName}}
+          <!-- <a>
+            <img src="assets/images/redirect.png" width="15px" (click)="redirectToResourcePage(window.participant)" />
+          </a> -->
+        </strong>
+      </a>
+
+      <span
+        [ngClass]="{'ng-chat-participant-status': true, 'online': window.participant.status == ChatParticipantStatus.Online, 'busy': window.participant.status == ChatParticipantStatus.Busy, 'away': window.participant.status == ChatParticipantStatus.Away, 'offline': window.participant.status == ChatParticipantStatus.Offline}"
+        title="{{chatParticipantStatusDescriptor(window.participant.status, localization)}}"></span>
+      <span *ngIf=" window.participant.totalUnreadCount > 0"
+        class="ng-chat-unread-messages-count unread-messages-counter-container primary-text">{{
+        window.participant.totalUnreadCount}}</span>
+    </div>
+    <a href="javascript:void(0);" class="ng-chat-close primary-text in-footer" (click)="onCloseChatWindow()">
+      <img src="https://cavalry.s3.amazonaws.com/cancel.svg" />
+    </a>
+  </div>
+</ng-container>
+<!-- collapsed Window ends here -->
+
+
+<!-- Opened Window starts here -->
+<ng-container *ngIf="window && !window.isCollapsed">
+  <div class="ng-chat-title secondary-background"
+    [ngClass]="{'active-header':  window.participant.totalUnreadCount > 0}">
+
+    <div class="ng-chat-title-visibility-toggle-area1">
+
+      <span class="chat-title-text" title="{{window.participant.displayName}}"
+        *ngIf="window.participant.participantType != 1">
+        {{window.participant.displayName}}
+      </span>
+
+      <span class="chat-title-text" title="{{window.participant.displayName}}"
+        *ngIf="window.participant.participantType == 1" (click)="redirectToResourcePage(window.participant)"
+        style="cursor:pointer;">
+        {{window.participant.displayName}}
+
+      </span>
+      <span
+        [ngClass]="{'ng-chat-participant-status': true, 'online': window.participant.status == ChatParticipantStatus.Online, 'busy': window.participant.status == ChatParticipantStatus.Busy, 'away': window.participant.status == ChatParticipantStatus.Away, 'offline': window.participant.status == ChatParticipantStatus.Offline}"
+        title="{{chatParticipantStatusDescriptor(window.participant.status, localization)}}" style="cursor:pointer;">
+      </span>
+      <a class="redirect-icon-new"
+        *ngIf="window.participant.participantType == 1 && window.participant.parentTableId!=''">
+        <img src="https://cavalry.s3.amazonaws.com/redirect.png" width="15px" (click)="redirectToResourcePage(window.participant)"
+          style="cursor:pointer;" />
+      </a>
+
+    </div>
+    <div>
+      <button class="option-button">
+        <span>...</span>
+        <div class="hover-opt ng-chat-options-content primary-background shadowed">
+          <button type="button" [ngClass]="'primary-text'" class="btn btn-opt" (click)="onOptionClicked(window)"
+            *ngIf="window.participant.participantType != 1">
+            Add People
+          </button>
+          <button type="button" [ngClass]="'primary-text'" class="btn btn-opt" (click)="onViewPeopleClicked(window)"
+            *ngIf="window.participant.participantType == 1">
+            View People
+          </button>
+        </div>
+      </button>
+
+    </div>
+
+
+
+  </div>
+  <div class="popout-action">
+    <nb-icon *ngIf="!window.isCollapsed" icon="diagonal-arrow-right-up-outline" class="arrow-right-outline" (click)="isOpenPopOutWindow = true"></nb-icon>
+    <ngx-popoutwindow *ngIf="isOpenPopOutWindow" (popemitValue)="popEmitValue($event, window.participant.id)"
+                      [windowsUser]="{ unreadCount: window.participant.totalUnreadCount, displayName: window.participant.displayName }">
+      <div class="light-theme" id="ng-chat" style="position: initial">
+        <div [ngClass]="{ 'ng-chat-window': true, 'primary-outline-color': true, 'ng-chat-popout-window': true }">
+          <ng-chat-window
+            #chatWindow
+            [localization]="localization"
+            [userId]="userId"
+            [window]="window"
+            [showOptions]="groupAdapter"
+            [emojisEnabled]="emojisEnabled"
+            [linkfyEnabled]="linkfyEnabled"
+            [showMessageDate]="showMessageDate"
+            [messageDatePipeFormat]="messageDatePipeFormat"
+            [hasPagedHistory]="hasPagedHistory"
+            [participantsResponse]="participantsResponse"
+            (onWindowClicked)="onParticipantClickedFromWindowList($event)"
+            (onMessagesSeen)="onWindowMessagesSeen($event)"
+            (onMessageSent)="onWindowMessageSent($event)"
+            (onTabTriggered)="onWindowTabTriggered($event)"
+            (onChatWindowClosed)="onWindowChatClosed($event)"
+            (onOptionTriggered)="onWindowOptionTriggered($event)"
+            (onLoadHistoryTriggered)="fetchMessageHistory($event)"
+            (onPushSendMessage)="pushSendMessage($event)"
+            (onParticipantListUpdate)="changeParticipantPosOnMessage($event)"
+            (onAddPeople)="addPeopleClicked($event)"
+          >
+          </ng-chat-window>
+        </div>
+      </div>
+    </ngx-popoutwindow>
+  </div>
+  <div class='chat-actions-parent'>
+    <a (click)="onCloseChatWindow()" href="javascript:void(0);" class="ng-chat-close chat-actions primary-text wd-0"
+      style="margin-right: 6px;">
+      <!-- <i class="fa fa-6 fa-window-minimize" aria-hidden="true" style="margin-right: 22px;cursor:pointer;"> -->
+      <img src="https://cavalry.s3.amazonaws.com/cancel.svg" />
+      <!-- </i> -->
+    </a>
+  </div>
+
+  <div class='chat-actions-parent'>
+    <a (click)="onCollapseChatWindow()" class="ng-chat-close chat-actions primary-text wd-0"
+      style="margin-left:1px; cursor:pointer;">
+      <!-- <i class="fa fa-times fa-6" aria-hidden="true"></i> -->
+      <img src="https://cavalry.s3.amazonaws.com/minus.svg" />
+    </a>
+  </div>
+
+  <div appDragDrop (onFileDropped)="draggedFiles($event)" (onFileDragged)="onFileDragged($event)" #chatMessages
+    class="ng-chat-messages primary-background" [ngClass]="{ isImageDivEnable: copiedFile}"
+    (scroll)="onContainerScroll($event,(window.participant.participantType == ChatParticipantType.Group || window.participant.participantType == 1) ? true : false )">
+
+    <div *ngIf="isLoading" class="ng-chat-loading-wrapper">
+      <div class="loader">Loading history...
+      </div>
+    </div>
+
+    <div *ngIf="hasPagedHistory && window.hasMoreMessages && !window.isLoadingHistory" class="ng-chat-load-history">
+      <a class="load-history-action"
+        (click)="fetchMessageHistory(window)">{{localization.loadMessageHistoryPlaceholder}}
+      </a>
+    </div>
+
+
+    <div *ngFor="let message of window.messages; let i = index"
+      [ngClass]="{'ng-chat-message': true, 'ng-chat-message-received': (message.fromId != userId || message.fromId == message.toId) && message.fromId != message.toId,
+                                            'ng-chat-message-sent': message.fromId == userId ||  message.sender._id == userId}" [id]="'message' + i">
+
+      <div #list>
+        <ng-container>
+          <ng-container *ngIf="message.fromId != userId && message.sender._id != userId">
+            <div class="icon-wrapper">
+              <i class="user-icon"></i>
+            </div>
+            <!-- <img *ngIf="getChatWindowAvatar(window.participant, message)" alt="" class="avatar" height="30" width="30"
+              [src]="getChatWindowAvatar(window.participant, message) | sanitize" /> -->
+
+          </ng-container>
+        </ng-container>
+
+        <span
+          *ngIf="window.participant.participantType == ChatParticipantType.Group || window.participant.participantType == 1"
+          class="ng-chat-participant-name"
+          [ngClass]="{'sender-title': message.fromId == userId || message.fromId == message.toId}">
+          {{ getChatName(message) }}
+        </span>
+        <ng-container [ngSwitch]="message.type">
+          <div *ngSwitchCase="MessageType.Text"
+            [ngClass]="{'sent-chat-message-container': message.fromId == userId ||  message.sender._id == userId, 'received-chat-message-container': message.fromId != userId && message.sender._id != userId }">
+            <div class="delete_main_div" style="position: relative;"
+              [ngClass]="{'outer-div': message.fromId == userId }">
+              <img (click)="deleteMessage(message.id, i)" *ngIf=" message.fromId == userId"
+                class="img-sty trash-icon fa fa-trash pointer" aria-hidden="true"
+                src="https://cavalry.s3.amazonaws.com/delete.png">
+              <img (click)="replyParticularMessage(window,message,message.id, i)"
+                class="img-sty trash-icon fa fa-trash pointer" aria-hidden="true"
+                src="https://cavalry.s3.amazonaws.com/reply.png">
+              <span *ngIf="!message.replyTo"
+                [innerHtml]="message.message | emojify:emojisEnabled | linkfy:linkfyEnabled" class="msg-data"
+                style="cursor: pointer;" (click)="mentionRedirect(message)">
+              </span>
+              <span class="msg-data" style="cursor: pointer;" *ngIf="message.replyTo"
+                (click)="scrollToMessage(message.replyTo._id,i,message)">
+                <span class="reply-to">
+                  <blockquote *ngIf="(message.replyTo.type == 'text' || message.replyTo.type == 1)"><sup><i class="fa fa-quote-left"
+                        aria-hidden="true"></i></sup> {{message.replyTo.text}}
+                  </blockquote>
+                  <blockquote *ngIf="(message.replyTo.type == 'image' || message.replyTo.type == 3)"><sup><i class="fa fa-quote-left"
+                        aria-hidden="true"></i></sup> <img
+                      [src]="message.replyTo.text" class="image-message" />
+                  </blockquote>
+                  <blockquote *ngIf="(message.replyTo.type == 'file' || message.replyTo.type == 2)"><sup><i class="fa fa-quote-left"
+                        aria-hidden="true"></i></sup> <img src="https://cavalry.s3.amazonaws.com/file-img.png" class="image-message" style="width: 120px;" />
+                  </blockquote>
+
+                  <!-- <span class="reply-user-date">{{message.sender.firstName}} {{message.sender.lastName}}, {{message.replyTo.createdAt}}</span> -->
+                  <span class="reply-user-date">{{message.replyTo.sender.firstName}}
+                    {{message.replyTo.sender.lastName}},
+                    {{message.replyTo.createdAt | date : 'short'}}</span>
+                </span>
+
+                <!-- <hr> -->
+                <span>{{message.message}}</span>
+              </span>
+            </div>
+
+            <span *ngIf="showMessageDate && message.dateSent" class="message-sent-date">{{message.dateSent |
+              date:messageDatePipeFormat}}</span>
+          </div>
+          <div *ngSwitchCase="MessageType.Image"
+            [ngClass]="{'sent-chat-message-container': message.fromId == userId || message.sender._id == userId, 'received-chat-message-container': message.fromId != userId && message.sender._id != userId}">
+
+            <div class="delete_main_div right-side" style="position: relative;"
+              *ngIf="checkImage(message.message);else fileDiv">
+
+              <img (click)="deleteMessage(message.id, i)" *ngIf=" message.fromId == userId"
+                class="img-sty trash-icon fa fa-trash pointer" aria-hidden="true"
+                src="https://cavalry.s3.amazonaws.com/delete.png">
+              <img (click)="replyParticularMessage(window,message,message.id, i)"
+                class="img-sty trash-icon fa fa-trash pointer" aria-hidden="true"
+                src="https://cavalry.s3.amazonaws.com/reply.png">
+              <img *ngIf="!message.replyTo" src="{{message.message}}" class="image-message"
+                (click)="onFilePreview(message.message, message)" />
+
+              <!-- <span class="msg-data" style="cursor: pointer;" *ngIf="message.replyTo">
+                <span class="reply-to">
+                  <blockquote><sup><i class="fa fa-quote-left" aria-hidden="true"></i></sup><img
+                    [src]="message.replyTo.text" class="image-message" />
+                  </blockquote>
+                  <span class="reply-user-date">Mehar Singh, {{message.replyTo.createdAt}}</span>
+                </span>
+              </span>
+              <span>{{message.message}}</span> -->
+            </div>
+
+            <!-- The Modal -->
+            <ng-template #fileDiv>
+
+              <div class="delete_main_div right-side" style="position: relative;">
+
+
+                <img (click)="deleteMessage(message.id, i)" *ngIf=" message.fromId == userId"
+                  class="img-sty trash-icon fa fa-trash pointer" aria-hidden="true"
+                  src="https://cavalry.s3.amazonaws.com/delete.png">
+                <img (click)="replyParticularMessage(window,message,message.id, i)"
+                  class="img-sty trash-icon fa fa-trash pointer" aria-hidden="true"
+                  src="https://cavalry.s3.amazonaws.com/reply.png">
+                  <div class="sent-chat-message-container-inner with-mg-img">
+                    <a (click)="onFilePreview(message.message, message)">
+                      <img src="https://cavalry.s3.amazonaws.com/file-img.png" class="image-message" style="width: 120px;" />
+                    </a>
+                    <span class="message-sent-date">{{ getFileName(message.message)}}</span>
+                  </div>
+
+              </div>
+
+
+            </ng-template>
+            <span *ngIf="showMessageDate && message.dateSent" class="message-sent-date">{{message.dateSent |
+              date:messageDatePipeFormat}}</span>
+          </div>
+
+          <div *ngSwitchCase="MessageType.File"
+          [ngClass]="{'sent-chat-message-container': message.fromId == userId || message.sender._id == userId, 'received-chat-message-container': message.fromId != userId && message.sender._id != userId}">
+
+
+            <div class="delete_main_div right-side" style="position: relative;">
+
+
+              <img (click)="deleteMessage(message.id, i)" *ngIf=" message.fromId == userId"
+                class="img-sty trash-icon fa fa-trash pointer" aria-hidden="true"
+                src="https://cavalry.s3.amazonaws.com/delete.png">
+              <img (click)="replyParticularMessage(window,message,message.id, i)"
+                class="img-sty trash-icon fa fa-trash pointer" aria-hidden="true"
+                src="https://cavalry.s3.amazonaws.com/reply.png">
+                <div class="sent-chat-message-container-inner with-mg-img">
+                  <a (click)="onFilePreview(message.message, message)">
+                    <img src="https://cavalry.s3.amazonaws.com/file-img.png" class="file-message" style="width: 120px;" />
+                  </a>
+                  <span class="message-sent-date">{{ getFileName(message.message)}}</span>
+                </div>
+
+
+            </div>
+            <span *ngIf="showMessageDate && message.dateSent" class="message-sent-date">{{message.dateSent |
+              date:messageDatePipeFormat}}</span>
+
+
+            <!-- <div class="file-message-icon-container">
+              <i class="paperclip-icon"></i>
+            </div> -->
+            <!-- <a class="file-details" [attr.href]="message.downloadUrl" target="_blank" rel="noopener noreferrer"
+              (click)="this.markMessagesAsRead([message])" download> -->
+              <!-- <span class="file-message-title" [attr.title]="message.message">{{message.message}}</span> -->
+              <span *ngIf="message.fileSizeInBytes" class="file-message-size">{{message.fileSizeInBytes}} Bytes</span>
+            <!-- </a> -->
+          </div>
+
+          <!-- copied image start -->
+
+          <!-- copied image end -->
+        </ng-container>
+        <!-- <div *ngIf="copiedFile" class="sent-chat-message-container">
+          <img #imgRenderer class="image-message" />
+        </div> -->
+      </div>
+
+
+
+    </div>
+
+    <div class="ng-chat-message">
+      <!-- <div class="sent-chat-message-container" *ngIf="copiedFile">
+			<img #imgRenderer class="image-message" height="75px" width="90px" (click)="zoomImage(message.message)" />
+				<i class="fa fa-remove delete-icons" (click)="removeImageCopied()"></i>
+			</div> -->
+    </div>
+    <span class="reply-to bottom-reply" *ngIf="(window.participant.status !== 0 && window.participant.status !== 2)">
+     <nb-icon style="width: 15px;height: 15px;" icon="bell-off-outline"></nb-icon>
+      <span class="reply-user-date">User is offline</span>
+    </span>
+
+    <span class="reply-to bottom-reply" *ngIf="replyImageFlag">
+      <!-- <span>{{replyToMessage}}</span> -->
+      <blockquote><sup><i class="fa fa-quote-left" aria-hidden="true"></i></sup> <img src="{{replyToMessage}}"
+          class="image-message" /></blockquote>
+      <span class="reply-user-date">{{senderName}}, {{replyToMsgDate}}</span>
+      <span class="close-btn" (click)="replyImageFlag = false">x</span>
+    </span>
+    <span class="reply-to bottom-reply" *ngIf="replyFileFlag">
+      <!-- <span>{{replyToMessage}}</span> -->
+      <blockquote><sup><i class="fa fa-quote-left" aria-hidden="true"></i></sup> <img src="https://cavalry.s3.amazonaws.com/file-img.png" class="image-message" style="width: 120px;" /></blockquote>
+      <span class="reply-user-date">{{senderName}}, {{replyToMsgDate}}</span>
+      <span class="close-btn" (click)="replyFileFlag = false">x</span>
+    </span>
+
+
+    <div class="image-div" [hidden]="!copiedFile">
+      <i class="fa fa-remove rem-icon" (click)="removeImageCopied()"></i>
+      <img #imgRenderer class="renderImage img-thumbnail" height="75px" width="150px" />
+      <div class="send-img-outer"><img src="https://cavalry.s3.amazonaws.com/send.png" (click)="sendImage()" height="35px" width="35px"
+          class="send-img"></div>
+      <!-- <a class="btn btn-danger btn-sm" (click)="removeImageCopied()">Delete</a> -->
+    </div>
+
+  </div>
+  <div id="drag-image-div" appDragDrop (onFileDropped)="draggedFiles($event)" (onFileDragged)="onFileDragged($event)"
+    class="dragimage" [ngClass]="{'drag-drop-msg': isDragged}">
+    <img src="https://cavalry.s3.amazonaws.com/drag-drop-image.png">
+    <span>Drag image to attach</span>
+  </div>
+
+  <!-- 'has-side-action': fileUploadAdapter -->
+  <div appDragDrop (onFileDropped)="draggedFiles($event)" (onFileDragged)="onFileDragged($event)"
+    class="ng-chat-footer primary-outline-color primary-background" style="position: absolute;">
+    <span class="reply-to bottom-reply" *ngIf="replyFlag">
+      <!-- <span>{{replyToMessage}}</span> -->
+      <blockquote><sup><i class="fa fa-quote-left" aria-hidden="true"></i></sup> {{replyToMessage}}</blockquote>
+      <span class="reply-user-date">{{senderName}}, {{replyToMsgDate}}</span>
+      <span class="close-btn" (click)="replyFlag = false">x</span>
+    </span>
+    <span class="thumg-img"><a *ngIf="!fileUploading" class="btn-add-file-new"
+        (click)="triggerNativeImageUpload(window)"><img class="image-upload-icon"
+          src="https://cavalry.s3.amazonaws.com/image-upload-icon.png" /></a></span>
+    <span class="link-img"><a *ngIf="!fileUploading" class="btn-add-file-new"
+        (click)="triggerNativeFileUpload(window)"><img class="image-link-file"
+          src="https://cavalry.s3.amazonaws.com/image-link-file.png" /></a></span>
+
+    <textarea #chatWindowInput style="width: calc(100% - 104px);" rows="1" type="text"
+      [ngModel]="window.newMessage | emojify:emojisEnabled" (ngModelChange)="window.newMessage=$event"
+      [placeholder]="localization.messagePlaceholder" [ngClass]="{'chat-window-input': true }"
+      (keydown)="onChatInputTyped($event, window)" (blur)="toggleWindowFocus(window)"
+      (focus)="toggleWindowFocus(window)" (paste)="pasteEvent($event)" [mention]="users"
+      [mentionConfig]="{dropUp:true}"></textarea>
+    <i style="font-size: 17px;" class="fa fa-smile-o emoji-picker" (click)="toggleEmojiPicker($event);"></i>
+
+    <emoji-mart [showPreview]="false" class="emoji-mart chat-emoji" set="{{set}}" *ngIf="showEmojiPicker"
+      isNative="true" (click)="emojiClicked($event)" (emojiSelect)="insertEmoji($event)" title="Pick your emoji…">
+    </emoji-mart>
+
+    <!-- <span style="position: relative; left: 254px; bottom: 33px;"><i class="fa fa-microphone"></i></span> -->
+    <!-- File Upload -->
+    <!-- <ng-container>
+      <a *ngIf="!fileUploading" class="btn-add-file" (click)="triggerNativeFileUpload(window)">
+        <i class="upload-icon"></i>
+      </a>
+      <input type="file" #nativeFileInput style="display: none;" [attr.id]="getUniqueFileUploadInstanceId(window)"
+        (change)="onFileChosen(window, userId)" />
+      <div *ngIf="fileUploading" class="loader"></div>
+    </ng-container> -->
+  </div>
+  <ng-container>
+    <input type="file" #nativeImageInput accept="image/*" style="display: none;"
+      [attr.id]="getUniqueFileUploadInstanceId(window)" (change)="onFileChosen(window, userId)" />
+    <input type="file" #nativeFileInput style="display: none;" [attr.id]="getUniqueFileUploadInstanceId(window)"
+      (change)="onFileChosen(window, userId, true)" />
+
+    <div *ngIf="fileUploading" class="loader"></div>
+  </ng-container>
+  <div>
+
+  </div>
+</ng-container>
+
+<input hidden type="file" #imageInput (change)="draggedFiles($event.target.files)">
+<!-- <input type="file" style="display: none;" #fileInput (change)="draggedFiles($event.targe.files)" /> -->
+
+<!-- Opened Window ends here -->
+
+
+<!-- <img src="/assets/images/drop-to-attach.png"  height="175px" width="200px" />
+			<div>Drop image to attach</div> -->

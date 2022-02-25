@@ -1,0 +1,934 @@
+<nb-card [ngClass]="{
+    'sub-form-exist': showSubForm,
+    'modal-body': true,
+    'project-pop-up': true
+  }" [nbSpinner]="loading" nbSpinnerSize="large" nbSpinnerStatus="primary">
+  <nb-card-header>
+    {{ title }}
+    <button nbButton status="info" aria-hidden="true" class="watcher" [matMenuTriggerFor]="menu"
+      (menuOpened)="watcherMenuOpened()" (menuClosed)="watcherMenuClosed()">
+      Watchers &nbsp; {{ subscribers.length }}
+    </button>
+    <mat-menu #menu="matMenu" yPosition="below">
+      <button mat-menu-item first-top>
+        <span class="li-head curson-pointer" (click)="selfSubsription()">
+          <span class="icon-mar-lft"></span> {{ subscriptionText }}
+        </span>
+      </button>
+
+      <div class="all-user-list">
+        <button mat-menu-item *ngFor="let option of subscribers">
+          <span class="li-head">
+            <span class="icon-mar-lft" [ngStyle]="{ 'background-color': option?.userColor }">{{ option.firstName[0] +
+              option.lastName[0] | uppercase }}</span>
+            {{ option.firstName + " " + option.lastName }}
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="left-margin curson-pointer" (click)="cancelSubscription(option._id)">
+              <i class="fa fa-times" aria-hidden="true"></i>
+            </span>
+          </span>
+        </button>
+      </div>
+
+      <button style="background-color: #ececf0" mat-menu-item class="last-bottom" (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()" class="curson-pointer">
+        <ngx-watch-user [tableInfo]="tableInfo" [matMenu]="trigger" parentForm="dynamicForm"
+          (valueChanged)="updateSubscribers($event)"></ngx-watch-user>
+      </button>
+    </mat-menu>
+  </nb-card-header>
+  <nb-card-body class="main_body">
+    <ng-container class="add-edit-form">
+      <ng-container [ngTemplateOutlet]="formFields" [ngTemplateOutletContext]="{ dynamicData: withoutSectionData }">
+      </ng-container>
+
+      <ng-container *ngFor="let section of sections">
+        <mat-expansion-panel class="w-100 mt-3" expanded *ngIf="show[section[0].name]">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ section[0].label }}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-container [ngTemplateOutlet]="formFields" [ngTemplateOutletContext]="{ dynamicData: section }">
+          </ng-container>
+        </mat-expansion-panel>
+      </ng-container>
+    </ng-container>
+
+    <!-- <ng-template #subFormTemplate>
+      <ng-container *ngIf="showSubForm">
+        <nb-card class="sub-form-card">
+          <nb-card-body>
+            <div class="sub-form-divider" *ngFor="let subForm of subFormTableName | keyvalue;let idx = index;">
+              <ngx-dynamic-subform [unwantedFieldsInOptions]="unwantedFieldsInOptions" [editFormData]="editDataSubForm"
+                [subFormLookupName]="subForm.key" (subFormData)="getSubFormFields($event)" [recordType]="recordType"
+                (subFormBuilder)="getSubFormValue($event)" [subFormFields]="subFormFields[subForm.value]"
+                [subFormName]="subForm.value" [lookUpNameId]="lookUpNameId" [parentTableName]="parentTableName"
+                (subFormLookupData)="getSubFormLookupData($event)" [formSubmitted]="formSubmitted">
+              </ngx-dynamic-subform>
+            </div>
+          </nb-card-body>
+        </nb-card>
+      </ng-container>
+    </ng-template> -->
+  </nb-card-body>
+  <nb-card-footer class="button_show">
+    <button class="save" type="submit" (click)="submit()" nbButton matRipple>
+      {{ button.text }}
+    </button>
+    <button class="cancel" nbButton matRipple (click)="cancel()">Cancel</button>
+    <!-- <div *ngIf="(validFlag && formSubmitted) || (dynamicForm.invalid && formSubmitted)" class="required-main-error">Please fill the required fields</div> -->
+  </nb-card-footer>
+</nb-card>
+
+<form [formGroup]="dynamicForm">
+  <ng-template #formFields let-dynamicData="dynamicData">
+    {{ refTableName }}<br />
+    <ng-container *ngFor="let field of dynamicData; let fieldIndex = index">
+
+      <!-- Field input for type autoNumber -->
+      <ng-container *ngIf="field.type == 'autoNumber' && field.startValue > 0">
+        <mat-form-field class="auto-number" appearance="outline" [ngClass]="{
+            'mat-form-field-invalid':
+              dynamicForm.get(field.name).invalid && formSubmitted
+          }">
+          <mat-label>{{ field.label }} <br /><small class="ultra_small">(System generated)</small></mat-label>
+
+          <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+            <img class="
+                mat-icon
+                notranslate
+                material-icons
+                mat-icon-no-color
+                00000
+              " src="{{ field.icon }}" />
+          </div>
+
+          <input matInput [type]="'text'" placeholder="------" [formControlName]="field.name" [readonly]="true" />
+          <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+            [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+        </mat-form-field>
+      </ng-container>
+
+      <!-- Field input for type rollUp -->
+      <ng-container *ngIf="
+          field.type == 'rollUp' &&
+          field.options &&
+          field.options.length &&
+          show[field.name]
+        ">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ field.label }}</mat-label>
+
+          <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+            <img class="
+                mat-icon
+                notranslate
+                material-icons
+                mat-icon-no-color
+                top04
+              " src="{{ field.icon }}" />
+          </div>
+
+          <input matInput [type]="'text'" [placeholder]="field.label" [formControlName]="field.name"
+            [readonly]="field.isReadOnly" [ngClass]="{ 'disable-formula-field': field.isReadOnly }" />
+          <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+            [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+        </mat-form-field>
+      </ng-container>
+
+      <!-- Field input for type formula -->
+      <ng-container *ngIf="
+          field.type == 'formula' &&
+          field.options &&
+          field.options.length &&
+          show[field.name]
+        ">
+        <!-- For type STRING -->
+        <ng-container *ngFor="let formula of field.options">
+          <ng-container *ngIf="formula.type == 'string'">
+            <mat-form-field appearance="outline" [ngClass]="[
+                field.fieldSize == 'tiny'
+                  ? 's_s'
+                  : field.fieldSize == 'small'
+                  ? 's'
+                  : field.fieldSize == 'medium'
+                  ? 'm'
+                  : 'l',
+                dynamicForm.get(field.name).invalid && formSubmitted
+                  ? 'mat-form-field-invalid'
+                  : ''
+              ]">
+              <mat-label>{{ field.label }}</mat-label>
+
+              <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+                <img class="mat-icon notranslate material-icons mat-icon-no-color" src="{{ field.icon }}" />
+              </div>
+
+              <input matInput [type]="'text'" [placeholder]="field.label" [formControlName]="field.name"
+                [readonly]="field.isReadOnly" [ngClass]="{ 'disable-formula-field': field.isReadOnly }" />
+              <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+            </mat-form-field>
+          </ng-container>
+
+          <!-- For type NUMBER -->
+          <ng-container *ngIf="formula.type == 'number'">
+            <mat-form-field appearance="outline" [ngClass]="[
+                field.fieldSize == 'tiny'
+                  ? 's_s'
+                  : field.fieldSize == 'small'
+                  ? 's'
+                  : field.fieldSize == 'medium'
+                  ? 'm'
+                  : 'l',
+                dynamicForm.get(field.name).invalid && formSubmitted
+                  ? 'mat-form-field-invalid'
+                  : ''
+              ]" class="less-space">
+              <mat-label>{{ field.label }}</mat-label>
+
+              <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+                <img class="mat-icon notranslate material-icons mat-icon-no-color" src="{{ field.icon }}" />
+              </div>
+
+              <input matInput [type]="'number'" placeholder="{{ field.label }}" [formControlName]="field.name"
+                [readonly]="field.isReadOnly" [ngClass]="{ 'disable-formula-field': field.isReadOnly }" />
+              <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+            </mat-form-field>
+          </ng-container>
+
+          <!-- For type RADIO -->
+          <ng-container *ngIf="formula.type == 'radio'">
+            <div class="checkbox mb-20 111">
+              <span class="position-relative with-help">{{ field.label }} &nbsp; &nbsp;:
+                <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                  [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+              </span>
+              <nb-radio-group class="radio" name="my-radio-group-{{ field.name }}" [formControlName]="field.name"
+                [disabled]="field.isReadOnly">
+                <nb-radio value="yes"> Yes </nb-radio>
+                <nb-radio value="no"> No </nb-radio>
+              </nb-radio-group>
+            </div>
+          </ng-container>
+
+          <!--  For type DATE -->
+          <ng-container *ngIf="formula.type == 'date'">
+            <mat-form-field class="mb-20 due-date-col" appearance="outline" [ngClass]="
+                field.fieldSize == 'tiny'
+                  ? 's_s'
+                  : field.fieldSize == 'small'
+                  ? 's'
+                  : field.fieldSize == 'medium'
+                  ? 'm'
+                  : 'l'
+              ">
+              <mat-label>{{ field.label }}</mat-label>
+              <input matInput [matDatepicker]="formpicker1" [placeholder]="field.label" [formControlName]="field.name"
+                [readonly]="field.isReadOnly" [ngClass]="{ 'disable-formula-field': field.isReadOnly }" />
+              <mat-datepicker-toggle matSuffix [for]="formpicker1" [disabled]="field.isReadOnly">
+              </mat-datepicker-toggle>
+              <mat-datepicker #formpicker1></mat-datepicker>
+              <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+            </mat-form-field>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+
+      <!-- Field input for type injectSubForm -->
+      <ng-container *ngIf="field.type == 'injectSubForm' && show[field.name]">
+        <ng-container *ngIf="showSubForm">
+          <nb-card class="sub-form-card">
+            <nb-card-body>
+              <div class="sub-form-divider" *ngFor="
+                  let subForm of subFormTableName
+                    | keyvalue
+                    | subFormFilter: dynamicData:field.name;
+                  let idx = index
+                ">
+                <ngx-dynamic-subform [unwantedFieldsInOptions]="unwantedFieldsInOptions"
+                  [editFormData]="editDataSubForm" [subFormLookupName]="subForm.key"
+                  (subFormData)="getSubFormFields($event)" [recordType]="recordType"
+                  (subFormBuilder)="getSubFormValue($event)" [subFormFields]="subFormFields[subForm.value]"
+                  [subFormName]="subForm.value" [lookUpNameId]="lookUpNameId" [parentTableName]="parentTableName"
+                  (subFormLookupData)="getSubFormLookupData($event)" [formSubmitted]="formSubmitted"
+                  [tableDataForForms]="tableDataForForms">
+                </ngx-dynamic-subform>
+              </div>
+            </nb-card-body>
+          </nb-card>
+        </ng-container>
+
+        <!-- <ng-container [ngTemplateOutlet]="subFormTemplate"></ng-container> -->
+      </ng-container>
+
+      <!-- Field input for type zip -->
+      <ng-container *ngIf="field.name == 'zip'">
+        <mat-form-field appearance="outline" *ngIf="field.name == 'zip'" [ngClass]="
+            field.fieldSize == 'tiny'
+              ? 's_s'
+              : field.fieldSize == 'small'
+              ? 's'
+              : field.fieldSize == 'medium'
+              ? 'm'
+              : 'l'
+          " [ngClass]="{
+            'mat-form-field-invalid':
+              dynamicForm.get(field.name).invalid && formSubmitted
+          }" appearance="outline">
+          <mat-label>{{ field.label
+            }}<span *ngIf="field.isRequired" style="color: #f44336">*</span></mat-label>
+
+          <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+            <img class="mat-icon notranslate material-icons mat-icon-no-color" src="{{ field.icon }}" />
+          </div>
+
+          <input matInput [type]="field.type" (keyup)="listCity(dynamicForm)" [formControlName]="field.name"
+            [readonly]="field.isReadOnly" />
+          <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+            [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+        </mat-form-field>
+      </ng-container>
+
+      <ng-container *ngIf="field.name != 'zip'">
+        <!-- Field input for type text -->
+        <mat-form-field class="mb-20" appearance="outline" *ngIf="inputFields.includes(field.type) && show[field.name]"
+          [ngClass]="[
+            field.fieldSize == 'tiny'
+              ? 's_s'
+              : field.fieldSize == 'small'
+              ? 's'
+              : field.fieldSize == 'medium'
+              ? 'm'
+              : 'l',
+            dynamicForm.get(field.name).invalid && formSubmitted
+              ? 'mat-form-field-invalid'
+              : '',
+            field.icon ? 'with-icon' : ''
+          ]">
+          <mat-label>{{ field.label }}
+            <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+          </mat-label>
+
+          <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+            <img class="mat-icon notranslate material-icons mat-icon-no-color" src="{{ field.icon }}" />
+          </div>
+
+          <input *ngIf="!field.isPhone" matInput placeholder="{{ field.label }}" [type]="field.type"
+            [formControlName]="field.name" (keyup)="
+              evalExpressionForFormulaField(); rollUpCalculationFunction()
+            " [readonly]="field.isReadOnly" />
+
+          <input *ngIf="field.isPhone" #item [value]="dynamicForm.get(field.name).value | phone" ngxNumberOnly matInput
+            placeholder="{{ field.label }}" [type]="field.type" [formControlName]="field.name"
+            [readonly]="field.isReadOnly" />
+
+          <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+            [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+        </mat-form-field>
+
+        <!-- Field input for type number -->
+        <mat-form-field class="mb-20 less-space" appearance="outline" *ngIf="
+            (field.type == 'number' || field.type == 'currency') &&
+            show[field.name]
+          " [ngClass]="[
+            field.fieldSize == 'tiny'
+              ? 's_s'
+              : field.fieldSize == 'small'
+              ? 's'
+              : field.fieldSize == 'medium'
+              ? 'm'
+              : 'l',
+            dynamicForm.get(field.name).invalid && formSubmitted
+              ? 'mat-form-field-invalid'
+              : '',
+            field.icon ? 'with-icon' : ''
+          ]">
+          <mat-label>{{ field.label
+            }}<span *ngIf="field.isRequired" style="color: #f44336">*</span></mat-label>
+          <div matPrefix *ngIf="field.isCurrency">
+            <mat-icon class="money_icon">attach_money</mat-icon>
+          </div>
+
+          <div matPrefix *ngIf="field.icon" class="mat-matPrefix">
+            <img class="mat-icon notranslate material-icons mat-icon-no-color" src="{{ field.icon }}" />
+          </div>
+
+          <input *ngIf="!field.isPhone" matInput placeholder="{{ field.label }}" [type]="field.type"
+            [placeholder]="field.label" [formControlName]="field.name" [readonly]="field.isReadOnly" (keyup)="
+              evalExpressionForFormulaField(); rollUpCalculationFunction()
+            " (change)="
+              evalExpressionForFormulaField(); rollUpCalculationFunction()
+            " />
+          <input *ngIf="field.isPhone" #item [value]="dynamicForm.get(field.name).value | phone" ngxNumberOnly matInput
+            (keyup)="
+              evalExpressionForFormulaField(); rollUpCalculationFunction()
+            " (change)="
+              evalExpressionForFormulaField(); rollUpCalculationFunction()
+            " placeholder="{{ field.label }}" [type]="field.type" [placeholder]="field.label"
+            [formControlName]="field.name" [readonly]="field.isReadOnly" />
+          <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+            [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+        </mat-form-field>
+
+        <!-- Field input for type area -->
+        <mat-form-field class="mb-20 reminder-note textarea-hght-auto" *ngIf="field.type == 'area' && show[field.name]"
+          appearance="outline" [ngClass]="[
+            field.fieldSize == 'tiny'
+              ? 's_s'
+              : field.fieldSize == 'small'
+              ? 's'
+              : field.fieldSize == 'medium'
+              ? 'm'
+              : 'l',
+            dynamicForm.get(field.name).invalid && formSubmitted
+              ? 'mat-form-field-invalid'
+              : '',
+            field.icon ? 'with-icon' : ''
+          ]">
+          <mat-label>{{ field.label
+            }}<span *ngIf="field.isRequired" style="color: #f44336">*</span></mat-label>
+
+          <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+            <img class="
+                mat-icon
+                notranslate
+                material-icons
+                mat-icon-no-color
+                top11
+              " src="{{ field.icon }}" />
+          </div>
+
+          <textarea [rows]="field.textAreaLines" matInput [placeholder]="field.label" [formControlName]="field.name"
+            [readonly]="field.isReadOnly" (keyup)="
+              evalExpressionForFormulaField(); rollUpCalculationFunction()
+            "></textarea>
+
+          <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+            [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+        </mat-form-field>
+
+        <!-- Field input for type dropdown -->
+        <ng-container *ngIf="field.type === 'dropdown' && show[field.name]">
+          <mat-form-field class="mb-20" appearance="outline" [ngClass]="{
+              'mat-form-field-invalid':
+                dynamicForm.get(field.name).invalid && formSubmitted
+            }" [ngClass]="[
+              field.fieldSize == 'tiny'
+                ? 's_s'
+                : field.fieldSize == 'small'
+                ? 's'
+                : field.fieldSize == 'medium'
+                ? 'm'
+                : 'l',
+              field.icon ? 'with-icon' : ''
+            ]">
+            <mat-label>{{ field.label
+              }}<span *ngIf="field.isRequired" style="color: #f44336">*</span></mat-label>
+
+            <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+              <img class="
+                  mat-icon
+                  notranslate
+                  material-icons
+                  mat-icon-no-color
+                  top04
+                " src="{{ field.icon }}" />
+            </div>
+
+            <ng-container *ngIf="!field.allowMultipleValues">
+              <mat-select [formControlName]="field.name" [disabled]="field.isReadOnly" (selectionChange)="
+                  onDependentFieldChanged(
+                    $event,
+                    field._id,
+                    field.type,
+                    field.name
+                  )
+                ">
+                <mat-option *ngFor="let option of field.options" [value]="option" matRipple>
+                  {{ option }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
+
+            <ng-container *ngIf="field.allowMultipleValues">
+              <mat-select [formControlName]="field.name" multiple [placeholder]="field.label"
+                [disabled]="field.isReadOnly" (change)="
+                  evalExpressionForFormulaField(); rollUpCalculationFunction()
+                " (selectionChange)="
+                  onDependentFieldChanged(
+                    $event,
+                    field._id,
+                    field.type,
+                    field.name
+                  )
+                ">
+                <mat-option *ngFor="let option of field.options" [value]="option" matRipple>
+                  {{ option }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
+          </mat-form-field>
+          <ngx-help class="help-iconhelp-right help-dropdown" *ngIf="tutorials | helpPipe: field.label"
+            [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+        </ng-container>
+
+        <!-- Field input for type dropdown with image -->
+        <ng-container class="fltt-left mb-20" *ngIf="field.type === 'dropdownWithImage' && show[field.name]">
+          <ng-container *ngIf="!field.allowMultipleValues">
+            <div class="select-new" [ngClass]="{
+                l: field.fieldSize == 'large',
+                s_s: field.fieldSize == 'tiny',
+                s: field.fieldSize == 'small',
+                m: field.fieldSize == 'medium',
+                'mat-form-field-invalid':
+                  dynamicForm.get(field.name).invalid && formSubmitted
+              }">
+              <mat-label>{{ field.label
+                }}<span *ngIf="field.isRequired" style="color: #f44336">*</span></mat-label>
+              <ng-select [formControlName]="field.name" [ngClass]="{
+                  'mat-form-field-invalid':
+                    dynamicForm.get(field.name).invalid && formSubmitted
+                }" appendTo="body" [id]="field.name" placeholder="{{ field.label }}" (change)="
+                  onDependentFieldChanged(
+                    $event,
+                    field._id,
+                    field.type,
+                    field.name
+                  )
+                " class="ng-select-latest single-select">
+                <ng-option *ngFor="let val of field.options" [value]="val.title">
+                  <div class="col-md-12 drop-down-img-col">
+                    <img [src]="val.image" alt="" height="18" width="18" />
+                    <span class="select-text">{{ val.title }}</span>
+                  </div>
+                </ng-option>
+              </ng-select>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="field.allowMultipleValues" class="mat-form-field drop-down-img-col">
+            <div class="select-new" [ngClass]="{
+                l: field.fieldSize == 'large',
+                s_s: field.fieldSize == 'tiny',
+                s: field.fieldSize == 'small',
+                m: field.fieldSize == 'medium',
+                'mat-form-field-invalid':
+                  dynamicForm.get(field.name).invalid && formSubmitted
+              }">
+              <mat-label>{{ field.label
+                }}<span *ngIf="field.isRequired" style="color: #f44336">*</span></mat-label>
+              <ng-select [multiple]="true" [formControlName]="field.name" appendTo="body" [id]="field.name"
+                placeholder="{{ field.label }}" (change)="
+                  onDependentFieldChanged(
+                    $event,
+                    field._id,
+                    field.type,
+                    field.name
+                  )
+                " class="ng-select-latest">
+                <ng-option *ngFor="let val of field.options" [value]="val.title">
+                  <div class="col-md-12 drop-down-img-col">
+                    <img [src]="val.image" alt="" height="18" width="18" />
+                    <span>{{ val.title }}</span>
+                  </div>
+                </ng-option>
+              </ng-select>
+            </div>
+          </ng-container>
+
+          <ngx-help class="help-iconhelp-right help-dropdown" *ngIf="tutorials | helpPipe: field.label"
+            [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+        </ng-container>
+
+        <!-- Field input for type date -->
+        <mat-form-field class="mb-20 due-date-col" *ngIf="field.type == 'date' && show[field.name]" appearance="outline"
+          [ngClass]="[
+            field.fieldSize == 'tiny'
+              ? 's_s'
+              : field.fieldSize == 'small'
+              ? 's'
+              : field.fieldSize == 'medium'
+              ? 'm'
+              : 'l',
+            dynamicForm.get(field.name).invalid && formSubmitted
+              ? 'mat-form-field-invalid'
+              : ''
+          ]">
+          <mat-label>{{ field.label
+            }}<span *ngIf="field.isRequired" style="color: #f44336">*</span></mat-label>
+          <input matInput [matDatepicker]="formpicker" [placeholder]="" [formControlName]="field.name"
+            [readonly]="field.isReadOnly" (dateChange)="
+              evalExpressionForFormulaField(); rollUpCalculationFunction()
+            " (dateInput)="
+              evalExpressionForFormulaField(); rollUpCalculationFunction()
+            " />
+          <mat-datepicker-toggle matSuffix [for]="formpicker">
+          </mat-datepicker-toggle>
+          <mat-datepicker #formpicker></mat-datepicker>
+          <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+            [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+        </mat-form-field>
+
+        <!-- Field input for type dateTime -->
+        <div class="date-time-pic-cus mb-20" *ngIf="field.type == 'dateTime' && show[field.name]" [ngClass]="[
+            field.fieldSize == 'tiny'
+              ? 's_s'
+              : field.fieldSize == 'small'
+              ? 's'
+              : field.fieldSize == 'medium'
+              ? 'm'
+              : 'l'
+          ]" [ngClass]="{
+            'mat-form-field-invalid': dateTimeErrorFlag && formSubmitted
+          }">
+          <span class="date-time-pic-cus-title" [ngClass]="{ 'title-active': dateTimePickerToggeledOn }">{{ field.label
+            }} :</span>
+          <app-date-time-picker [formControlName]="field.name" pla (ngModelChange)="
+              evalExpressionForFormulaField(); rollUpCalculationFunction()
+            "></app-date-time-picker>
+          <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+            [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+        </div>
+
+        <!-- Field input for type status -->
+        <mat-form-field appearance="outline" *ngIf="field.type == 'status' && show[field.name]" [ngClass]="[
+            field.fieldSize == 'tiny'
+              ? 's_s'
+              : field.fieldSize == 'small'
+              ? 's'
+              : field.fieldSize == 'medium'
+              ? 'm'
+              : 'l'
+          ]" [ngClass]="[
+            dynamicForm.get(field.name).invalid && formSubmitted
+              ? 'mat-form-field-invalid'
+              : '',
+            field.icon ? 'with-icon' : ''
+          ]">
+          <mat-label><i class="fas fa-circle mr-1" [ngStyle]="{ color: colorSetter[field.name] }"></i>
+            {{ statuses[field.name] ? statuses[field.name] : field.label
+            }}<span *ngIf="field.isRequired" style="color: #f44336">*</span>
+          </mat-label>
+
+          <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+            <img class="
+                mat-icon
+                notranslate
+                material-icons
+                mat-icon-no-color
+                top04
+              " src="{{ field.icon }}" />
+          </div>
+
+          <mat-select [formControlName]="field.name">
+            <div class="px-3">
+              <mat-form-field>
+                <input matInput #statusSearch placeholder="Search" (click)="$event.stopPropagation()" />
+              </mat-form-field>
+            </div>
+            <mat-option [class.mat-active]="status.status === statuses[field.name]" *ngFor="
+                let status of field.statusOptions
+                  | searchStatusOptions: statusSearch.value
+              " [value]="status" (click)="onDone(status, field)">
+              <i class="fas fa-circle" [ngStyle]="{ color: status.color }"></i>
+              {{ status.status }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+          [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+
+        <!-- Field input for type checkbox -->
+        <ng-container *ngIf="field.type == 'checkbox' && show[field.name]">
+          <div class="checkbox mb-20" [ngClass]="{
+              'is-invalid':
+                field.checkBoxValidateForDynamicForm && formSubmitted
+            }">
+            <span class="position-relative with-help">{{ field.label }}
+              <span *ngIf="field.isRequired" style="color: #f44336">*</span>&nbsp; &nbsp;:
+              <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+            </span>
+
+            <ng-container [formArrayName]="field.name" *ngFor="let item of field.options; let i = index">
+              <nb-checkbox (change)="
+                  onDependentFieldChanged(
+                    $event,
+                    field._id,
+                    field.type,
+                    field.name,
+                    field
+                  )
+                " class="inner_checkbox" [formControlName]="i" [disabled]="field.isReadOnly" [checked]="field">{{ item
+                }}
+              </nb-checkbox>
+            </ng-container>
+          </div>
+        </ng-container>
+
+        <!-- Field input for type recordType -->
+        <ng-container *ngIf="
+            field.type == 'recordType' &&
+            show[field.name] &&
+            recordTypeFlagFromAddNew
+          ">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ refRecordType }} Type</mat-label>
+
+            <div *ngIf="field.icon" matPrefix class="mat-matPrefix">
+              <img class="mat-icon notranslate material-icons mat-icon-no-color" src="field.icon" />
+            </div>
+
+            <mat-select [placeholder]="refRecordType" [formControlName]="field.name">
+              <mat-option *ngFor="let option of optionRecordType" matRipple [value]="option.title">
+                {{ option.title }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+
+        <!--For field type radio -->
+        <ng-container *ngIf="field.type == 'radio' && show[field.name]">
+          <div class="checkbox mb-20" [ngClass]="{
+              'is-invalid': dynamicForm.get(field.name).invalid && formSubmitted
+            }">
+            <span class="position-relative with-help">{{ field.label
+              }}<span *ngIf="field.isRequired" style="color: #f44336">*</span>
+              &nbsp; &nbsp;:
+              <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+            </span>
+
+            <nb-radio-group class="radio" name="my-radio-group-{{ field.name }}" [formControlName]="field.name"
+              [disabled]="field.isReadOnly">
+              <nb-radio (valueChange)="
+                  onDependentFieldChanged(
+                    $event,
+                    field._id,
+                    field.type,
+                    field.name
+                  )
+                " *ngFor="let item of field.options" [value]="item">
+                {{ item }}
+              </nb-radio>
+            </nb-radio-group>
+          </div>
+        </ng-container>
+
+        <!-- Field input for type richTextAre -->
+        <ng-container *ngIf="field.type == 'richTextArea' && show[field.name]">
+          <div class="l text-area-con mb-20">
+            <span class="position-relative with-help">{{ field.label
+              }}<span *ngIf="field.isRequired" style="color: #f44336">*</span>
+              &nbsp; &nbsp;:
+              <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+            </span>
+
+            <editor [init]="{
+                plugins: 'autoresize',
+                toolbar: false,
+                skin_url: 'assets/skins/lightgray'
+              }" (ngModelChange)="
+                evalExpressionForFormulaField(); rollUpCalculationFunction()
+              " apiKey="3zk4lcdxv42ueqfotvbtw7lihq6uwkb0cy7l33muhxhr778z" [formControlName]="field.name"></editor>
+          </div>
+        </ng-container>
+
+        <!--For field type lookup with not loadAsDropdown -->
+        <ng-container class="fltt-left mb-20" *ngIf="
+            field.type == 'lookup' && show[field.name] && !field.loadAsDropDown
+          " appearance="outline">
+          <!--[ngClass]="{'error_color' : lookupFieldRequired[field.name],'l' : field.fieldSize == 'large' , 's_s' : field.fieldSize == 'tiny', 's' : field.fieldSize == 'small','m' : field.fieldSize == 'medium'}"-->
+
+          <div class="select-new" [ngClass]="{
+              l: field.fieldSize == 'large',
+              s_s: field.fieldSize == 'tiny',
+              s: field.fieldSize == 'small',
+              m: field.fieldSize == 'medium',
+              'mat-form-field-invalid':
+                !this.lookupValue[field.name].length &&
+                formSubmitted &&
+                field.isRequired
+            }">
+            <mat-label>{{ field.label
+              }}<span *ngIf="field.isRequired" style="color: #f44336">*</span></mat-label>
+
+            <ng-select [items]="filteredOptions[field.name]" bindLabel="value" #in
+              (keyup)="dynamicSearch($event, field)" appendTo="body" [notFoundText]="dropDownText[field.name]"
+              (ngModelChange)="updatedVal($event, field.name)" [ngModelOptions]="{ standalone: true }" [id]="field.name"
+              placeholder="{{ field.label }}" [compareWith]="compareFn"
+              [maxSelectedItems]="!field.allowMultipleValues ? 1 : undefined" (change)="
+                onSelectionChange(lookupValue[field.name], field, fieldIndex)
+              " [multiple]="true" [(ngModel)]="lookupValue[field.name]" clearable="true" class="ng-select-latest"
+              [ngClass]="{
+                'single-select':
+                  field.allowMultipleValues == null ||
+                  field.allowMultipleValues == false
+              }">
+              <ng-template ng-footer-tmp>
+                <div *ngIf="loadingAPI" [nbSpinner]="true" nbSpinnerStatus="info">
+                  Loading ...
+                </div>
+                <div (click)="in.close(); addSubForm(field, fieldIndex)" class="hover-addnew">
+                  Add New {{ field.lookupTableName }}
+                </div>
+              </ng-template>
+              <ng-template ng-label-tmp let-item="item">
+                <div (click)="openLookupModalForDetail(item, field)">
+                  <i class="fa fa-window-close" (click)="removeSelected(item, field)">x</i>
+                  <b style="font-size: 16px">{{ item.value }}</b>
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+
+          <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+            [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+        </ng-container>
+
+        <!--For field type lookup with loadAsDropdown-->
+        <ng-container class="fltt-left" *ngIf="
+            field.type == 'lookup' && show[field.name] && field.loadAsDropDown
+          " appearance="outline">
+          <!--[ngClass]="{'error_color' : lookupFieldRequired[field.name],'l' : field.fieldSize == 'large' , 's_s' : field.fieldSize == 'tiny', 's' : field.fieldSize == 'small','m' : field.fieldSize == 'medium'}"-->
+          <div class="select-new" [ngClass]="{
+              l: field.fieldSize == 'large',
+              s_s: field.fieldSize == 'tiny',
+              s: field.fieldSize == 'small',
+              m: field.fieldSize == 'medium',
+              'mat-form-field-invalid':
+                !this.lookupValue[field.name].length &&
+                formSubmitted &&
+                field.isRequired
+            }">
+            <mat-label>{{ field.label
+              }}<span *ngIf="field.isRequired" style="color: #f44336">*</span></mat-label>
+            <ng-select [items]="
+                filteredOptions[field.name]
+                  | filter: lookupValue[field.name]:in.searchTerm
+              " bindLabel="value" #in appendTo="body" [notFoundText]="'No record found'"
+              (ngModelChange)="updatedVal($event, field.name)" [ngModelOptions]="{ standalone: true }" [id]="field.name"
+              placeholder="{{ field.label }}" [compareWith]="compareFn"
+              [maxSelectedItems]="!field.allowMultipleValues ? 1 : undefined" (change)="
+                onSelectionChange(lookupValue[field.name], field, fieldIndex)
+              " [multiple]="true" [(ngModel)]="lookupValue[field.name]" clearable="true" class="ng-select-latest"
+              [ngClass]="{
+                'single-select':
+                  field.allowMultipleValues == null ||
+                  field.allowMultipleValues == false
+              }">
+              <ng-template ng-footer-tmp>
+                <div *ngIf="loadingAPI" [nbSpinner]="true" nbSpinnerStatus="info">
+                  Loading ...
+                </div>
+                <div (click)="in.close(); addSubForm(field, fieldIndex)" class="hover-addnew">
+                  Add New {{ field.lookupTableName }}
+                </div>
+              </ng-template>
+              <ng-template ng-label-tmp let-item="item">
+                <div (click)="openLookupModalForDetail(item, field)">
+                  <i class="fa fa-window-close" (click)="removeSelected(item, field)">x</i>
+                  <b style="font-size: 16px">{{ item.value }}</b>
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+        </ng-container>
+
+        <!-- Field input for type file -->
+        <ng-container *ngIf="field.type == 'file' && show[field.name]">
+          <div class="wrap_field full-width" [ngClass]="
+              field.fieldSize == 'tiny'
+                ? 's_s'
+                : field.fieldSize == 'small'
+                ? 's'
+                : field.fieldSize == 'medium'
+                ? 'm'
+                : 'l'
+            ">
+            <!-- <span>{{field.label}} :</span> -->
+
+            <span class="position-relative with-help">{{ field.label
+              }}<span *ngIf="field.isRequired" style="color: #f44336">*</span>
+              &nbsp; &nbsp;:
+              <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+                [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+            </span>
+
+            <div class="file_upload">
+              <div class="files">
+                <div class="upload_file">
+                  <div class="droparea" (dragover)="onDragOver($event)" (drop)="onDrop($event, field.name)"
+                    (dragleave)="onDragLeave($event)" [class.active]="isActive">
+                    <input type="file" name="{{ field.name }}" class="browse-file"
+                      (change)="onSelectedFile($event, field.name)" multiple [readonly]="field.isReadOnly" />
+                    <div class="upload_img">
+                      <img src="/assets/images/file-upload.png" />
+                    </div>
+                    <span class="drop_text">Choose files or Drag and drop files here</span>
+                  </div>
+                </div>
+                <div class="w_100" *ngIf="
+                    field.type === 'file' &&
+                    uploadedFiles &&
+                    uploadedFiles[field.name]
+                  ">
+                  <div class="s_file">
+                    <div class="inner_files edit_file">
+                      <span class="file_name edit_file_inner" *ngFor="
+                          let f of uploadedFiles[field.name];
+                          let index = index
+                        ">
+                        <span class="{{ getFileExtension(f) }}"></span>&nbsp;&nbsp;
+                        <span class="text_inner"> {{ getFileName(f) }} </span>
+                        <span class="flex_space"></span>
+                        <div class="delete_icon" (click)="onDelete(index, field.name)">
+                          <img src="assets/images/close.png" />
+                        </div>
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <nb-progress-bar class="progress_bar" *ngIf="uploadProgress > 0" aria-valuenow="25"
+                      aria-valuemin="0" aria-valuemax="100" [value]="uploadProgress" status="primary">
+                      {{ uploadProgress }}%</nb-progress-bar>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Field input for type time -->
+        <mat-form-field class="mb-20" [ngClass]="{
+            'mat-form-field-invalid':
+              dynamicForm.get(field.name).invalid && formSubmitted
+          }" appearance="outline" *ngIf="field.type === 'time' && show[field.name]" [ngClass]="
+            field.fieldSize == 'tiny'
+              ? 's_s'
+              : field.fieldSize == 'small'
+              ? 's'
+              : field.fieldSize == 'medium'
+              ? 'm'
+              : 'l'
+          ">
+          <mat-label>{{ field.label }}</mat-label>
+          <span *ngIf="field.isRequired" style="color: #f44336">*</span>
+          <input matInput placeholder="{{ field.label }}" [type]="field.type" [placeholder]="field.label"
+            [formControlName]="field.name" [readonly]="field.isReadOnly" (keyup)="
+              evalExpressionForFormulaField(); rollUpCalculationFunction()
+            " (ngModelChange)="
+              evalExpressionForFormulaField(); rollUpCalculationFunction()
+            " />
+          <ngx-help class="help-icon help-right" *ngIf="tutorials | helpPipe: field.label"
+            [tutorial]="tutorials | helpPipe: field.label"></ngx-help>
+        </mat-form-field>
+      </ng-container>
+    </ng-container>
+  </ng-template>
+</form>

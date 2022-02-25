@@ -1,0 +1,114 @@
+<nb-card class="scroller big-chat-main" (click)="chatPageClicked()" [nbSpinner]="loading"  nbSpinnerStatus="primary"
+         nbSpinnerSize="large" nbSpinnerMessage="" [ngClass]="{'custom-style' : callLogStyle}">
+  <nb-card-header *ngIf="!callLogStyle" class="big-chat-header d-flex justify-content-end align-items-center">
+    <!-- <button nbButton class="float-right" status="primary" nbButton *ngIf="subscribeOptions.length > 0"> -->
+    <!-- <i class="fa fa-eye" *ngIf="subscribeOptions.length > 0"  -->
+    <span class="reminder" *ngIf="fromTask">
+      <a class="bottom_line alert-images" title="Reminder" (click)="openReminderModal()">
+        <img class="alert-default default" src="assets/images/alert-default.png" />
+      </a>
+    </span>
+    <button *ngIf="tableInfo?.tableName == 'Tasks'" aria-hidden="true" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu"
+            class="eye-btnn" [ngClass]="{'watcherOpened': isWatcherOpened}" (menuOpened)="watcherMenuOpened()"
+            (menuClosed)="watcherMenuClosed()">
+      <span class="icon-mar-lft" ><i class="fa fa-users" [ngStyle]="{color:uiColor}"></i>&nbsp; {{subscribers.length}} </span>
+    </button>
+
+    <mat-menu  #menu="matMenu" yPosition="below">
+      <ng-container *ngIf="tableInfo?.tableName == 'Tasks'">
+        <button mat-menu-item first-top>
+          <span class="li-head curson-pointer" (click)="selfSubsription()">
+            <span class="icon-mar-lft"></span> {{ subscriptionText }}
+          </span>
+        </button>
+
+        <div class="all-user-list">
+          <button mat-menu-item *ngFor="let option of subscribers">
+            <span class="li-head">
+              <span class="icon-mar-lft"  [ngStyle]="{'background-color': option?.userColor}">{{ option.firstName[0] + option.lastName[0] | uppercase}}</span>
+              {{ option.firstName +' ' + option.lastName}}
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span class="left-margin curson-pointer" (click)="cancelSubscription(option._id)">
+                <i class="fa fa-times" aria-hidden="true"></i>
+              </span>
+            </span>
+          </button>
+        </div>
+
+        <button mat-menu-item class="last-bottom" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
+                class="curson-pointer">
+          <ngx-watch-user [tableInfo]='tableInfo' [matMenu]="trigger" (valueChanged)="loadSubscribers()"></ngx-watch-user>
+        </button>
+      </ng-container>
+    </mat-menu>
+
+  </nb-card-header>
+  <nb-card-body class="big-chat-body">
+    <div class="row">
+      <div class="chat-container col-md-12 col-lg-12 col-xxxl-12 big-chat-con">
+        <nb-chat title="Messages" size="{{callLogStyle ? '' : 'large'}}" status="primary"
+                 [ngClass]="{'call-bg position-relative': callLogStyle}"
+                 style="{{viewCallLog ? 'height : 100% !important' : ''}}"
+                 [callLog]="callLogStyle"
+                 [scrollBottom]="false" [replyFlag]="replyFlag" [replyImageFlag]="replyImageFlag" [replyName]="replyName" [replyDate]="replyDate" [currentUser]="currentUser"
+                 (replyFlagEmit)="replyFlagEmitMethod($event)" (replyImageFlagEmit)="replyImageFlagEmitMethod($event)" [replyToMessage]="replyToMessage" #scrollable>
+
+          <nb-chat-message #list  *ngFor="let msg of messageList;let i = index" [id]="'msg' + i" [dateFormat]="'medium'" [type]="msg?.type" [replyToMessage]="replyToMessage"
+                           [message]="msg.text" [messageId]="msg"
+                           [messageObj]="msg" [reply]="msg.reply" [sender]="msg?.sender?.firstName + ' ' + msg?.sender?.lastName"
+                           [callLog]="callLogStyle"
+                           [date]="msg.dateSent" [files]="msg.files" [quote]="msg?.quote" [latitude]="msg?.latitude" [replyFlag]="replyFlag" [replyImageFlag]="replyImageFlag"
+                           [longitude]="msg?.longitude" [avatar]="'assets/images/img_avatar.png'" [uiColor]='uiColor' (click)="mentionRedirect(msg)"
+                           (onDeleteMessage)="onDeleteMessage(msg)" (replyParticularMessage)="replyParticularMessage(msg)" (onScrollElement)="scrollToMessage($event)">
+          </nb-chat-message>
+
+          <!-- <div class="reply" *ngIf="replyFlag">
+            <span>{{replyToMessage}}</span>
+            <i class="fa fa-times" aria-hidden="true" (click)="replyFlag = false"></i>
+          </div> -->
+
+          <!-- <div class="reply" *ngIf="replyImageFlag">
+            <span>{{replyToMessage}}</span>
+            <img [src]="replyToMessage">
+            <i class="fa fa-times" aria-hidden="true" (click)="replyImageFlag = false"></i>
+          </div> -->
+
+          <nb-chat-form (send)="sendMessage($event)" [messagePlaceholder]="'Write a comment'"
+                        [uiColor]='uiColor' [dropFiles]="true" [ngClass]="{'call-chat-form': callLogStyle}"
+                        class="scroller" [nbSpinner]="fileUploading" nbSpinnerSize="small"
+                        [resourceId] = "tableInfo?.resourceId" [resourceTableName] = "tableInfo?.tableName"
+                        (loadSubscribers) = "loadSubFromForm($event)"
+                        >
+            <img src="">
+          </nb-chat-form>
+        </nb-chat>
+
+      </div>
+    </div>
+  </nb-card-body>
+  <div class="message-link">
+    <ul *ngIf="!loading">
+      <li><a><i class="fa fa-paperclip" (click)="triggerFileUpload()"></i></a></li>
+      <li><a><i class="fa fa-file-image-o" (click)="triggerImageUpload()"></i></a></li>
+      <!-- <li><a href="#"><i class="fa fa-smile-o"></i></a></li> -->
+      <!-- <li *ngIf="loadEmoji"><i (click)="toggled = !toggled" [(emojiPickerIf)]="toggled"
+          [emojiPickerDirection]="'bottom' || 'top' || 'left' || 'right'" (emojiPickerSelect)="insertEmoji($event)"
+          class="fa fa-smile-o"></i></li> -->
+      <li>
+        <i class="fa fa-smile-o" (click)="toggleEmojiPicker($event);"></i>
+        <emoji-mart class="emoji-mart"  [style]="{ position: 'absolute', bottom: '20px', right: '20px' }" [showPreview]="false" set="{{set}}" *ngIf="showEmojiPicker" isNative="true"
+                    (click)="emojiClicked($event)" (emojiSelect)="insertEmoji($event)" title="Pick your emoji…"></emoji-mart>
+
+      </li>
+    </ul>
+    <input type="file" style="display: none;" accept="image/*" #imageInput (change)="onImageChosen($event)" />
+    <input type="file" style="display: none;" #fileInput (change)="onFileChosen($event)" />
+  </div>
+</nb-card>
+<div id="myModal" class="modal" #myDiv>
+  <span class="close" #mySpan (click)="closeImageModal()">&times;</span>
+  <div class="vertical-mid">
+    <img class="modal-content" id="img01" #myModalImage>
+    <div id="caption" #myCaption></div>
+  </div>
+</div>

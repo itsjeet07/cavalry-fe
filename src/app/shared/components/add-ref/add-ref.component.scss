@@ -1,0 +1,86 @@
+.appear {
+  width: 450px;
+    margin-bottom: 0;
+    border-radius: 5px !important;
+    position: absolute;
+    top: 30px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+}
+
+.label-css {
+    background: var(--unnamed-color-f8fbff) 0% 0% no-repeat padding-box;
+    border: 1px solid var(--unnamed-color-d7dfe9);
+    background: #f8fbff 0% 0% no-repeat padding-box;
+    border: 1px solid #d7dfe9;
+    border-radius: 5px;
+    opacity: 1;
+}
+.result {
+    color: var(--unnamed-color-5c77ea);
+    text-align: left;
+    font: normal normal medium 14px/22px DM Sans;
+    letter-spacing: 0px;
+    color: #5c77ea;
+    opacity: 1;
+}
+
+.heading {
+    color: var(--unnamed-color-262b44);
+    text-align: left;
+    font: normal normal medium 12px/22px DM Sans;
+    letter-spacing: 0px;
+    color: #262b44;
+    text-transform: uppercase;
+    opacity: 0.5;
+}
+nb-card.appear *{
+font-family: "DM Sans", sans-serif !important;
+font-size: 14px;
+font-weight: normal
+
+}
+nb-card.appear nb-card-header{
+padding: 13px 20px;
+color: #5c77ea;
+font-size: 18px;
+font-family: "DM Sans", sans-serif !important;
+font-weight: normal;
+line-height: 40px;
+}
+nb-card.appear nb-card-body{
+  padding: 23px 40px !important;
+  max-height: calc(100vh - 20vh);
+  overflow-x: hidden;
+}
+nb-card.appear nb-card-body .new-label{
+  color: #172B4D;
+    position: inherit;
+    text-transform: inherit;
+    font-size: 14px !important;
+}
+nb-card.appear nb-card-header img.close-btn {
+  float: right;
+  margin: 14px 0 0 0;
+  position: relative;
+  cursor: pointer;
+  /* left: -278px; */
+}
+nb-card.appear nb-card-header img.title-icon {
+  margin: -7px 5px 0 0;
+}
+.row.refer-lookup {
+  margin-bottom: 12px;
+}
+.white-space {
+  background: #fff;
+    width: 446px;
+    height: 20px;
+    position: sticky;
+    bottom: -23px;
+    top: auto;
+    left: -50px;
+    margin-left: -38px;
+}
+

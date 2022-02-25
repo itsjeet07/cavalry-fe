@@ -1,0 +1,31 @@
+.display-block{
+  display:block;
+}
+.drop-down-image {
+  margin-bottom: 15px;
+}
+.drop-down-image .added-img{
+  float: right;
+    width: 25px;
+    height: auto;
+    margin-top: 8px;
+    /* display: flex; */
+    /* align-items: center; */
+    opacity: 0.3;
+}
+
+.drop-down-image .added-input {
+  float: left;
+    max-width: calc(100% - 30px);
+    overflow: hidden;
+}
+
+.drop-down-image i.fa.fa-plus {
+  margin-top: 20px;
+}
+.drop-down-image i.fa.fa-minus{
+  margin-top: 20px;
+}
+.drop-down-image .min-hgt{
+  min-height: 47px;
+}

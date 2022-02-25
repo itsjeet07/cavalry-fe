@@ -1,0 +1,77 @@
+<nb-card>
+
+  <nb-card-header>
+    <ng-container *ngIf="(columnType?columnType != 'formula':true)  else elseBlock">
+      Field Options
+      <small class="default_note">Note: Click on item to set as default option</small>
+    </ng-container>
+    <ng-template #elseBlock>
+      Formulas
+      <button nbButton class="pull-right" (click)="showHelpModal()">Help</button>
+    </ng-template>
+
+
+  </nb-card-header>
+
+  <nb-card-body *ngIf="columnType?columnType != 'formula':true">
+    <tag-input [(ngModel)]="options" #input [secondaryPlaceholder]="'Input the option and press enter to add more'"
+      (onAdd)="onItemAdded($event)" [placeholder]="''">
+      <ng-template let-item="item" let-index="index">
+        <div (click)="onSelect(item)">
+          <span>
+            <i *ngIf="item.value==isSelected" class="fa fa-check-circle"></i> {{ item.value }}
+          </span>
+          <span (click)="input.removeItem(item, index);isSelected=''" class="ng2-tag__remove-button">
+            x
+          </span>
+        </div>
+      </ng-template>
+    </tag-input>
+    <!-- <tag-input [(ngModel)]='options' [ngClass]="{'selected-class':'isSelected'}"
+    (onAdd)="onItemAdded($event)" (onSelect)="onSelect($event)" [secondaryPlaceholder]="'Input the option and press enter to add more'"
+     [placeholder]="''"></tag-input>
+     <label>Default selected value: </label> -->
+    <!-- <tag-input [(ngModel)]='defaultValueChip' [disable]="true"  placeholder=""></tag-input> -->
+  </nb-card-body>
+
+  <nb-card-body *ngIf="(columnType && columnType == 'formula')">
+    <div class="form-group with-plus-icon float-none">
+      <label for="type" class="label">Formula type</label>
+      <nb-select status="basic" placeholder="Type of formula" [(ngModel)]="items[0].type" fullWidth>
+        <nb-option *ngFor="let formula of formulas" [value]="formula.toLowerCase()">
+          {{formula}}
+        </nb-option>
+      </nb-select>
+
+      <div>
+        <br/>
+        <!-- <label for="type" class="label">Also a frontend formula</label> -->
+        <nb-checkbox class="default_note" name="alsoAFrontEndFormula" [(ngModel)]="items[0].alsoAFrontEndFormula">Also a frontend formula </nb-checkbox>
+        <br/>
+      </div>
+    </div>
+
+    <div class="form-group with-plus-icon float-none">
+      <label for="type" class="label">Formula</label>
+      <!-- <span class="default_note" (click)="showHelp = !showHelp">
+        <i class="fas fa-question-circle"></i>
+      </span> -->
+      <ngx-codemirror
+        [(ngModel)]="items[0].formula"
+        [options]="{
+          lineNumbers: true,
+          theme: 'erlang-dark',
+          mode: 'javascript',
+          lineWrapping:true
+        }"
+      ></ngx-codemirror>
+    </div>
+
+  </nb-card-body>
+
+  <nb-card-footer>
+    <button class="cancel" nbButton matRipple status="danger" (click)="cancel()">Cancel</button>
+    <button nbButton matRipple status="success" [disabled]="(columnType && columnType == 'formula')?false:!options.length" (click)="submit()">Submit</button>
+    <button nbButton class="default_note" *ngIf="columnType == 'formula'" status="basic" (click)="validateFormula()">Validate Formula</button>
+  </nb-card-footer>
+</nb-card>

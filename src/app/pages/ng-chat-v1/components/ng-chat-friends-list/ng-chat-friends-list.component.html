@@ -1,0 +1,120 @@
+<div *ngIf="shouldDisplay" id="ng-chat-people"
+  [ngClass]="{'primary-outline-color': true, 'primary-background': true, 'ng-chat-people-collapsed': isCollapsed}">
+  <a href="javascript:void(0);" class="ng-chat-title secondary-background shadowed"
+    [ngClass]="{'active-friendlist': totalUnreadMessage}" (click)="onChatTitleClicked()">
+    <span class="badge-new-main">
+      {{localization.title}}
+      <span *ngIf="totalUnreadMessage" class="badge-new">
+        {{ totalUnreadMessage | messageCount }}
+        <span class="ng-chat-participant-status unread ml-1" *ngIf="isCollapsed && showUnreadStatus"></span>
+      </span>
+    </span>
+  </a>
+  <div *ngIf="addPeopleFromFlag" class="ng-chat-people-actions">
+    <a href="javascript:void(0);" class="ng-chat-people-action" (click)="onFriendsListActionCancelClicked()">
+      <i class="remove-icon"></i>
+    </a>
+    <a href="javascript:void(0);" class="ng-chat-people-action" (click)="onFriendsListActionConfirmClicked()">
+      <i class="check-icon"></i>
+    </a>
+  </div>
+  <div *ngIf="!addPeopleFromFlag" class="ng-chat-people-actions float-right" (mouseleave)="showOptions(false)">
+    <span class="ng-chat-options-activator">
+      <span class="primary-text" (mouseenter)="showOptions(true)" *ngIf="!this.isCollapsed">...</span>
+    </span>
+
+    <div *ngIf="toShowOption" [ngClass]="'primary-text'">
+      <input type="checkbox" [(ngModel)]="muteSound" (change)="changeSound()">
+      Mute Sound
+    </div>
+  </div>
+
+  <div class="search-wth-icon">
+    <i class="fa fa-search"></i>
+    <input *ngIf="searchEnabled" id="ng-chat-search_friend" class="friends-search-bar" type="search"
+      [placeholder]="localization.searchPlaceholder" [(ngModel)]="searchInput" (keyup)="onUserSearch()" />
+
+  </div>
+  <div class="users-main-div">
+    <nb-card>
+      <nb-card-body>
+        <!-- <img src="../../../../../assets/images/address.svg"> -->
+        <nb-tabset class="users-orders" (changeTab)="ontabChanged($event)">
+          <!-- [tabIcon]="allUsersIconConfig" -->
+            <nb-tab active="{{setActiveAllTab}}" nbTooltip="All Users" nbTooltipPlacement="top" tabIcon="people-outline">
+            </nb-tab>
+          <nb-tab active="{{setPrivateTabActive}}" class="users-orders-badge" tabTitle="Private" badgeText='{{filteredParticipants|countByParticipantType: 0}}'>
+          </nb-tab>
+          <nb-tab active="{{setGroupTabActive}}" class="users-orders-badge" tabTitle="Group"
+            badgeText='{{filteredParticipants|countByParticipantType: 1}}'>
+          </nb-tab>
+        </nb-tabset>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="scroll-div">
+    <ul id="ng-chat-users" *ngIf="!isCollapsed" [ngClass]="{'offset-search': searchEnabled}">
+      <ng-container *ngIf="userGroupFlag == 0 || userGroupFlag == 1">
+          <ul id="ng-chat-users" *ngIf="!isCollapsed" [ngClass]="{'offset-search': searchEnabled}">
+              <li [class.disabled]="!allowClickFlag" *ngFor="let user of filteredParticipants |userGroup: userGroupFlag">
+                <div>
+
+                  <div [ngStyle]="{'margin-left:28px':addPeopleFromFlag}"
+                    [ngClass]="{'ng-chat-friends-list-selectable-offset': currentActiveOption, 'ng-chat-friends-list-container': true}"
+                    (click)="onUserClick(user)">
+                    <div *ngIf="!user.avatar" class="chat-user-icon" [ngStyle]="{'background-color': user?.userColor}">
+                      <!-- <i class="user-icon"></i> -->
+                      <!-- <img src="assets/images/profile-user.svg" /> -->
+                      <span >{{user.displayName | firstLetterOfWords}}</span>
+                    </div>
+
+                    <img *ngIf="user.avatar" alt="" class="avatar" height="30" width="30" [src]="user.avatar | sanitize" />
+                    <strong title="{{user.displayName}}">{{user.displayName}}</strong>
+                    <span *ngIf="user.totalUnreadCount >=1"
+                      class="ng-chat-unread-messages-count unread-messages-counter-container primary-text">{{user.totalUnreadCount}}</span>
+                    <span
+                      [ngClass]="{'ng-chat-participant-status': true, 'online': user.status == ChatParticipantStatus.Online, 'busy': user.status == ChatParticipantStatus.Busy, 'away': user.status == ChatParticipantStatus.Away, 'offline': user.status == ChatParticipantStatus.Offline}"
+                      title="{{chatParticipantStatusDescriptor(user.status, localization)}}"></span>
+                  </div>
+
+                </div>
+              </li>
+          </ul>
+        </ng-container>
+        <ng-container *ngIf="userGroupFlag == 2">
+            <ul id="ng-chat-users" *ngIf="!isCollapsed" [ngClass]="{'offset-search': searchEnabled}">
+                <li *ngFor="let user of allFilteredUserList |userGroup: userGroupFlag">
+                  <input *ngIf="currentActiveOption && currentActiveOption.validateContext(user)" type="checkbox"
+                    class="ng-chat-users-checkbox" (change)="onCheckboxChange(user, $event.target.value)"
+                    [checked]="isUserSelectedFromFriendsList(user)" />
+                  <div>
+                    <input *ngIf="addPeopleFromFlag" type="checkbox"
+                      [ngClass]="{'in-checkbox':addPeopleFromFlag}" [checked]="selectedUsers.indexOf(user) >-1"
+                      (change)="onCheckboxChange(user, $event.target.checked)" />
+
+                    <div [ngStyle]="{'margin-left:28px':addPeopleFromFlag}"
+                      [ngClass]="{'ng-chat-friends-list-selectable-offset': currentActiveOption, 'ng-chat-friends-list-container': true}"
+                      (click)="onUserClick(user)">
+
+                      <div *ngIf="!user.avatar" class="chat-user-icon"  [ngStyle]="{'background-color': user?.userColor}">
+                        <!-- <i class="user-icon"></i> -->
+                        <!-- <img src="assets/images/profile-user.svg" /> -->
+                        <span >{{user.displayName | firstLetterOfWords}}</span>
+                      </div>
+
+                      <img *ngIf="user.avatar" alt="" class="avatar" height="30" width="30" [src]="user.avatar | sanitize" />
+                      <strong title="{{user.displayName}}">{{user.displayName}}</strong>
+                      <span *ngIf="user.totalUnreadCount >=1"
+                        class="ng-chat-unread-messages-count unread-messages-counter-container primary-text">{{user.totalUnreadCount}}</span>
+                      <span
+                        [ngClass]="{'ng-chat-participant-status': true, 'online': user.status == ChatParticipantStatus.Online, 'busy': user.status == ChatParticipantStatus.Busy, 'away': user.status == ChatParticipantStatus.Away, 'offline': user.status == ChatParticipantStatus.Offline}"
+                        title="{{chatParticipantStatusDescriptor(user.status, localization)}}"></span>
+                    </div>
+
+                  </div>
+                </li>
+            </ul>
+          </ng-container>
+    </ul>
+  </div>
+</div>

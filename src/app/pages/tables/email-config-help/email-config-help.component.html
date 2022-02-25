@@ -1,0 +1,38 @@
+
+<nb-card>
+
+    <div class="container-fluid main-container">
+      <div class="col-md-1 close-modal" (click)="closeModal()" style="cursor: pointer;">
+        <strong>X</strong>
+      </div>
+      <div class="header">
+        <span>Variables which can be used in template :</span><br/>
+        <strong>It can be used as : $Table.subject</strong><br/>
+        <small>Lookup properties can be accessed like : $Table.assignedTo.firstName </small>
+      </div>
+
+      <nb-card-body>
+        <div class="row">
+          <div class="col-sm-5">
+            <nb-list>
+              <nb-list-item *ngFor="let field of tableFields" (click)="copied()" ngxClipboard [cbContent]="field.name" nbTooltip="Click to copy"  nbTooltipStatus="primary">
+                {{ field.name }}
+              </nb-list-item>
+            </nb-list>
+          </div>
+          <div class="col-sm-5">
+            <nb-list>
+
+              <nb-list-item *ngFor="let prop of userProperties" (click)="copied()" ngxClipboard [cbContent]="prop" nbTooltip="Click to copy"  nbTooltipStatus="primary">
+                {{ prop }}
+              </nb-list-item>
+
+              userProperties
+            </nb-list>
+          </div>
+
+        </div>
+    </nb-card-body>
+    </div>
+
+  </nb-card>

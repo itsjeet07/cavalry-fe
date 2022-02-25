@@ -1,0 +1,60 @@
+<nb-card class="export_layout">
+    <nb-card-header>Export</nb-card-header>
+    <nb-card-body class="export_body">
+      <div class="margin30">
+        <div class="inner_body" >
+          <div *ngIf="formSubmitted && form?.controls?.table?.hasError('required') || !formSubmitted">
+            <form [formGroup]="form">
+                <mat-select class="form-control" placeholder="Related Date fields" formControlName="table">
+                    <mat-option *ngFor="let filters of tableList" [value]="filters">
+                    {{filters.tableName}}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="formSubmitted && form?.controls?.table?.hasError('required')">
+                  Atleast 1 table is selected
+                </mat-error>
+            </form>
+          </div>
+          <div *ngIf="(lookupsTable && lookupsTable.length > 0) && formSubmitted && !form?.controls?.table?.hasError('required')">
+            <span>Check the following Lookup tables</span>
+            <ng-container class="fltt-left" appearance="outline">
+              <!--[ngClass]="{'error_color' : lookupFieldRequired[field.name],'l' : field.fieldSize == 'large' , 's_s' : field.fieldSize == 'tiny', 's' : field.fieldSize == 'small','m' : field.fieldSize == 'medium'}"-->
+              <div class="select-new m">
+                <mat-label>Look up Tables</mat-label>
+
+                <ng-select [items]="lookupsTable | filter : 'tableName' : in.searchTerm"
+                  bindLabel="tableName" #in appendTo="body" [notFoundText]="'No record found'"
+                  (ngModelChange)="updatedVal($event)" [ngModelOptions]="{standalone: true}" [id]="'lookupsTable'"
+                  placeholder="Look up Tables" [compareWith]="compareFn"
+                  (change)="onSelectionChange()" [multiple]="true"
+                  [(ngModel)]="selectedLookupsTable" clearable="true" class="ng-select-latest">
+                  <ng-template ng-footer-tmp>
+                    <div *ngIf="loadingAPI" [nbSpinner]="true" nbSpinnerStatus="info">
+                      Loading ...
+                    </div>
+                    <div (click)="in.close(); addSubForm()" class="hover-addnew">
+                      Add New Look up Table
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+            </ng-container>
+          </div>
+          <div *ngIf="(lookupsTable && lookupsTable.length === 0) && formSubmitted && !form?.controls?.table?.hasError('required')">
+            <span>The following table will be exported</span>
+            <ul>
+              <li *ngFor="let table of selectedTables">{{table}}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nb-card-body>
+    <nb-card-footer class="footer d-flex">
+      <button *ngIf="formSubmitted && form?.controls?.table?.hasError('required') || !formSubmitted" class="btn btn-primary btn-lg w-50 mb-1 mr-2" (click)="onCancel()">Cancel </button>
+      <button *ngIf="formSubmitted && form?.controls?.table?.hasError('required') || !formSubmitted" class="btn btn-primary btn-lg w-50 mb-1" type="submit" (click)="save()">Save</button>
+      <button *ngIf="(lookupsTable && lookupsTable.length === 0) && formSubmitted && !form?.controls?.table?.hasError('required')" class="btn btn-primary btn-lg w-50 mb-1 mr-2" type="submit" (click)="export()">Export</button>
+      <button *ngIf="(lookupsTable && lookupsTable.length === 0) && formSubmitted && !form?.controls?.table?.hasError('required')" class="btn btn-primary btn-lg w-50 mb-1" type="submit" (click)="reset()">Back</button>
+      <button *ngIf="(lookupsTable && lookupsTable.length > 0) && formSubmitted && !form?.controls?.table?.hasError('required')" class="btn btn-primary btn-lg w-50 mb-1" type="submit" (click)="addLookUp()">Add</button>
+    </nb-card-footer>
+  </nb-card>
+  

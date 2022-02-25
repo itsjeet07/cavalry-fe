@@ -1,0 +1,23 @@
+.width-100{
+    width: 100%;
+}
+.mr-top-15{
+    margin-top: 15px;
+}
+.email_modal .close-btn.col-md-1 {
+  position: absolute;
+  right: 8px;
+  top: 14px;
+}
+.email_modal {
+    position: fixed;
+    width: 600px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-bottom: 0;
+}
+.email_modal nb-card-body {
+  min-height: 530px;
+}
+

@@ -1,0 +1,21 @@
+<span *ngIf="tutorial.content == 'Text'" [nbPopover]="templateRef" nbPopoverTrigger="click" nbPopoverPlacement="bottom">
+  <i class="fas fa-question-circle"></i>
+</span>
+
+<span *ngIf="tutorial.content !== 'Text'" (click)="openVideoPopUp(tempVideoRef)">
+  <i class="fas fa-question-circle"></i>
+</span>
+
+<ng-template #templateRef>
+  <span class="primitive-overlay" *ngIf="tutorial.content == 'Text'">{{tutorial.text}}</span>
+</ng-template>
+
+<ng-template #tempVideoRef let-modal >
+  <div class="video-with-close">
+    <span class="right-align" (click)="closeModal()">X</span>
+      <div class="video-frame">
+        <iframe width="660" height="400" [src]="safeSrc" allowfullscreen>
+        </iframe>
+      </div>
+  </div>
+</ng-template>

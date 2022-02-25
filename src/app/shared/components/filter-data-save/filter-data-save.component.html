@@ -1,0 +1,24 @@
+<nb-card>
+    <nb-card-header>Save As Filter Data</nb-card-header>
+    <nb-card-body>
+      <form [formGroup]="filtercFormData">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+                <input nbInput
+                placeholder="Enter Filter Name" formControlName="filterName">
+            </div>
+            <div class="form-group checkboxtext">
+              <nb-checkbox formControlName="isDefaultList">Default List
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+      </form>
+    </nb-card-body>
+
+    <nb-card-footer>
+        <button class="save" type="submit" disabled="!filtercFormData.valid" (click)="onSaveFilterData()"  nbButton matRipple>Save</button>
+        <button class="cancel" nbButton matRipple status="primary" (click)="onCancel()">Cancel</button>
+    </nb-card-footer>
+  </nb-card>

@@ -1,0 +1,57 @@
+<nb-card class="email_modal">
+    <nb-card-header class="action-card-header">
+        <div class="row">
+            <div class="col-md-11">
+                {{title}}
+            </div>
+            <div class="col-md-1" (click)="closeModal();$event.preventDefault();" style="cursor: pointer;">
+                <strong>X</strong>
+            </div>
+        </div>
+        ​
+    </nb-card-header>
+    <nb-card-body class="action-card-body">
+        <div *ngFor="let item of validate;let i = index" class="message-list-container">
+            <form #myForm="ngForm">
+                <div class="row">
+                    <div class="col-md-1 msg-list-action">
+                        <i class="fa fa-plus " (click)="addNewValidation();$event.preventDefault();"></i>&nbsp;
+                        <i class="fas fa-trash-alt" (click)="removeValidation(i);$event.preventDefault();"></i>
+                    </div>
+                    <div class="col-md-5">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Name</mat-label>
+                            <input matInput placeholder="Name" type="text" name="name" [(ngModel)]="item.name" required>
+                        </mat-form-field>
+                    </div>
+                    <!-- </div>
+                    <div class="row"> -->
+                    <div class="col-md-5">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Error Message</mat-label>
+                            <input matInput placeholder="Error Message" type="text" name="error"
+                                [(ngModel)]="item.errorMessage" required>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mt-2">
+                        <label>Logic</label>
+                        <ngx-codemirror name="conditionForNotAvailable{{i}}" [(ngModel)]="item.jstextArea"
+                            [options]="codeMirrorConfig" required></ngx-codemirror>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+
+    </nb-card-body>
+    <nb-card-footer>
+        <div class="action-card-footer">
+            <button ngbButton class="btn btn-primary" type="button"
+                (click)="saveRecord();$event.preventDefault();">Save</button>&nbsp;&nbsp;
+            <button ngbButton class="btn btn-primary" type="button"
+                (click)="closeModal();$event.preventDefault();">Cancel</button>
+        </div>
+    </nb-card-footer>
+</nb-card>

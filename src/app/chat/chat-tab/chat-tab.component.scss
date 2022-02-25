@@ -1,0 +1,200 @@
+.left-margin {
+  margin-left: 30px;
+}
+
+button.eye-btnn {
+  float: right;
+  border-radius: 4px;
+  border: none !important;
+}
+
+button.eye-btnn:hover, button.eye-btnn:focus {
+  // background: #ececf0 !important;
+  outline: none;
+}
+
+button.eye-btnn:active *, button.eye-btnn:focus * {
+  // background: #ececf0;
+  // color: #3366ff !important;
+}
+
+.all-user-list {
+  max-height: 106px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  margin-bottom: 7px;
+}
+
+.mat-menu-content {
+  padding: 0 !important;
+}
+
+.first-top {
+  margin-top: -8px !important;
+}
+
+span.li-head {
+  float: left;
+  width: 100%;
+}
+
+span.li-head span.icon-mar-lft {
+  float: left;
+  margin-right: 11px;
+}
+
+.all-user-list span.icon-mar-lft {
+  background: #3366ff;
+  width: 24px;
+  height: 24px;
+  line-height: 26px;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 11px;
+  margin-top: 12px;
+  color: #fff;
+}
+
+button.mat-focus-indicator.mat-menu-item:focus {
+  outline: none;
+  cursor: auto !important;
+}
+
+button.mat-focus-indicator.mat-menu-item {
+  border-bottom: 1px solid #ececf0;
+  cursor: auto !important;
+}
+
+button.mat-focus-indicator.last-bottom.mat-menu-item {
+  border-bottom: 0px solid #ececf0;
+  border-top: 1px solid #ececf0;
+}
+
+button.mat-focus-indicator.last-bottom.mat-menu-item * {
+  color: #3366ff;
+}
+
+.mat-menu-panel {
+  max-width: 240px;
+}
+
+button.mat-focus-indicator span.li-head span.left-margin {
+  display: none;
+  float: right;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  right: 11px;
+}
+
+button.mat-focus-indicator:hover span.li-head span.left-margin {
+  display: block;
+
+}
+
+.watcherOpened {
+  background: #ececf0 !important;
+}
+
+.curson-pointer {
+  cursor: pointer;
+}
+
+#ng-chat.light-theme .sent-chat-message-container img {
+  max-width: 182px;
+  width: 100%;
+}
+
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 11041; /* Sit on top */
+  padding-top: 0px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
+}
+
+.modal:before {
+  /* width: 100%;
+  height: 100%;
+  content: "";
+  background: rgba(0,0,0,0.9);
+  position: absolute;
+  z-index: 9999; */
+}
+
+/* Modal Content (image) */
+.modal-content {
+  margin: auto;
+  display: block;
+  width: 100%;
+  max-width: 96%;
+}
+
+/* Caption of Modal Image */
+#caption {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+  text-align: center;
+  color: #ccc;
+  padding: 10px 0;
+  height: 150px;
+}
+
+/* Add Animation */
+.modal-content, #caption {
+  -webkit-animation-name: zoom;
+  -webkit-animation-duration: 0.6s;
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+
+
+::ng-deep.nb-theme-default .size-medium.icon-start.icon-end.appearance-filled {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+
+::ng-deep.big-chat-main .big-chat-body .message-row input.with-button {
+  height: 45px;
+  margin-right: 8px;
+}
+
+::ng-deep.nb-theme-default nb-chat.size-large {
+  height: calc(100vh - 485px) !important;
+}
+
+span.link-img a {
+  padding-left: 0 !important;
+}
+
+.highlightedMessage {
+  background: rgba(89, 139, 255, 0.15);
+}
+
+.custom-style {
+  margin: 0 !important;
+  width: 100% !important;
+  overflow: hidden;
+}
+
+.call-bg {
+  background-color: #EEEEEE;
+  height: 100% !important;
+}
+
+.call-chat-form {
+  position: absolute;
+  bottom: -15px;
+  width: 95%;
+}

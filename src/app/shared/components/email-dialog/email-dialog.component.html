@@ -1,0 +1,42 @@
+<nb-card class="layout">
+  <nb-card-header class="header">
+    <span class="header_text">Compose</span>
+    <i class="fas fa-times pointer" (click)="onClose()"></i>
+  </nb-card-header>
+  <nb-card-body class="body">
+    <form class="example-form inner_body">
+      <div class="s1">
+      <mat-form-field class="example-full-width w-100">
+        <input matInput placeholder="To">
+      </mat-form-field>
+      <button type="button" class="btn btn-light add">
+        <i class="fas fa-user-plus"></i>
+      </button>
+    </div>
+      <mat-form-field class="example-full-width">
+        <mat-label>Subject</mat-label>
+        <input matInput>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="example-full-width email_message">
+        <textarea class="email_message" matInput></textarea>
+      </mat-form-field>
+      </form>
+  </nb-card-body>
+  <nb-card-footer class="footer">
+   <div class="f_but">
+    <button type="button" class="btn btn-light add">
+      <i class="fa fa-bold fi_14" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="btn btn-light add">
+      <i class="fa fa-italic fi_14" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="btn btn-light add">
+      <i class="fa fa-underline fi_14" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="btn btn-light add">
+      <i class="fa fa-paperclip fi_14" aria-hidden="true"></i>
+    </button>
+   </div>
+   <button type="button" class="btn btn-light send">SEND</button>
+  </nb-card-footer>
+</nb-card>

@@ -1,0 +1,92 @@
+<nb-card [nbSpinner]="loading" nbSpinnerSize="large" nbSpinnerStatus="primary">
+
+    <nb-card-header>
+        Roll Up
+    </nb-card-header>
+
+    <nb-card-body>
+      <form #myForm="ngForm">
+      <!-- <div class="form-group with-plus-icon float-none">
+        <label for="type" class="label">Roll Up Table<sup style="color:red;">*</sup></label>
+        <nb-select (selectedChange)="onSelectRollUpTableChange($event)" name="table" status="basic" placeholder="Roll Up Table" [(ngModel)]="items[0].rollUptable" fullWidth required>
+          <nb-option *ngFor="let roll of tableVlaues" [value]="roll.toLowerCase()">
+            {{roll}}
+          </nb-option>
+        </nb-select>
+
+      </div>
+
+      <div class="form-group with-plus-icon float-none">
+        <label for="type" class="label">Number Field<sup style="color:red;">*</sup></label>
+        <nb-select (selectedChange)="numberFieldSelected($event)" [disabled]="!items[0].rollUptable" status="basic" name="field" placeholder="Number Field" [(ngModel)]="items[0].numberField" fullWidth required>
+          <nb-option *ngFor="let num of numberFieldArray" [value]="num.name">
+            {{num.label}}
+          </nb-option>
+        </nb-select>
+
+      </div> -->
+
+      <!-- <div class="form-group with-plus-icon float-none">
+        <label for="type" class="label">Main Table Number Field<sup style="color:red;">*</sup></label>
+        <nb-select [(selected)]="items[0].tableNumberField" (selectedChange)="mainTableNumberSelected($event)" [multiple]="true" status="basic" name="numberField" placeholder="Main Table Number Field" [(ngModel)]="items[0].tableNumberField" fullWidth required>
+          <nb-option *ngFor="let num of mainTableNumberFieldArray" [value]="num.name">
+            {{num.label}}
+          </nb-option>
+        </nb-select>
+
+      </div> -->
+
+      <ng-container *ngIf="parentForms">
+      <div class="form-group with-plus-icon float-none">
+        <label for="type" class="label">Roll Up Table<sup style="color:red;">*</sup></label>
+        <nb-select [multiple]="false" status="basic" (selectedChange)="parentFormSelected()" name="parentTable" placeholder="Parent table" [(ngModel)]="items[0].rollUptable" fullWidth required>
+          <nb-option *ngFor="let table of parentForms | keyvalue" [value]="table.key">
+            {{table.key}}
+          </nb-option>
+        </nb-select>
+      </div>
+    </ng-container>
+
+      <div class="form-group with-plus-icon float-none">
+        <label for="type" class="label">Roll up field<sup style="color:red;">*</sup></label>
+        <nb-select appendTo="body" [multiple]="false" status="basic" name="parentTableNumberField" placeholder="Parent table number/formula fields" [(ngModel)]="items[0].numberField" fullWidth required>
+          <nb-option *ngFor="let field of parentForms[items[0].rollUptable]" [value]="field.name">
+            {{field.label}}
+          </nb-option>
+        </nb-select>
+      </div>
+
+
+
+      <div class="form-group with-plus-icon float-none">
+        <label for="type" class="label">Aggregation<sup style="color:red;">*</sup></label>
+        <nb-select status="basic" placeholder="Aggregation" name="aggregation" [(ngModel)]="items[0].aggregation" fullWidth required>
+          <nb-option *ngFor="let agg of aggreArray" [value]="agg.toLowerCase()">
+            {{agg}}
+          </nb-option>
+        </nb-select>
+
+      </div>
+
+
+      <div class="form-group with-plus-icon float-none">
+        <label for="type" class="label">Filter<sup style="color:red;">*</sup></label>
+        <ngx-codemirror required name="filter"
+          [(ngModel)]="items[0].filter"
+          [options]="{
+            lineNumbers: true,
+            theme: 'erlang-dark',
+            mode: 'javascript',
+            lineWrapping:true
+          }"
+        ></ngx-codemirror>
+      </div>
+    </form>
+    </nb-card-body>
+
+    <nb-card-footer>
+      <button class="cancel" nbButton matRipple status="danger" (click)="cancel()">Cancel</button>
+      <button nbButton matRipple status="success" (click)="submit()">Submit</button>
+      <!-- <button nbButton class="default_note" *ngIf="columnType == 'formula'" status="basic" (click)="validateFormula()">Validate Formula</button> -->
+    </nb-card-footer>
+  </nb-card>

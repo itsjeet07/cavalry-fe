@@ -1,0 +1,106 @@
+<nb-card class="nb-additional-form">
+  <nb-card-header>Additional Form</nb-card-header>
+  <nb-card-body>
+    <form>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox [(ngModel)]="formModel.displayInList" name="displayInList" status="success">Display in List
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox [(ngModel)]="formModel.isSearchable" name="isSearchable" status="success">Is Searchable
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox [(ngModel)]="formModel.displayInTreeTable" name="displayInTreeTable" status="success">Display
+                in Tree Table
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox [(ngModel)]="formModel.allowMultipleValues" name="allowMultipleValues" status="success">Allow
+                Multiple Values
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox [(ngModel)]="formModel.idField" name="idField" status="success">ID Field
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox [(ngModel)]="formModel.isWorkFlowField" name="isWorkFlowField" status="success">Is Work Flow
+                Field
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox [(ngModel)]="formModel.isReadOnly" name="isReadOnly" status="success">Is ReadOnly
+                Field
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox [(ngModel)]="formModel.isVisibilityOn" name="isVisibilityOn" status="success">Is Visibility Depends On
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox [(ngModel)]="formModel.loadAsDropDown" name="isLoadAsDropDown" status="success">Load as Drop-down
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox [(ngModel)]="formModel.recordHistory" name="recordHistory" status="success">Record History
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <div class="validation-checkboxes">
+              <nb-checkbox [(ngModel)]="formModel.isReference" name="isReference" status="success">Is Reference
+              </nb-checkbox>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </nb-card-body>
+
+  <nb-card-footer>
+    <button class="cancel" nbButton matRipple status="danger" (click)="cancel()">Cancel</button>
+    <button class="submit" nbButton matRipple status="success" (click)="submit()">Submit</button>
+  </nb-card-footer>
+</nb-card>

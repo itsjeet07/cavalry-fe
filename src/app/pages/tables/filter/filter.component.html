@@ -1,0 +1,294 @@
+<ng-container>
+  <div id="filter" [ngClass]="{'filter_disable': hideFilters}" class="filter_popup">
+    <div class="filter_header">
+      <img class="filter-icon" src="/assets/images/filter-icon-colored.svg">
+      <span class="filter-heading">Filter</span>
+      <img class="filter-close-icon" (click)="handleOutSideClick()" src="/assets/images/close-icon.svg">
+    </div>
+    <div class="filter-body">
+      <ng-container *ngIf="finalList && finalList.length">
+        <ng-container *ngFor="let field of finalList">
+          <ng-container *ngIf="inputFields.includes(field.type)">
+            <div class="filter-pop-row">
+              <div class="filter-label">
+                <span>{{field.label}}:</span>
+                <span class="filter-clear-all" (click)="removeText(field.name,field.type)"><a>Clear</a></span>
+              </div>
+              <div class="filter-input">
+                <input class="" nbInput #search (keyup.enter)="onFilterSearch(search.value,field.name,field.type)"
+                  [type]="field.type" [placeholder]="field.label" [(ngModel)]="filterObject.textValue[field.name]">
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="field.type === 'dropdown'">
+            <div class="filter-pop-row">
+              <div class="filter-label">
+                <span>{{field.label}}:</span>
+                <span class="filter-clear-all" (click)="removeText(field.name,field.type)"><a>Clear</a></span>
+              </div>
+              <div class="filter-input">
+                <nb-select class="status-dropdown" placeholder="All" [(ngModel)]="filterObject.dropdownValue" multiple
+                  (selectedChange)="onFilterSearch($event,field.name); canShowClearFilter[field.name] = true">
+                  <nb-option default>All</nb-option>
+                  <nb-option *ngFor="let option of field.options" matRipple [value]="option">
+                    {{ option }}
+                  </nb-option>
+                </nb-select>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="field.type == 'dropdownWithImage'">
+            <div class="filter-pop-row">
+              <div class="filter-label">
+                <span>{{field.label}}:</span>
+                <span class="filter-clear-all" (click)="removeText(field.name,field.type)"><a>Clear</a></span>
+              </div>
+              <div class="filter-input">
+                <ng-select placeholder="ALL" multiple="true" [(ngModel)]="filterObject.dropdownWithImageValue"
+                  (change)="onFilterSearch($event,field.name); canShowClearFilter[field.name] = true;">
+                  <ng-option *ngFor="let val of field.options" [value]="val.title">
+                    <div>
+                      <img [src]="val.image" alt="" height="18" width="18">
+                      <span class="select-text">{{val.title}}</span>
+                    </div>
+                  </ng-option>
+                </ng-select>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="field.type === 'number'">
+            <div class="filter-pop-row">
+              <div class="filter-label">
+                <span>{{field.label}}:</span>
+                <span class="filter-clear-all" (click)="removeText(field.name,field.type)"><a>Clear</a></span>
+              </div>
+              <div class="filter-input">
+                <div class="checkbox listing-search-popup">
+                  <nb-select class="status-dropdown mb-2" [placeholder]="'Operator'"
+                    [(ngModel)]="filterObject.numberOperation">
+                    <nb-option *ngFor="let option of operations" matRipple [value]="option.val">
+                      {{ option.name }}
+                    </nb-option>
+                  </nb-select>
+                  <input class="" nbInput #searchNumber
+                    (keyup.enter)="onFilterSearch(searchNumber.value,field.name,field.type,filterObject.numberOperation)"
+                    [type]="field.type" [placeholder]="field.label" [(ngModel)]="filterObject.textValue[field.name]">
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="field.type == 'checkbox'">
+            <div class="filter-pop-row">
+              <div class="filter-label">
+                <span>{{field.label}}:</span>
+                <span class="filter-clear-all" (click)="removeText(field.name,field.type)"><a>Clear</a></span>
+              </div>
+              <div class="filter-input">
+                <div class="checkbox">
+                  <ng-container *ngFor="let item of field.options; let i = index">
+                    <nb-checkbox class="inner_checkbox" [checked]="filterObject.check[i]"
+                      (change)="onFilterSearch($event,field.name,field.type,'',i)">
+                      {{ item }}
+                    </nb-checkbox>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="field.type == 'radio'">
+            <div class="filter-pop-row">
+              <div class="filter-label">
+                <span>{{field.label}}:</span>
+                <span class="filter-clear-all" (click)="removeText(field.name,field.type)"><a>Clear</a></span>
+              </div>
+              <div class="filter-input">
+                <div class="checkbox radio-filter">
+                  <nb-radio-group [(ngModel)]="filterObject.radio" class="radio" name="my-radio-group-{{field.name}}">
+                    <nb-radio (valueChange)="onFilterSearch($event,field.name)" *ngFor="let item of field.options"
+                      [value]="item">
+                      {{ item }}
+                    </nb-radio>
+                  </nb-radio-group>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="field.type == 'date'">
+            <div class="filter-pop-row">
+              <div class="filter-label">
+                <span>{{field.label}}:</span>
+                <span class="filter-clear-all" (click)="removeText(field.name,field.type)"><a>Clear</a></span>
+              </div>
+              <div class="filter-input">
+                <div class="date-toggle">
+                  <mat-datepicker-toggle matSuffix [for]="formpicker1">
+                  </mat-datepicker-toggle>
+                </div>
+
+                <mat-date-range-input [rangePicker]="formpicker1">
+                  <input matStartDate placeholder="start date" [(ngModel)]="filterObject.range.start">
+                  <input matEndDate placeholder="end date" [(ngModel)]="filterObject.range.end"
+                    (dateChange)="dateRangeChange('end', $event, field.name, field.type)">
+                </mat-date-range-input>
+                <mat-date-range-picker #formpicker1></mat-date-range-picker>
+              </div>
+            </div>
+          </ng-container>
+
+
+          <ng-container *ngIf="field.type == 'formula'">
+            <div class="filter-pop-row">
+              <div class="filter-label">
+                <span>{{field.label}}:</span>
+                <span class="filter-clear-all" (click)="removeText(field.name,field.type)"><a>Clear</a></span>
+              </div>
+              <div class="filter-input">
+                <div class="checkbox listing-search-popup">
+                  <nb-select class="status-dropdown mb-2" [placeholder]="'Operator'"
+                    [(ngModel)]="filterObject.formulaOperation">
+                    <nb-option *ngFor="let option of operations" matRipple [value]="option.val">
+                      {{ option.name }}
+                    </nb-option>
+                  </nb-select>
+                  <input class="" nbInput #searchNumber
+                    (keyup.enter)="onFilterSearch(searchNumber.value,field.name,field.type,filterObject.formulaOperation)"
+                    [type]="field.type" [placeholder]="field.label" [(ngModel)]="filterObject.textValue[field.name]">
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="field.type == 'lookup' && field.loadAsDropDown">
+            <div class="filter-pop-row">
+              <div class="filter-label">
+                <span>{{field.label}}:</span>
+                <span class="filter-clear-all" (click)="removeText(field.name,field.type)"><a>Clear</a></span>
+              </div>
+              <div class="filter-input">
+                <ng-select
+                  [items]="filterObject.filteredOptions[field.name] | filter : filterObject.lookupValue[field.name] : in.searchTerm"
+                  bindLabel="value" #in [notFoundText]="'No record found'"
+                  (ngModelChange)="updatedVal($event, field.name)" [ngModelOptions]="{standalone: true}"
+                  [id]="field.name" placeholder="Search" [compareWith]="compareFn"
+                  (change)="onSelectionChange(filterObject.lookupValue[field.name], field.name, field.type)"
+                  [multiple]="true" [(ngModel)]="filterObject.lookupValue[field.name]" clearable="true"
+                  class="ng-select-latest">
+                  <ng-template ng-option-tmp let-item="item" let-index="index" let-item$="item$">
+                    <div>
+                      <input type="checkbox" [checked]="item$.selected" />
+
+                      <span class="checkmark"></span>
+                      <label class="form-check-label ml-2">
+                        {{item.value}}
+                      </label>
+                    </div>
+                  </ng-template>
+
+                </ng-select>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="field.type == 'lookup' && !field.loadAsDropDown">
+            <div class="filter-pop-row">
+              <div class="filter-label">
+                <span>{{field.label}}:</span>
+                <span class="filter-clear-all" (click)="removeText(field.name,field.type)"><a>Clear</a></span>
+              </div>
+              <div class="filter-input">
+                <ng-select [items]="filterObject.filteredOptions[field.name]" bindLabel="value" #autoInput
+                  (keyup)="dynamicSearch($event,field)" [compareWith]="compareFn" [ngModelOptions]="{standalone: true}"
+                  [id]="field.name" placeholder="{{field.label}}"
+                  (change)="onSelectionChange($event,field.name,field.type)"
+                  [(ngModel)]="filterObject.lookupValue[field.name]" clearable="true" class="ng-select-latest"
+                  [multiple]="true">
+                  <ng-template ng-option-tmp let-item="item" let-index="index" let-item$="item$">
+                    <div>
+                      <input type="checkbox" [checked]="item$.selected" />
+                      <span class="checkmark"></span>
+                      <label class="form-check-label ml-2">
+                        {{item.value}}
+                      </label>
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="field.type === 'recordType'">
+            <div class="filter-pop-row">
+              <div class="filter-label">
+                <span>{{field.label}}:</span>
+                <span class="filter-clear-all"><a>Clear</a></span>
+              </div>
+              <div class="filter-input">
+                <nb-select [placeholder]="field.label" (selectedChange)="onFilterSearch($event,field.name)">
+                  <nb-option *ngFor="let option of field.options" matRipple [value]="option">
+                    {{ option }}
+                  </nb-option>
+                </nb-select>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="field.type == 'dateTime'">
+            <div class="filter-pop-row">
+              <div class="filter-label">
+                <span>{{field.label}}:</span>
+                <span class="filter-clear-all" (click)="removeText(field.name,field.type)"><a>Clear</a></span>
+              </div>
+              <div class="filter-input">
+                <div class="date-toggle">
+                  <mat-datepicker-toggle matSuffix [for]="formpicker2">
+                  </mat-datepicker-toggle>
+                </div>
+                <mat-date-range-input [rangePicker]="formpicker2">
+                  <input matStartDate placeholder="start date" [(ngModel)]="filterObject.DateTimerange.start"
+                    (click)="formpicker2.open()">
+                  <input matEndDate placeholder="end date" [(ngModel)]="filterObject.DateTimerange.end"
+                    (dateChange)="dateTimeRangeChange('end', $event, field.name, field.type)"
+                    (click)="formpicker2.open()">
+                </mat-date-range-input>
+                <mat-date-range-picker #formpicker2></mat-date-range-picker>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+        <ng-container>
+          <div class="filter-pop-row">
+            <div class="filter-label">
+              <span>Watched by :</span>
+              <span class="filter-clear-all" (click)="removeText('watchedBy','watchedBy')"><a>Clear</a></span>
+            </div>
+            <div class="filter-input">
+              <ng-select [items]="usersWithIds" bindLabel="value" [notFoundText]="'No record found'" id='watchedBy'
+                placeholder="Search" (change)="usersSelected($event)" [multiple]="true" [(ngModel)]="filterObject.users"
+                clearable="true" class="ng-select-latest">
+                <ng-template ng-option-tmp let-item="item" let-index="index" let-item$="item$">
+                  <div>
+                    <input type="checkbox" [checked]="item$.selected" />
+                    <span class="checkmark"></span>
+                    <label class="form-check-label ml-2">
+                      {{item.value}}
+                    </label>
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+    <div class="filter-footer">
+      <span class="cancel-all-filter" (click)="handleOutSideClick()">
+        <a>Cancel</a>
+      </span>
+      <span class="apply-save-filter" (click)="hideFilters = !hideFilters">
+        <button nbButton status="primary">Close</button>
+      </span>
+    </div>
+  </div>
+</ng-container>

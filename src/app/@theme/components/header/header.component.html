@@ -1,0 +1,142 @@
+<div *ngIf="showNotification" class="overlay-enabled"></div>
+<div class="header-container">
+  <div class="logo-container">
+    <a href="#" class="sidebar-toggle" matRipple [matRippleUnbounded]="true" [matRippleCentered]="true"
+      (click)="toggleSidebar()">
+      <nb-icon [icon]="(materialTheme$ | async) ? 'menu-outline' : 'menu-2-outline'"></nb-icon>
+    </a>
+    <img [class]="cavalryLogo.cssClass" (click)="navigateHome()" [height]="cavalryLogo.height" [src]="cavalryLogo.path"
+      alt="Cavalry">
+    <nb-action class="control-item border-0 header-search">
+      <div class="form-group">
+        <input placeholder="search" autocorrect="off" autocapitalize="off" spellcheck="off" type="text"
+          class="form-control search-data" #search (keyup.enter)="onSearch(search.value)">
+      </div>
+    </nb-action>
+  </div>
+</div>
+
+<div class="header-container header-with-nb-icon">
+  <nb-actions size="small">
+
+    <nb-action class="control-item p-0 header-announcements">
+      <button type="button" class="btn announcements-btn py-1 px-3" [ngClass]="{'annRead': !isAnnounceRead }"
+        (click)="openAnnouncementBox()">Announcements</button>
+    </nb-action>
+
+    <nb-action nbTooltip="Email Coming Soon!" nbTooltipPlacement="bottom" nbTooltipStatus="basic"
+      nbTooltipTrigger="hover" class="control-item" icon="email-outline" matRipple [matRippleUnbounded]="true"
+      [matRippleCentered]="true"></nb-action>
+
+    <nb-action style="padding-right: 25px;" class="control-item" icon="settings-outline" matRipple
+      (click)="manageTables()" [matRippleUnbounded]="true" [matRippleCentered]="true" *ngIf="isGearIcon"></nb-action>
+
+    <!-- <nb-action class="control-item notification_dropdown" icon="bell-outline" matRipple
+      (click)="readNotifications($event)" badgeText="1" badgeDot="true" badgePosition="top right"  badgeStatus="danger"
+      [matRippleUnbounded]="true" [matRippleCentered]="true"> -->
+    <!-- [nbContextMenu]="notificationMenu" -->
+
+    <!-- </nb-action> -->
+
+    <nb-action class="control-item notification_dropdown" icon="bell-outline" matRipple
+      (click)="readNotifications($event)" [badgeText]=notificationBadgeText badgePosition="top right"
+      badgeStatus="danger"></nb-action>
+
+    <nb-action class="control-item add-icon" icon="plus-circle" [nbPopover]="templateRef1" nbPopoverTrigger="click"
+      nbPopoverPlacement="bottom" matRipple>
+    </nb-action>
+
+    <nb-action class="user-action" *nbIsGranted="['view', 'user']" matRipple [matRippleUnbounded]="true"
+      [matRippleCentered]="true">
+      <nb-user [nbContextMenu]="userMenu" [onlyPicture]="userPictureOnly" [name]="username" [picture]="user?.picture">
+      </nb-user>
+    </nb-action>
+  </nb-actions>
+
+  <ng-template #templateRef1>
+    <ul>
+      <!-- <li class="list-in-ul"><span>+</span> Call Log</li> -->
+      <li class="list-in-ul" (click)="openForm('Tasks')"><span>+</span> Task</li>
+      <li class="list-in-ul" (click)="openReminderModal()"><span>+</span> Reminder</li>
+      <li class="list-in-ul" (click)="openForm(table)" *ngFor="let table of quickActionList"><span>+</span> {{table}}</li>
+    </ul>
+  </ng-template>
+
+  <div *ngIf="showNotification" class="dropdown-menu notifi-drp-dwn">
+    <i class="fas fa-caret-up"></i>
+    <div class="dropdown-header">
+      <img class="header-icon" src="/assets/images/alarm-clock-icon.png" />
+      <!-- <nb-icon icon="star" class="theme-color"></nb-icon> -->
+      Reminders ({{ notificationMenu[0]['title'] == 'No new notification!' ? 0 : notificationMenu.length }})
+      <nb-action class="control-item add-icon notifi-drp-dwn-add-icon" icon="plus-circle" (click)="openReminderModal()"
+        [nbPopover]="templateRef1" nbPopoverTrigger="click" nbPopoverPlacement="bottom" matRipple>
+      </nb-action>
+    </div>
+
+    <!-- <ng-template *ngIf="notificationCount > 0"> -->
+    <div class="dropdown-body" *ngIf="this.notificationMenu[0]['title'] !=  'No new notification!'">
+      <ul class="data-listing" *ngIf="this.notificationMenu[0]['title'] !=  'No new notification!'">
+        <ng-container *ngFor="let notification of notificationMenu;let i = index">
+
+          <li *ngIf="notification.tableName == 'Tasks' " [ngClass]="{'unread-message': notification.isNewMessage}"
+            (click)="redirect(notification)">
+            <a href="#">
+              <span class="item-con item-task" [innerHTML]="'Task: ' + notification.notes"></span>
+              <!-- <span class="item-con item-description" [innerHTML]="notification.description"></span> -->
+              <span class="item-con item-description" *ngIf="notification.reminderNotes">{{ notification.reminderNotes
+                }}</span>
+              <!-- <span class="item-con item-remind-date-time">Reminder Date&Time</span> -->
+              <span class="item-con item-date">
+                <img src="/assets/images/ic_schedule_24px.svg" />
+                {{ formatDate(notification.dateTime) }}</span>refer-reminder
+            </a>
+          </li>
+          <li *ngIf="notification.tableName != 'Tasks' ">
+
+            <div class="row">
+              <div class="col-md-10" (click)="redirect(notification)">
+                <a href="#">
+                  <!-- <span class="item-con item-task"> {{ notification?.tableName}} <i class="fal fa-ellipsis-v"></i> {{ notification?.resourceName}}</span> -->
+                  <span class="item-con item-description" *ngIf="notification?.reminderNotes || notification?.notes">
+                    {{ notification?.reminderNotes || notification?.notes}}
+                  </span>
+
+                  <div *ngIf="notification?.resourceId" class="row field-row">
+                    <div class="refer-reminder">
+                      <div class="field-area call-log-field">
+                        <img [src]="tableIcon[notification?.tableName]" class="phone-image-icon" />
+                        <span class="call-log-title">{{notification?.tableName}}</span>
+                        <span>#{{notification?.toDisplay}}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <span class="item-con item-remind-date-time">Reminder Date&Time : </span> -->
+                  <span class="item-con item-date">
+                    <img src="/assets/images/ic_schedule_24px.svg" />
+                    {{ formatDate(notification.dateTime)}}</span>
+                </a>
+              </div>
+              <div class="col-md-2" id="edit-btn-{{i}}">
+                <div class="menu_action" style="cursor: pointer;float: right;">
+                  <img [nbPopover]="templateRef" class="option-image" nbPopoverTrigger="click"
+                    nbPopoverPlacement="bottom" src="/assets/images/more-vertical-outline.svg">
+                  <!-- <button [nbPopover]="templateRef" nbPopoverTrigger="click"
+                    nbPopoverPlacement="bottom">hdcbwecbwecuyecuqc</button> -->
+                </div>
+                <ng-template #templateRef>
+                  <nb-icon style="width: 35px;height: 30px;cursor: pointer;" icon="edit-outline"
+                    (click)="openReminderModal(notification)"></nb-icon>
+                </ng-template>
+
+              </div>
+            </div>
+
+          </li>
+
+        </ng-container>
+      </ul>
+      <!-- <div class="dropdown-footer"><a (click)="redirectToNotifications()">see all</a></div> -->
+    </div>
+    <!-- </ng-template> -->
+  </div>
+</div>

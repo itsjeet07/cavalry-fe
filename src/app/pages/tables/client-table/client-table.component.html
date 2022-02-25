@@ -1,0 +1,103 @@
+<nb-card>
+  <nb-card-body>
+    <label class="search-label" for="search">Search:</label>
+    <input nbInput class="search-input" placeholder="Search client">
+    <button type="button" class="right btn btn-primary btn-sm">Add New Client</button>
+    <div class="container p_0 my-4">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col w_50"></th>
+              <th scope="col" class="icon_center">Name <i class="fas fa-angle-down"></i></th>
+              <th scope="col" class="icon_center">Email <i class="fas fa-angle-down"></i></th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="">
+              <td class="expand-button collapsed w_50" id="accordion1" data-parent="#accordion1" data-toggle="collapse"  
+              href="#collapseOne">           
+            </td>
+              <td>Latika</td>
+              <td>latika@gmail.com</td>
+              <td class="w_50">
+              <div class="menu_action">
+                <img src="/assets/images/dots-icon.png">
+              </div>
+            </td>
+            </tr>
+            <tr class="hide-table-padding">
+              <td class=p_0></td>
+              <td colspan="3" class="p_0">
+                <div id="collapseOne" class="collapse in p-3">
+                  <nb-card-body>
+                    <!-- <label class="search-label" for="search">Search:</label>
+                    <input nbInput class="search-input"  placeholder="Search contacts"> -->
+                    <button type="button" class="right btn btn-primary btn-sm">Add New Contact</button>
+                  <table class="table" >
+                    <thead>
+                      <tr>
+                        <th scope="col">First Name</th>
+                        <th scope="col">Last Name</th>
+                        <th scope="col">Number</th>
+                        <th scope="col">Email</th>
+                        <th scope="col"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>John</td>
+                        <td>Winter</td>
+                        <td>(931)-789-7896</td>
+                        <td>jaan@gmail.com</td>
+                        <td class="w_50">
+                          <div class="menu_action">
+                            <img src="/assets/images/dots-icon.png">
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Greg</td>
+                        <td>Polin</td>
+                        <td>(931)-785-4896</td>
+                        <td>greg@gmail.com</td>
+                        <td class="w_50">
+                          <div class="menu_action">
+                            <img src="/assets/images/dots-icon.png">
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Francisco</td>
+                        <td>Deblin</td>
+                        <td>(931)-689-7896</td>
+                        <td>franz@gmail.com</td>
+                        <td class="w_50">
+                          <div class="menu_action">
+                            <img src="/assets/images/dots-icon.png">
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  </nb-card-body>
+                </div>
+              </td>
+            </tr>
+          
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination_div">
+        <ul class="pagination">
+          <li><a><span><<</span></a></li>
+          <li><a><span><</span></a></li>
+          <li class="active"><a><span>1</span></a></li>
+          <li><a><span>></span></a></li>
+          <li><a><span>>></span></a></li>
+        </ul>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>

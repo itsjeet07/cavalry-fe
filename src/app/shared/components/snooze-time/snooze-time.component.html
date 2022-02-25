@@ -1,0 +1,13 @@
+<nb-card class="snooze-reminder">
+  <nb-card-header>
+    Remind me in:
+    <img class="close-btn" src="/assets/images/ic_close_24px.svg" (click)="close()">
+  </nb-card-header>
+  <nb-card-body>
+    <div class="row time-row" *ngFor="let time of times" (click)="selectedTime(time.val)">
+      <div class="time-div">
+        {{time.label}}
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>

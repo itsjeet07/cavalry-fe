@@ -1,0 +1,44 @@
+<nb-card size="small">
+  <nb-card-header>Map Fields <span class="pull-right">
+    <i class="fa fa-plus" (click)="addNewRow()"></i>
+  </span>
+</nb-card-header>
+  <nb-card-body class="add-date-time-form">
+    <div class="scroll-div">
+      <div class="row">
+
+        <ng-container *ngFor="let field of fieldList; let i = index;">
+
+          <div class="col-md-5">
+            <label class="label">LookUp Fields</label>
+
+            <nb-select [(ngModel)]="field.lookupField" name="lookUp{{i}}">
+              <nb-option *ngFor="let lookup of lookupData | filterOutSelectedItem: fieldList: i" value="{{lookup.name}}">{{lookup.label}}
+              </nb-option>
+            </nb-select>
+          </div>
+
+          <div class="col-md-5">
+            <label class="label">Table Fields</label>
+
+            <nb-select [(ngModel)]="field.tableField">
+              <nb-option *ngFor="let table of currentTableData | sameType: field.lookupField: copyLookUp" value="{{table.name}}">{{table.label}}</nb-option>
+            </nb-select>
+          </div><br />
+
+          <div class="col-md-2 add-item-icon">
+            <span class="remove-row"><i class="fa fa-minus" (click)="removeRow(i)"></i></span>
+
+          </div>
+
+        </ng-container>
+      </div>
+    </div>
+
+  </nb-card-body>
+  <nb-card-footer>
+    <button class="cancel" nbButton matRipple status="danger" (click)="cancel()">Cancel</button>
+    <button nbButton matRipple status="success"
+      (click)="submit()">Submit</button>
+  </nb-card-footer>
+</nb-card>

@@ -1,0 +1,6 @@
+{
+  "/api/*": {
+    "target": "https://dev.synccos.com",
+    "secure": false
+  }
+}

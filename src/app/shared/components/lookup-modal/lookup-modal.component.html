@@ -1,0 +1,26 @@
+
+<nb-card class="popup_layout" >
+  <nb-card-header class="header_text">Lookup</nb-card-header>
+  <nb-card-body>
+    <span *ngFor="let lookup of lookup | keyvalue">
+      <ng-container *ngFor="let lookupValue of lookup.value | keyvalue">
+        <ng-container *ngIf="lookupValue.key.indexOf('_link') == -1">
+      <div class="body_info">
+          <span class="text_lable" style=" font-family: 'Roboto-Bold' !important;">  {{ lookupValue.key }} :</span>
+          <span class="text_value"> {{ lookupValue.value }}
+            <a (click)="redirectToLookup(lookup.value)"
+            class="white-space-pre-line pointer" style="color: #2C2D34;"><p class="mb-1">
+             <i class="fas fa-share-square send_icon"  *ngIf="lookup.value"></i>
+         </p>
+       </a>
+          </span>
+    </div>
+      </ng-container>
+      </ng-container>
+    </span>
+  </nb-card-body>
+  <nb-card-footer class="button_show">
+    <button class="cancel" nbButton matRipple (click)="onClose()">Cancel</button>
+  </nb-card-footer>
+</nb-card>
+

@@ -1,0 +1,33 @@
+
+:host
+::v deep
+ng2-st-tbody-custom
+a.ng2-smart-action.ng2-smart-action-custom-custom {
+    text-align: center;
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem !important;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+    margin-top: 9px;
+    height: 29px;
+    width: 80px;
+    margin-left: 10px;
+}
+
+:host
+::v deep
+ng2-st-tbody-custom
+a.ng2-smart-action.ng2-smart-action-custom-custom:hover {
+color: #5dcfe3;
+}
+
+:host 
+::v deep 
+ng2-smart-table .ng2-smart-actions {
+width: 100% !important;
+display: inline-flex !important;
+height: 100%;
+}

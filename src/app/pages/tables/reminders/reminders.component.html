@@ -1,0 +1,155 @@
+<nb-card [ngClass]="{'mb-0': isFromDashboard}" [ngStyle]="{'width': notifyFlag?'auto':'1000px', 'border-radius': notifyFlag ? '10px': null}" class="remindar-main" [nbSpinner]="loading" nbSpinnerSize="large" nbSpinnerStatus="primary">
+  <nb-card-header>
+    <div class="full-width-head">
+      <span class="modal-title">My Reminders</span>
+      <button *ngIf="notifyFlag" style="float: right;" type="button" nbButton matRipple status="primary" (click)="addReminder()">+ Add New</button>
+      <button *ngIf="ref" type="button" class="close" aria-label="Close" (click)="onCancel()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </nb-card-header>
+  <nb-card-body [ngClass]="{'contet-blur':showAdd}" [ngStyle]="{'padding-bottom': isFromDashboard ? '0px': '16px'}">
+    <div [ngClass]="{'row col-md-12 reminderrr-date':notifyFlag,'container col-md-7 reminder-list-bottom right-side-rmdr-list':!notifyFlag}">
+      <div class="row reminder-list selected-date">{{datePipeString}}</div>
+      <div class="row reminder-list-loop add-event-row"  *ngIf="showAdd">
+        ​
+          <div class="col-md-12 add-notes">
+            <div class="add-notes-top-main">
+              <div class="add-notes-top-left">
+                <span class="calen-tab">
+                  <ngb-timepicker [(ngModel)]="time" [meridian]="meridian"></ngb-timepicker>
+                </span>
+              </div>
+              <div class="alert-notification add-notes-top-right">
+                <span (click)="stopAdding()">
+                  <i class="fa fa-times" aria-hidden="true"></i>
+                </span>
+              </div>
+            </div>
+            <div class="notes-row" >
+              <div class="notes-row-full">
+                <span class="calen-tab">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Event title</mat-label>
+                    <input matInput placeholder="Remind me about call" value="" [(ngModel)]="notes">
+                  </mat-form-field>
+                </span>
+                <button class="note-save-btn" nbButton status="primary" (click)="saveReminder()">Save</button>
+              </div>
+            </div>
+
+          </div>
+​
+        </div>
+
+        <ng-container *ngFor="let data of selectedDateData;let rowIndex = index" >
+          <div class="row reminder-list-loop">
+            <div class="col-md-12 display-flex" style="padding: 0;" >
+              <div class="row col-md-10" style="overflow: hidden;" >
+
+                <div class="col-md-4" >
+                  <span class="reminder-tick-main" (click)="reminderClicked(data,rowIndex)"><nb-icon icon="checkmark-circle-2-outline" class="reminder-tick-icon"></nb-icon></span>
+                  {{data.date | date:'shortTime'}}
+                </div>
+                <div class="col-md-8">
+                  {{data.notes}}
+                </div>
+              </div>
+              <div class="alert-notification col-md-2" style="padding: 0;">
+                <nb-icon class="delete-reminder" (click)="deleteReminder(data,rowIndex)" icon="trash-2-outline"></nb-icon>
+                <!-- <i class="nb-trash alert-notification-img show" *ngIf="data.createdBy == currentUser._id" (click)="deleteReminder(data,rowIndex)"></i> -->
+                <img src="assets/images/due-alert.png" *ngIf="data.overDue && data.visibilityStatus == 'unread'" class="alert-notification-img show">
+                <ng-container *ngIf="data.visibilityStatus == 'unread'">
+                  <img src="assets/images/inbox-alert.png"   class="alert-notification-img show">
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+​
+
+        <div *ngIf="!notifyFlag && addFlag" class="row add-remimnder-btn">
+          <button type="button" nbButton matRipple status="primary" (click)="addReminder()">+ Add New</button>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+    <div [ngClass]="{'row':notifyFlag,'container col-md-7 reminder-list-bottom right-side-rmdr-list only-notification-page':!notifyFlag}">
+      <div class="row reminder-list selected-date only-notification-page">{{datePipeString}}</div>
+    <div class="row reminder-list-loop add-event-row only-notification-page"  *ngIf="showAdd">
+      ​
+        <div class="col-md-12 add-notes">
+          <div class="add-notes-top-main">
+            <div class="add-notes-top-left">
+              <span class="calen-tab">
+                <ngb-timepicker [(ngModel)]="time" [meridian]="meridian"></ngb-timepicker>
+              </span>
+            </div>
+            <div class="alert-notification add-notes-top-right">
+              <span (click)="stopAdding()">
+                <i class="fa fa-times" aria-hidden="true"></i>
+              </span>
+            </div>
+          </div>
+          <div class="notes-row" >
+            <div class="notes-row-full">
+              <span class="calen-tab">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Event title</mat-label>
+                  <input matInput placeholder="Remind me about call" value="" [(ngModel)]="notes">
+                </mat-form-field>
+              </span>
+              <button class="note-save-btn" nbButton status="primary" (click)="saveReminder()">Save</button>
+            </div>
+          </div>
+
+        </div>
+​
+      </div>
+      </div>
+
+
+
+
+
+    <div class="row" [ngClass]="{'main-reminder-hgt': !isFromDashboard}">
+      <div [ngClass]="{'col-md-12':notifyFlag,'col-md-5':!notifyFlag}">
+        <div [ngClass]="{'left-side-calendar':!notifyFlag}" class="reminder-list-top">
+          <div class="btn-group">
+            <div class="reminder-btn reminder-btn-prev" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
+              (viewDateChange)="closeOpenMonthViewDay()">
+              <mat-icon _ngcontent-hix-c447="" role="img" mwlcalendarpreviousview="" class="mat-icon notranslate mr-2 material-icons mat-icon-no-color" aria-hidden="true" ng-reflect-view="month" ng-reflect-view-date="Tue Mar 09 2021 14:55:25 GMT+0">keyboard_arrow_left</mat-icon>
+            </div>
+            <!-- <div class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate">
+              Today
+            </div> -->
+            <div class="reminder-btn reminder-btn-nxt" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
+              (viewDateChange)="closeOpenMonthViewDay()">
+              <mat-icon _ngcontent-hix-c447="" role="img" mwlcalendarnextview="" class="mat-icon notranslate mr-2 material-icons mat-icon-no-color" aria-hidden="true" ng-reflect-view="month" ng-reflect-view-date="Tue Mar 09 2021 14:55:25 GMT+0">keyboard_arrow_right</mat-icon>
+            </div>
+          </div>
+          <div>
+            <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</h3>
+          </div>
+          <div class="calendar">
+            <mwl-calendar-month-view weekStartsOn="1" [viewDate]="viewDate" [events]="todoEvents" [refresh]="refresh"
+             (dayClicked)="dayClicked($event.day)">
+            </mwl-calendar-month-view>
+            <!-- <nb-calendar></nb-calendar> -->
+          </div>
+        </div>
+      </div>
+      ​
+
+
+
+​
+    </div>
+  </nb-card-body>
+</nb-card>

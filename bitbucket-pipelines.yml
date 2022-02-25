@@ -1,0 +1,43 @@
+image: node:12.20.1
+pipelines:
+  branches:
+    master:      
+      - step:
+          name: cavalry
+          size: 2x # Double resources available for this step.
+          script:
+            - npm install
+            - npm run ng:prod
+            - pipe: atlassian/aws-s3-deploy:1.1.0
+              variables:
+                AWS_ACCESS_KEY_ID: $caaccess 
+                AWS_SECRET_ACCESS_KEY: $casecret
+                AWS_DEFAULT_REGION: us-east-1
+                S3_BUCKET: objectifapp.fe
+                LOCAL_PATH: cavalry/
+            - pipe: atlassian/aws-cloudfront-invalidate:0.6.0
+              variables:
+                AWS_ACCESS_KEY_ID: $caaccess 
+                AWS_SECRET_ACCESS_KEY: $casecret
+                AWS_DEFAULT_REGION: us-east-1
+                DISTRIBUTION_ID: E2MQE9ZR2D3BD            
+    dev:            
+      - step:
+          name: dev
+          size: 2x # Double resources available for this step.
+          script:
+            - npm install
+            - npm run build
+            - pipe: atlassian/aws-s3-deploy:1.1.0
+              variables:
+                AWS_ACCESS_KEY_ID: $caaccess 
+                AWS_SECRET_ACCESS_KEY: $casecret
+                AWS_DEFAULT_REGION: us-east-1
+                S3_BUCKET: dev.synccos
+                LOCAL_PATH: cavalry/
+            - pipe: atlassian/aws-cloudfront-invalidate:0.6.0
+              variables:
+                AWS_ACCESS_KEY_ID: $caaccess 
+                AWS_SECRET_ACCESS_KEY: $casecret
+                AWS_DEFAULT_REGION: us-east-1
+                DISTRIBUTION_ID: E2JB11Z8YF85DQ

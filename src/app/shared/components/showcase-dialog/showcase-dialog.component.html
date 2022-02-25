@@ -1,0 +1,17 @@
+<nb-card class="modal-body"  nbSpinnerSize="large" nbSpinnerStatus="primary">
+  <nb-card-header>{{ title }}</nb-card-header>
+  <nb-card-body [innerHTML]="body" *ngIf="!list"></nb-card-body>
+
+  <nb-card-body *ngIf="list && list.length > 0">
+
+    <nb-list *ngFor="let obj of list">
+      <nb-list-item >
+        {{ obj.firstName + " "+ obj.lastName  }}
+      </nb-list-item>
+    </nb-list>
+  </nb-card-body>
+
+  <nb-card-footer>
+    <button nbButton matRipple hero status="primary" (click)="dismiss()">{{ button.text }}</button>
+  </nb-card-footer>
+</nb-card>

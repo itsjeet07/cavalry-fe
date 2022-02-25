@@ -1,0 +1,228 @@
+<nb-card class="main_layout" [nbSpinner]="!pageLoaded" nbSpinnerSize="large" nbSpinnerStatus="primary">
+  <div class="main new-inline-layout">
+    <div class="left_side-dynamic" [ngStyle]="{ 'margin-top': breadcrumbs.length > 0 ? '20px' : null }">
+
+      <div class="profile_div">
+
+        <div class="view-header-div">
+          <div class="table-detail">
+            <img *ngIf="parentTableIcon" class="tableIcon" [src]="parentTableIcon" />
+            {{ singularTableName }}
+          </div>
+          <div class="profile_option">
+            <a class="default-link bottom_line" (click)="editDynamicTable()">
+              <i class="color_icon fas fa-pen"></i>
+            </a>
+            <a class="bottom_line" title="Coming Soon"><i class="fa fa-envelope icon_color"></i></a>
+            <a class="bottom_line" title="Coming Soon"><i class="fa fa-phone icon_color"></i></a>
+            <a class="bottom_line" title="Coming Soon"><i class="fa fa-calendar icon_color"></i></a>
+            <a class="bottom_line alert-images" title="Reminder" (click)="openReminderModal()">
+              <img class="alert-default" [ngClass]="{ show: clientData?.reminderStatus == 'default' }"
+                src="assets/images/alert-default.png" />
+              <img class="alert-due" [ngClass]="{ show: clientData?.reminderStatus == 'alert-due' }"
+                src="assets/images/alert-due.png" />
+              <img class="alert-overdue" [ngClass]="{
+                  show: clientData?.reminderStatus == 'alert-overdue'
+                }" src="assets/images/alert-overdue.png" />
+              <img class="alert-due-overdue" [ngClass]="{
+                  show: clientData?.reminderStatus == 'alert-due-overdue'
+                }" src="assets/images/alert-due-overdue.png" />
+            </a>
+            <a class="bottom_line" *ngIf="isDocumentTemplate" [matMenuTriggerFor]="documentTemplateListMenu"
+              title="Documents"><i class="fa fa-file-text-o icon_color"></i></a>
+            <mat-menu #documentTemplateListMenu="matMenu">
+              <button mat-menu-item *ngFor="let doc of documentTemplateList" (click)="viewDocument(doc)">
+                {{ doc?.event?.name }}
+              </button>
+            </mat-menu>
+          </div>
+        </div>
+
+        <ngx-dynamic-form-dialog-new-design *ngIf="dataFetched"
+          [tableName]="tableName"
+          [tableDataForForms]="tableDataFromViewToForm"
+          [viewFlag]="true"
+          [inlineView]="true"
+          [Data]="this.clientData"
+          [form]="this.form" [id]="id">
+        </ngx-dynamic-form-dialog-new-design>
+
+        <div class="d-flex footer-btns">
+          <div (click)="onActionsClick('',action)" *ngFor="let action of actionsMenu">
+            <button class="btn btn-primary">{{action.actionName}}</button>
+          </div>
+        </div>
+
+      </div>
+
+
+    </div>
+    <div class="right_side big-chat-page" style="width: 75%"
+      [ngStyle]="{ 'margin-top': breadcrumbs.length > 0 ? '20px' : null }">
+
+      <div class="breadcrumb-status" *ngIf="breadcrumbs.length">
+        <ngx-table-breadcrumb
+          [breadcrumbs]="breadcrumbs"
+          [tableName]="tableName"
+          [id]="id">
+        </ngx-table-breadcrumb>
+      </div>
+
+      <nb-tabset class="cus_tab border-tab"
+          [ngClass]="{ projectstyle: breadcrumbs.length > 0 }"
+          *ngIf="pageLoaded"
+          (changeTab)="selectTab($event)"
+        >
+
+        <nb-tab
+          *ngIf="(lookupRelateData && lookupRelateData.length &&
+                 tableDataFromViewToForm && tableDataFromViewToForm.length)"
+          tabTitle="Overview"
+          [active]="tabTitle == 'Overview'">
+
+          <ngx-overview
+              [lookupRelateData]="lookupRelateData"
+              [overview]="overview[tableName]"
+              [tableDataFromViewToForm]="tableDataFromViewToForm"
+              [tableName]="tableName"
+              [tempParentTableHeader]="tempParentTableHeader"
+              [showChats]="showChats"
+              [subscribers]="subscribers"
+              [subscriptionText]="subscriptionText"
+              [isSelfSubscribed]="isSelfSubscribed"
+              [clientData]="clientData"
+              [tableInfo]="tableInfo"
+              [renderAt]='id'
+              (emitLookupId)="callRelatedLookup()">
+          </ngx-overview>
+        </nb-tab>
+
+        <nb-tab tabTitle="{{ lookup.value[0] }}" class="tab_class" badgeStatus="success" badgeText="{{
+            lookup?.value[1] && lookup?.value[1]?.tempRecords?.length > 0
+              ? lookup?.value[1].isTaskTab
+                ? openTasked.length > 0
+                  ? openTasked.length
+                  : ''
+                : lookup?.value[1]?.tempRecords?.length
+              : ''
+          }}" *ngFor="let lookup of tempLookupRelateData | filterTabs : tableDataFromViewToForm | keyvalue; let i = index"
+          [active]="tabTitle == lookup.value[0]">
+
+          <ng-container>
+            <div>
+              <div>
+                <div>
+                  <div>
+
+                    <div class="add-new-task-ul">
+                      <!-- <div class="main_search" style="display: none">
+                        <input nbInput class="search-input" placeholder="Search for {{ singularTab }}" />
+                        <i class="fa fa-search icon" aria-hidden="true"></i>
+                      </div> -->
+                      <button *ngIf="relatedFieldObject[lookup.value[0]]" type="button"
+                        class="right btn btn-primary btn-sm" (click)="addNewLookUp(lookup.value[0], false)">
+                        Add New {{ singularTab }}
+                      </button>
+                    </div>
+
+                    <!-- <div class="add-new-task-ul" *ngIf="!showContextMenu(lookup.value[0])">
+                      <div class="main_search" style="display: none">
+                        <input nbInput class="search-input" placeholder="Search for {{ singularTab }}" />
+                        <i class="fa fa-search icon" aria-hidden="true"></i>
+                      </div>
+                      <button *ngIf="relatedFieldObject[lookup.value[0]]" type="button"
+                        class="right btn btn-primary btn-sm" (click)="addNewLookUp(lookup.value[0], false)">
+                        Add New {{ singularTab }}
+                      </button>
+                    </div> -->
+
+                    <!-- Render Tabs -->
+                    <div class="main_info new-inline-table-view">
+
+                      <!-- <ng-container *ngIf="lookup.value[0] != 'Tasks'"> -->
+                        <ngx-dynamic-tree-table *ngIf="checkFlag" [getTableByNameObject]="getTableByNameObject" [fromRecordPage]="true" [renderAt]='id' [tableName]="lookup.value[0]" (treeUpdated)="treeUpdated($event)"
+                         [count]="lookup?.value[1] && lookup?.value[1]?.tempRecords?.length > 0
+                         ? lookup?.value[1].isTaskTab
+                           ? openTasked.length > 0
+                             ? openTasked.length
+                             : 0
+                           : lookup?.value[1]?.tempRecords?.length
+                         : 0">
+                        </ngx-dynamic-tree-table>
+
+                        <!-- <div class="pagination_div" *ngIf="
+                            lookup.value[1]?.getRecords &&
+                            lookup.value[1]?.getRecords?.length
+                          ">
+                          <ul *ngIf="
+                              lookup.value[1]?.pager.pages &&
+                              lookup.value[1]?.pager.pages.length
+                            " class="pagination">
+                            <li [ngClass]="
+                                lookup.value[1]?.pager.currentPage == 1
+                                  ? 'disabled'
+                                  : 'active_icon cursor'
+                              " (click)="onPage(1)">
+                              <a><span>{{ "<<" }}</span></a>
+                            </li>
+                            <li *ngIf="lookup.value[1]?.pager.currentPage !== 1" [ngClass]="
+                                lookup.value[1]?.pager.currentPage == 1
+                                  ? 'disabled'
+                                  : 'active_icon cursor'
+                              " (click)="
+                                onPage(lookup.value[1]?.pager.currentPage - 1)
+                              ">
+                              <a><span>{{ "<" }}</span></a>
+                            </li>
+                            <li class="cursor" *ngFor="let page of lookup.value[1]?.pager.pages" [ngClass]="{
+                                active:
+                                  lookup.value[1]?.pager.currentPage === page
+                              }" (click)="onPage(page)">
+                              <a><span>{{ page }}</span></a>
+                            </li>
+                            <li *ngIf="
+                                lookup.value[1]?.pager.pages.length !==
+                                lookup.value[1]?.pager.currentPage
+                              " [ngClass]="
+                                lookup.value[1]?.pager.currentPage ==
+                                lookup.value[1]?.pager.totalPages
+                                  ? 'disabled'
+                                  : 'active_icon cursor'
+                              " (click)="
+                                onPage(lookup.value[1]?.pager.currentPage + 1)
+                              ">
+                              <a><span>></span></a>
+                            </li>
+                            <li [ngClass]="
+                                lookup.value[1]?.pager.currentPage ==
+                                lookup.value[1]?.pager.totalPages
+                                  ? 'disabled'
+                                  : 'active_icon cursor'
+                              " (click)="
+                                onPage(lookup.value[1]?.pager.totalPages)
+                              ">
+                              <a><span>>></span></a>
+                            </li>
+                          </ul>
+                        </div> -->
+                      <!-- </ng-container> -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </nb-tab>
+
+        <!-- <nb-tab tabTitle="Triggers" class="tab_class" *ngIf="tableName === 'Triggers'">
+          <ngx-trigger-table></ngx-trigger-table>
+        </nb-tab> -->
+        <!-- <nb-tab tabTitle="Notes" tabIcon="{{ messageCount ? 'message-square-outline' : '' }}" *ngIf="showChats"
+          [active]="(tabTitle == 'Notes')">
+          <ngx-chat-tab [chatOpened]="chatOpened" [tableInfo]="tableInfo" (messageCount)="messageCount = $event">
+          </ngx-chat-tab>
+        </nb-tab> -->
+      </nb-tabset>
+    </div>
+  </div>
+</nb-card>

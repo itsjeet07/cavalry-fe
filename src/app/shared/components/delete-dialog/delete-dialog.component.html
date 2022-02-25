@@ -1,0 +1,15 @@
+<nb-card [nbSpinner]="loading" nbSpinnerSize="large" nbSpinnerStatus="primary">
+    <nb-card-header>
+        <div class="icon-box">
+            <h4 class="modal-title w-100">Are you sure?</h4>
+        </div>
+    </nb-card-header>
+    <nb-card-body>
+        <p>Do you really want to delete these records? This process cannot be undone.</p>
+        <small>Note: This record will automatically be removed from related records.</small>
+    </nb-card-body>
+    <nb-card-footer>
+        <button class="cancel" nbButton matRipple status="primary" (click)="onCancel()">Cancel</button>
+        <button type="submit" nbButton matRipple status="primary" (click)="onYes()">Delete</button>
+    </nb-card-footer>
+</nb-card>

@@ -1,0 +1,224 @@
+<nb-card class="email_modal">
+  <nb-card-header class="action-card-header">
+    <div class="row">
+      <div class="col-md-11">
+        {{title}}
+      </div>
+      <div class="col-md-1" (click)="closeModal();$event.preventDefault();" style="cursor: pointer;">
+        <strong>X</strong>
+      </div>
+    </div>
+    ​
+  </nb-card-header>
+  <nb-card-body class="action-card-body">
+
+    <div *ngIf="action">
+      <form #myForm="ngForm">
+
+        <div class="row">
+          <label for="type" class="label">Fire On Save</label>
+          <nb-radio-group class="radio" name="default" [(ngModel)]="action.onSave">
+            <nb-radio value="yes"> Yes </nb-radio>
+            <nb-radio value="no"> No </nb-radio>
+          </nb-radio-group>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <mat-form-field appearance="outline">
+              <mat-label>Action Name</mat-label>
+              <input matInput placeholder="Action Name" type="text" name="actionName" [(ngModel)]="action.actionName"
+                required>
+            </mat-form-field>
+          </div>
+
+          <!-- <div class="col-md-12">
+              <label>Set Custom Not Available message</label>
+              <ngx-codemirror name="actionNotAvailable" [(ngModel)]="action.actionNotAvailable" [options]="codeMirrorConfig" required>
+              </ngx-codemirror>
+          </div> -->
+
+          <div class="col-md-12 message-list-container">
+            <div class="row">
+              <div class="col-md-11"><label for="type" class="label">Set Custom Not Available message<sup
+                    style="color:red;">*</sup></label>
+              </div>
+              <div class="col-md-1 msg-list-action">
+                <i class="fa fa-plus " (click)="addNewMessageForNotAvailable();$event.preventDefault();"></i>&nbsp;
+                <i class="fas fa-trash-alt" nbTooltip="Empty Whole List"
+                  (click)="emptyMessageListForNotAvailable();$event.preventDefault();"></i>
+              </div>
+            </div>
+
+            <ng-container *ngIf="action.actionNotAvailable && action.actionNotAvailable.length">
+              <div class="bottom-bor" *ngFor="let act of action.actionNotAvailable;let i = index;">
+                <div class="row custom-edit-msg">
+                  <div class="col-md-4">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Message</mat-label>
+                      <input matInput placeholder="Message" type="text" name="actionNotAvailableMessage{{i}}"
+                        [(ngModel)]="act.message">
+                    </mat-form-field>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label>{{act.color}}</label>
+                    <table>
+                      <tr>
+                        <td *ngFor="let color of colorArray1">
+                          <button style="width: 100%;" nbButton status="{{color.status}}"
+                            (click)="setColorForNotAvailable($event,i)">{{color.label}}</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td *ngFor="let color of colorArray2">
+                          <button style="width: 100%;" nbButton status="{{color.status}}"
+                            (click)="setColorForNotAvailable($event,i)">{{color.label}}</button>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+
+                  <div class="col-md-2">
+                    <div class="edit_but" style="cursor: pointer;" (click)="removeMessage(i)"><i
+                        class="fas fa-trash-alt"></i></div>
+                  </div>
+                  <div class="col-md-12 mt-2">
+                    <label>Condition</label>
+                    <ngx-codemirror name="conditionForNotAvailable{{i}}" [(ngModel)]="act.condition"
+                      [options]="codeMirrorConfig" required></ngx-codemirror>
+                  </div>
+                  <div class="hor-line">&nbsp;</div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+
+          <div class="col-md-12 message-list-container">
+            <div class="row">
+              <div class="col-md-6">
+                <mat-form-field appearance="outline">
+                  <mat-label>Warning Message</mat-label>
+                  <input matInput placeholder="Warning Message" type="text" name="warningMessage"
+                    [(ngModel)]="action.warningMessage">
+                </mat-form-field>
+              </div>
+              <div class="col-md-5">
+                <label>{{action.warningMessageColor}}</label>
+                <table>
+                  <tr>
+                    <td *ngFor="let color of colorArray1">
+                      <button style="width: 100%;" nbButton status="{{color.status}}"
+                        (click)="setWarningMessageColor($event)">{{color.label}}</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td *ngFor="let color of colorArray2">
+                      <button style="width: 100%;" nbButton status="{{color.status}}"
+                        (click)="setWarningMessageColor($event)">{{color.label}}</button>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <label>Action URL</label>
+            <ngx-codemirror name="actionUrl" [(ngModel)]="action.actionUrl" [options]="codeMirrorConfig" required>
+            </ngx-codemirror>
+          </div>
+          <div class="col-md-4 mt-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Wait Time <p style="color:grey">(in milies)</p>
+              </mat-label>
+              <input type="number" matInput placeholder="Wait Time" name="waitTime" [(ngModel)]="action.waitTime"
+                equired>
+            </mat-form-field>
+          </div>
+          <div class="hor-line">&nbsp;</div>
+        </div>
+
+        <div class="row ">
+
+          <div class="col-md-12 message-list-container">
+            <div class="row">
+              <div class="col-md-11"><label for="type" class="label">Message List<sup style="color:red;">*</sup></label>
+              </div>
+              <div class="col-md-1 msg-list-action">
+                <i class="fa fa-plus " (click)="addNewMessage();$event.preventDefault();"></i>&nbsp;
+                <i class="fas fa-trash-alt" nbTooltip="Empty Whole List"
+                  (click)="emptyMessageList();$event.preventDefault();"></i>
+              </div>
+            </div>
+
+            <ng-container *ngIf="action.messageList && action.messageList.length">
+              <div class="bottom-bor" *ngFor="let msg of action.messageList;let i = index;">
+                <div class="row custom-edit-msg">
+                  <div class="col-md-4">
+                    <label>Message</label>
+                    <textarea placeholder="Message" [(ngModel)]="msg.message" name="message{{i}}" required></textarea>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label>{{msg.color}}</label>
+                    <table>
+                      <tr>
+                        <td *ngFor="let color of colorArray1">
+                          <button style="width: 100%;" nbButton status="{{color.status}}"
+                            (click)="setColor($event,i)">{{color.label}}</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td *ngFor="let color of colorArray2">
+                          <button style="width: 100%;" nbButton status="{{color.status}}"
+                            (click)="setColor($event,i)">{{color.label}}</button>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+
+                  <div class="col-md-2">
+                    <div class="edit_but" style="cursor: pointer;" (click)="removeMessage(i)"><i
+                        class="fas fa-trash-alt"></i></div>
+                  </div>
+                  <div class="col-md-12 mt-2">
+                    <label>Condition</label>
+                    <ngx-codemirror name="condition{{i}}" [(ngModel)]="msg.condition" [options]="codeMirrorConfig"
+                      required></ngx-codemirror>
+                  </div>
+                  <div class="hor-line">&nbsp;</div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <div class="hor-line">&nbsp;</div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12 mt-4">
+            <div class="form-group with-plus-icon float-none">
+              <label for="type" class="label">Action Display Condition<sup style="color:red;">*</sup></label>
+              <ngx-codemirror name="actionCondition" [(ngModel)]="action.displayCondition" [options]="codeMirrorConfig"
+                required></ngx-codemirror>
+            </div>
+          </div>
+          <div class="hor-line">&nbsp;</div>
+        </div>
+
+
+
+      </form>
+    </div>
+
+
+  </nb-card-body>
+  <nb-card-footer>
+    <div class="action-card-footer">
+      <button ngbButton class="btn btn-primary" type="button"
+        (click)="saveActions();$event.preventDefault();">Save</button>&nbsp;&nbsp;
+      <button ngbButton class="btn btn-primary" type="button"
+        (click)="closeModal();$event.preventDefault();">Cancel</button>
+    </div>
+  </nb-card-footer>
+</nb-card>

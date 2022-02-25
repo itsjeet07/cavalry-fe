@@ -1,0 +1,2 @@
+2021-01-11T21:03:43.372+0530 E -        [main] Error saving history file: FileOpenFailed: Unable to open() file : No such file or directory
+2021-01-11T21:03:43.372+0530 I CONTROL  [main] shutting down with code:0

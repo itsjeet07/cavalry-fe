@@ -1,0 +1,203 @@
+.appear {
+  width: 450px;
+    margin-bottom: 0;
+    border-radius: 5px !important;
+    position: absolute;
+    top: 30px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+}
+
+.label-css {
+    background: var(--unnamed-color-f8fbff) 0% 0% no-repeat padding-box;
+    border: 1px solid var(--unnamed-color-d7dfe9);
+    background: #f8fbff 0% 0% no-repeat padding-box;
+    border: 1px solid #d7dfe9;
+    border-radius: 5px;
+    opacity: 1;
+}
+.result {
+    color: var(--unnamed-color-5c77ea);
+    text-align: left;
+    font: normal normal medium 14px/22px DM Sans;
+    letter-spacing: 0px;
+    color: #5c77ea;
+    opacity: 1;
+}
+
+.heading {
+    color: var(--unnamed-color-262b44);
+    text-align: left;
+    font: normal normal medium 12px/22px DM Sans;
+    letter-spacing: 0px;
+    color: #262b44;
+    text-transform: uppercase;
+    opacity: 0.5;
+}
+nb-card.appear *{
+font-family: "DM Sans", sans-serif !important;
+font-size: 14px;
+font-weight: normal
+
+}
+nb-card.appear nb-card-header{
+padding: 13px 20px;
+color: #5c77ea;
+font-size: 18px;
+font-family: "DM Sans", sans-serif !important;
+font-weight: normal;
+line-height: 40px;
+}
+nb-card.appear nb-card-body{
+  padding: 23px 40px !important;
+  max-height: calc(100vh - 20vh);
+}
+nb-card.appear nb-card-body .new-label{
+  color: #172B4D;
+    position: inherit;
+    text-transform: inherit;
+    font-size: 14px !important;
+}
+nb-card.appear nb-card-header img.close-btn {
+  float: right;
+  margin: 14px 0 0 0;
+  position: relative;
+  cursor: pointer;
+  /* left: -278px; */
+}
+nb-card.appear nb-card-header img.title-icon {
+  margin: -7px 5px 0 0;
+}
+nb-card.add-reminder-popup {
+  max-width: 380px;
+  width: 380px;
+  height: 518px;
+  margin-bottom: 0;
+  border-radius: 6px !important
+}
+nb-card.add-reminder-popup nb-card-body .container {
+  padding: 0;
+}
+nb-card.add-reminder-popup nb-card-header {
+  font-family: 'DM Sans' !important;
+  font-size: 18px;
+  color: #5c77ea;
+  font-weight: 500;
+}
+nb-card.add-reminder-popup nb-card-header img.add-reminder-img {
+  max-width: 20px;
+  position: relative;
+  top: -2px;
+  right: 0;
+  margin-right: 5px;
+}
+nb-card.add-reminder-popup nb-card-header img.close-btn{
+  position: relative;
+  width: 12px !important;
+  cursor: pointer;
+  top: 7px;
+  float: right;
+}
+nb-card.add-reminder-popup nb-card-footer .row{
+  justify-content: space-between;
+  margin: 0;
+}
+button.btn.btn-primary.btn-save {
+  min-width: 100px;
+  background: #5C77EA;
+  box-shadow: 0px 2px 4px #0000001F;
+  border: 1px solid #5C77EA;
+  border-radius: 5px;
+  font-family: 'DM Sans';
+  font-size: 14px;
+  font-weight: 500;
+  height: 40px;
+}
+button.btn.btn-cancel {
+  min-width: 90px;
+  border: 1px solid rgb(38, 43, 68 / 0.25);
+  font-family: 'DM Sans';
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(38, 43, 68 / 0.50);
+  height: 40px;
+}
+nb-card.add-reminder-popup nb-card-body label {
+  font-family: 'DM Sans';
+  color: rgb(38, 43, 68 / 0.50);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  opacity: 0.50;
+  margin-bottom: 4px;
+}
+nb-card.add-reminder-popup nb-card-body .call-log-field.field-area img {
+  float: left;
+  width: 16px;
+  margin-right: 6px;
+}
+nb-card.add-reminder-popup nb-card-body .call-log-field.field-area span {
+  float: left;
+  font-family: 'DM Sans';
+  font-size: 14px;
+  font-weight: 500;
+  color: #262B44;
+}
+nb-card.add-reminder-popup nb-card-body .call-log-field.field-area span.call-log-title {
+  margin-right: 3px;
+}
+nb-card.add-reminder-popup nb-card-body .call-log-field.field-area {
+  margin-bottom: 10px;
+  /* min-height: 80px; */
+  float: left;
+  width: auto;
+  position: relative;
+  padding-right: 24px;
+  border-radius: 5px !important;
+}
+nb-card.add-reminder-popup nb-card-body .call-log-field.field-area img.close-btn {
+  width: 10px;
+  float: right;
+  margin-top: 0;
+  margin-right: 0px;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  cursor: pointer;
+}
+nb-card.add-reminder-popup nb-card-body .field-area {
+  background: #F8FBFF;
+  border: 1px solid #D7DFE9;
+  width: 100%;
+  border-radius: 5px;
+  box-shadow: 0px 0px 3px #00000014;
+  min-height: 40px;
+  padding: 11px;
+  font-family: 'DM Sans';
+  color: #262B44;
+  font-weight: 500;
+  font-size: 16px;
+}
+nb-card.add-reminder-popup nb-card-body .field-area:focus{
+  outline: none;
+}
+nb-card.add-reminder-popup nb-card-body .field-area::placeholder {
+  color: #262B44;
+  opacity: 0.75;
+}
+nb-card.add-reminder-popup nb-card-body textarea.field-area {
+  min-height: 116px !important;
+  height: auto;
+  max-height: 116px;
+  font-size: 14px !important;
+  line-height: 22px;
+}
+.row.field-row {
+  margin-bottom: 11px;
+}
+.row.field-row.last-field-row{
+  margin-bottom: 0px;
+}
+
+

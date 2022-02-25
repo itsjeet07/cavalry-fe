@@ -1,0 +1,11 @@
+<nb-card>
+  <nb-card-header>
+    User
+  </nb-card-header>
+
+  <nb-card-body>
+    <button type="button" class="btn btn-primary btn-sm" style="float: right;padding:10px;" (click)="onAdd()">Add New User</button><br><br><br>
+    <ng2-smart-table *ngIf="(settings.columns | json) !== '{}'" [settings]="settings" [source]="source" (deleteConfirm)="onDeleteConfirm($event)">
+    </ng2-smart-table>
+  </nb-card-body>
+</nb-card>

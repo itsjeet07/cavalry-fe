@@ -1,0 +1,251 @@
+<nb-card *ngFor="let lookupData  of lookupDatas; let i = index;">
+  <nb-card-body>
+    <div class="row">
+      <div class="task-row">
+        <div class="task-col">
+          <div class="checkbox">
+            <ng-container>
+              <input type="checkbox" class="inner_checkbox" [(ngModel)]="lookupData.completed"
+                (change)="isCompleted(lookupData)" />
+              <ng-container *ngIf="!lookupData?.subjectdata?.edit">
+                <b (click)="toStaticEdit(lookupData, lookupData._id, 'subject')">{{ lookupData?.subject }}</b>
+                <i class="fa fa-edit" (click)="toStaticEdit(lookupData, lookupData._id, 'subject')"></i>
+              </ng-container>
+              <ng-container *ngIf="lookupData?.subjectdata?.edit">
+                <label class="label mb-0">{{ 'subject'  | normalText }}</label>
+                <input nbInput type="text" placeholder="Subject" [(ngModel)]="lookupData.subject">
+
+                <div>
+                  <button class="btn btn-sm btn-success m-2" (click)="onStaticSave(lookupData, 'subject')">Save</button>
+                  <button class="btn btn-sm btn-primary m-2"
+                    (click)="onStaticCancel(lookupData, 'subject')">Cancel</button>
+                </div>
+
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <!--
+      <div class="task-row">
+        <div class="task-col">
+          <div class="checkbox">
+            <ng-container>
+              <ng-container *ngIf="!lookupData?.assigne?.edit">
+                <b>{{ 'Hemant Kumar (HemantJalin@gmail.com)' }}</b>
+                <i class="fa fa-edit" (click)="toEdit(lookupDubData[i].subject, lookupData._id)"></i>
+              </ng-container>
+              <ng-container *ngIf="!lookupData?.subjectdata?.edit">
+                <label class="label mb-0">{{ 'dueDate' | normalText }}</label>
+                <input nbInput type="text" placeholder="Assigned To" [(ngModel)]="assignedTo">
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div> -->
+
+      <div class="task-row">
+        <div class="task-col">
+          <div class="checkbox">
+            <ng-container>
+              <ng-container *ngIf="!lookupData?.dueDatedata?.edit">
+                <b (click)="toStaticEdit(lookupData, lookupData._id, 'dueDate')">{{ lookupData?.dueDate | date }}</b>
+                <i class="fa fa-edit" (click)="toEdit(lookupData.dueDate, lookupData._id)"></i>
+              </ng-container>
+              <ng-container *ngIf="lookupData?.dueDatedata?.edit">
+                <label class="label mb-0">{{ 'Due Date' }}</label>
+                <input type="text" placeholder="Due Date" class="form-control" [(ngModel)]="lookupData.dueDate"
+                  [nbDatepicker]="formpicker">
+                <nb-datepicker #formpicker></nb-datepicker>
+                <div>
+                  <button class="btn btn-sm btn-success m-2" (click)="onStaticSave(lookupData, 'dueDate')">Save</button>
+                  <button class="btn btn-sm btn-primary m-2"
+                    (click)="onStaticCancel(lookupData, 'dueDate')">Cancel</button>
+                </div>
+
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+      <ng-container *ngFor="let lookupFields of lookupData | keyvalue">
+
+
+
+        <ng-container *ngIf="lookupFields.key != '_id' && isObject(lookupFields.value)
+                                            && !doNotRenderFields.includes(lookupFields.key)">
+
+          <div class="task-row">
+            <div class="task-col">
+              <label class="label mb-0">{{ lookupFields.key  | normalText }}</label>
+              <ng-container *ngIf="!lookupFields?.edit">
+
+                <b class="edit-class" nbTooltip="Click To Edit"
+                  *ngIf="lookupFields.key.toLowerCase().indexOf('date') == -1" style="min-height: 5px;"
+                  [innerHTML]="lookupFields?.value" (click)="toEdit(lookupFields, lookupData._id)">
+                </b>
+
+                <b class="edit-class" nbTooltip="Click To Edit"
+                  *ngIf="lookupFields.key.toLowerCase().indexOf('date') > -1" style="min-height: 5px;"
+                  [innerHTML]="lookupFields?.value | date" (click)="toEdit(lookupFields, lookupData._id)">
+                </b>
+
+                <i class="fa fa-edit" (click)="toEdit(lookupFields, lookupData._id)"></i>
+              </ng-container>
+
+            </div>
+          </div>
+
+          <div *ngIf="lookupFields?.edit" class="col-sm-6 ml-1 mb-2">
+            <ng-container *ngIf="inputFields.includes(lookupFields?.column?.type)">
+              <input nbInput [type]="lookupFields?.column?.type" [placeholder]="lookupFields?.column?.label"
+                [(ngModel)]="lookupFields.value">
+
+            </ng-container>
+            <ng-container *ngIf="lookupFields?.column?.type == 'richTextArea'">
+              <editor apiKey="3zk4lcdxv42ueqfotvbtw7lihq6uwkb0cy7l33muhxhr778z" [(ngModel)]="lookupFields.value">
+              </editor>
+            </ng-container>
+            <ng-container *ngIf="lookupFields?.column?.type == 'area'">
+              <textarea nbInput [placeholder]="lookupFields?.column?.label" [(ngModel)]="lookupFields.value"></textarea>
+            </ng-container>
+            <ng-container *ngIf="lookupFields?.column?.type === 'dropdown'">
+              <nb-select [(ngModel)]="lookupFields.value" [placeholder]="lookupFields?.column?.label">
+                <nb-option *ngFor="let option of lookupFields?.column?.options" matRipple [value]="option">
+                  {{ option }}
+                </nb-option>
+              </nb-select>
+            </ng-container>
+            <!-- <ng-container *ngIf="lookupFields?.column?.type == 'date'">
+                <input nbInput [nbDatepicker]="formpicker" [placeholder]="lookupFields?.column?.label"
+                  [(ngModel)]="lookupFields.value">
+                <nb-datepicker #formpicker></nb-datepicker>
+              </ng-container> -->
+            <ng-container *ngIf="lookupFields?.column?.type == 'date'">
+              <input type="text" [placeholder]="lookupFields?.column?.label" class="form-control"
+                [(ngModel)]="lookupFields.date" [nbDatepicker]="formpicker">
+              <nb-datepicker #formpicker></nb-datepicker>
+            </ng-container>
+
+            <ng-container *ngIf="lookupFields?.column?.type == 'checkbox'">
+              <div class="checkbox">
+                <ng-container [formArrayName]="lookupFields?.column?.name"
+                  *ngFor="let item of lookupFields?.column?.options; let i = index">
+                  <nb-checkbox class="inner_checkbox" [(ngModel)]="lookupFields.value">{{ item }}
+                  </nb-checkbox>
+                </ng-container>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="lookupFields?.column?.type == 'radio'">
+              <div class="RadioContainer">
+                <nb-radio-group class="radio" name="my-radio-group-{{lookupFields[lookupFields.key]}}"
+                  [(ngModel)]="lookupFields.value">
+                  <nb-radio *ngFor="let item of lookupFields?.column?.options" [value]="item">
+                    {{ item }}
+                  </nb-radio>
+                </nb-radio-group>
+
+              </div>
+            </ng-container>
+
+            <!-- <ng-container *ngIf="lookupFields?.column?.type == 'file'"> -->
+            <!-- <div class="file_upload">
+                  <div class="files">
+                    <div class="upload_file">
+
+                      <div class="droparea" (dragover)="onDragOver($event)" (drop)="onDrop($event)"
+                        (dragleave)="onDragLeave($event)" [class.active]="isActive">
+
+                        <input type="file" name="{{lookupFields.column.name}}"
+                          [(ngModel)]="lookupFields.value" class="browse-file"
+                          (change)="onSelectedFile($event)" multiple>
+
+                        <div class="upload_img">
+                          <img src="/assets/images/file-upload.png">
+                        </div>
+                        <span class="drop_text">Choose files or Drag and drop files here</span>
+                      </div>
+                    </div>
+                    <div class="w_100" *ngIf="showArrayData">
+                      <div class="s_file" *ngFor="let i of showArrayData;let index = index ">
+                        <div class="file_icon">
+                          <img src="assets/images/pdf.png" *ngIf="i.type === 'application/pdf'">
+                          <img src="assets/images/image.png" *ngIf="i.type === 'image/png'">
+                          <img src="assets/images/pdf.png" *ngIf="i.type === 'image/jpeg'">
+                          <img src="assets/images/file-img.png" *ngIf="i.type === ''">
+                        </div>
+                        <div class="inner_files">
+                          <span class="file_name">{{i.name}}</span>
+                        </div>
+                         <div class="delete_icon" (click)="onDelete(index)">
+                          <img src="assets/images/close.png">
+                        </div>
+                      </div>
+                      <nb-progress-bar class="progress_bar" *ngIf="uploadProgress > 0" aria-valuenow="25"
+                        aria-valuemin="0" aria-valuemax="100" [value]="uploadProgress" status="primary">
+                        {{uploadProgress}}%</nb-progress-bar>
+                      <div class="upload_but">
+                        <input class="inner_but" type="button" (click)="onUpload()" value="Upload">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container> -->
+
+            <div>
+              <button class="btn btn-sm btn-success m-2" (click)="onSave(lookupFields)">Save</button>
+              <button class="btn btn-sm btn-primary m-2" (click)="onCancel(lookupFields)">Cancel</button>
+            </div>
+          </div>
+
+        </ng-container>
+      </ng-container>
+
+      <!-- <div class="task-row">
+        <div class="task-col">
+          <div class="checkbox">
+            <ng-container>
+              <ng-container *ngIf="!taskFirstItems.assignedTo.edit">
+                <label class="label mb-0">{{ 'Created By' }}</label>
+                <b>{{ 'Hemant' }}</b>
+                <i class="fa fa-edit" (click)="toEdit(taskFirstItems.subject, lookupData._id)"></i>
+              </ng-container>
+              <ng-container *ngIf="taskFirstItems.assignedTo.edit">
+                <input nbInput type="text" placeholder="Assigned To" [(ngModel)]="createdBy">
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div> -->
+
+      <div class="task-row">
+        <div class="task-col">
+          <ng-container>
+            <ng-container *ngIf="!lookupData?.descriptiondata?.edit">
+              <b (click)="toStaticEdit(lookupData, lookupData._id, 'description')"
+                [innerHTML]="lookupData?.description"></b>
+              <i class="fa fa-edit" (click)="toStaticEdit(lookupData, lookupData._id, 'description')"></i>
+            </ng-container>
+            <ng-container *ngIf="lookupData?.descriptiondata?.edit">
+              <label class="label mb-0">{{ 'Description'  | normalText }}</label>
+              <editor apiKey="3zk4lcdxv42ueqfotvbtw7lihq6uwkb0cy7l33muhxhr778z" [(ngModel)]="lookupData.description">
+              </editor>
+              <div>
+                <button class="btn btn-sm btn-success m-2"
+                  (click)="onStaticSave(lookupData, 'description')">Save</button>
+                <button class="btn btn-sm btn-primary m-2"
+                  (click)="onStaticCancel(lookupData, 'description')">Cancel</button>
+              </div>
+
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>

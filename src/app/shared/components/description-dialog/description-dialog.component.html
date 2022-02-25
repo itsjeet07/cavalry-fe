@@ -1,0 +1,13 @@
+
+<nb-card>
+  <nb-card-header>Edit Description</nb-card-header>
+  <nb-card-body>
+    <editor [init]="{plugins: 'autoresize',skin: false,autoresize_bottom_margin: 10,min_height: 350,  max_height: 500}" apiKey="3zk4lcdxv42ueqfotvbtw7lihq6uwkb0cy7l33muhxhr778z"  [formControl]="editDescription"></editor>
+  </nb-card-body>
+  <nb-card-footer>
+    <nb-card-footer class="button_show">
+      <button class="save" type="submit" (click)="ref.close()" nbButton matRipple> Cancel </button>
+      <button class="cancel ml-2" nbButton matRipple (click)="onUpdate()">Update</button>
+    </nb-card-footer>
+  </nb-card-footer>
+</nb-card>

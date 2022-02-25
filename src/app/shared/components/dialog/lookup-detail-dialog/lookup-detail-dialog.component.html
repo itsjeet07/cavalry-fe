@@ -1,0 +1,75 @@
+<nb-card [nbSpinner]="loading" nbSpinnerSize="small" nbSpinnerStatus="primary">
+  <nb-card-header>
+    {{title}}
+    <button nbButton size="tiny"
+     (click)="viewFullDetail((data && data['link']) || (tableInfo && tableInfo['link']))" class="float-right margin-right">
+      View Full Record
+    </button>&nbsp;&nbsp;
+    <button nbButton size="tiny" (click)="editData()" class="float-right margin-right">
+      Edit Details
+    </button>
+
+  </nb-card-header>
+  <nb-card-body>
+    <div class="left_side-dynamic">
+      <div class="profile_div">
+
+        <div class="profile_pic" id="profile-image" *ngIf="showProfileImage">
+          <img [src]="profileImagePath" class="contact-image">
+        </div>
+
+        <span class="profile_text">
+          <h4 *ngIf="clientData?.firstName && clientData?.lastName">
+            {{ clientData?.firstName + ' ' + clientData?.lastName }}
+          </h4>
+          <h6 class="ml-3" *ngIf="clientData?.name">{{ clientData?.name }}</h6>
+        </span>
+
+        <div class="client_info">
+          <span class="client_name">About this {{ singularTableName }}</span>
+          <ng-container *ngFor="let item of profileData  | slice : startPage:paginationLimit">
+            <div [ngClass]="{'font-bold': clientData?.IDField.includes(item.name)}" class="data_list"
+              *ngIf="isProjectable(item.name)">
+              <span class="label_text">{{ item.label | normalText }}</span>
+              <p class="value_text" [innerHTML]="item.type == 'date' ? (item.value | date) :  item.value"></p>
+
+            </div>
+          </ng-container>
+          <!-- <ng-container *ngFor="let primaryItem of clientData?.primaryData | keyvalue">
+            <ng-container *ngIf="primaryItem.key.indexOf('_link') == -1">
+              <div [ngClass]="{'font-bold': clientData?.IDField.includes(primaryItem.key)}">
+                <div class="data_list">
+                  <span class="label_text">{{ primaryItem.key | normalText }} :</span>
+                  <span class="">
+                    <a class="white-space-pre-line "><span class="value_text">{{ primaryItem.value | newLineText }}
+                      </span>
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container> -->
+          <div class="button_align">
+            <button type="button" *ngIf="paginationLimit < profileData.length && showMore" (click)="showMoreItems()"
+              class="footer_text footer_but">
+              <span>View Additional information</span>
+            </button>
+            <button type="button" *ngIf="paginationLimit > 3 && showLess" (click)="showLessItems()"
+              class="footer_text footer_but">
+              <span>Show Less information</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+  </nb-card-body>
+
+  <nb-card-footer>
+    <button class="float-right" size="small" nbButton matRipple status="primary" (click)="cancel()">Close</button>
+  </nb-card-footer>
+</nb-card>

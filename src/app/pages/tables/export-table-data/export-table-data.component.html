@@ -1,0 +1,62 @@
+<nb-card class="export_layout" [nbSpinner]="loading" nbSpinnerSize="small" nbSpinnerStatus="primary">
+  <nb-card-header>Export</nb-card-header>
+  <nb-card-body class="import_body">
+    <div class="margin30">
+      <div class="inner_body">
+        <div class="wrap_field full-width">
+       </div>
+       <mat-form-field class="w-100">
+          <mat-select class="selection-panel" panelClass="myPanelOption" disableOptionCentering placeholder="Select Columns" multiple [(ngModel)]="selectedObjectsFromArray">
+            <mat-option *ngFor="let column of columnList; let i =index" [value]="column.name">
+              <mat-checkbox [checked]="column.selected" (change)="column.selected = !column.selected"> {{column.label}}</mat-checkbox>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item  (click)="save(1)">
+        <span>Excel</span>
+      </button>
+      <button mat-menu-item (click)="save(2)">
+        <span>CSV</span>
+      </button>
+      <button mat-menu-item (click)="save(3)">
+        <span>Pdf</span>
+      </button>
+    </mat-menu>
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer class="footer d-flex">
+    <button  class="btn btn-primary btn-lg w-50 mb-1 mr-2" (click)="onCancel()">Cancel </button>
+    <button class="btn btn-primary btn-lg w-50 mb-1" type="submit" [matMenuTriggerFor]="menu">Export As</button>
+    </nb-card-footer>
+</nb-card>
+
+<div class="list-view" id="table-view" *ngIf="displayTable && tableData.length > 0">
+  <table>
+    <tr>
+      <th *ngFor="let value of headerField">{{value.label}}</th>
+    </tr>
+    <tr *ngFor="let value of tableData">
+      <td *ngFor="let header of headerField">
+
+        <div class="data_list">
+        <p class="value_text 2" *ngIf="(header.name == recordTypeFieldName); else valueText1"> {{ value[header.label] }}</p>
+        <ng-template #valueText1>
+          <span class="value_text 3" *ngIf="(header.name != recordTypeFieldName && header.type != 'dateTime');else valueText2">
+            {{(header.type == 'date') ? (value[header.label] | date) :  getUrl(value[header.label], header)}}
+          </span>
+        </ng-template>
+        <ng-template #valueText2>
+          <p class="value_text 4" *ngIf="(header.name != recordTypeFieldName && header.type == 'dateTime' && testLinkify(value[header.label])); else valueText3">
+            {{(header.type == 'date' || header.type == 'dateTime') ? (value[header.label] | date:'short') :  value[header.label]}}
+          </p>
+        </ng-template>
+        <ng-template #valueText3>
+        <p class="value_text 1" *ngIf="value[header.label] && (header.type != 'date' && header.type != 'dateTime' && header.type != 'autoNumber') ">{{value[header.label]}}</p>
+        </ng-template>
+      </div>
+      </td>
+    </tr>
+  </table>
+</div>

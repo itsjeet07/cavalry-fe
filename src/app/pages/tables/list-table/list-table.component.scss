@@ -1,0 +1,38 @@
+@import '../../../@theme/styles/themes';
+
+@include nb-install-component() {
+  nb-card {
+    transform: translate3d(0, 0, 0);
+    font-family: 'Roboto-Bold'; 
+    h1,h2,h3,h4,h5,h6,a,p,span,button,table{
+      font-family: 'Roboto-Bold'; 
+    }
+  }
+}
+
+.font_familycss{
+  font-family: 'Roboto-Bold'; 
+  background-color: black;
+  table{
+    td{
+      div{
+        font-family: 'Roboto-Bold'; 
+      }
+    }
+  }
+}
+::ng-deep .nb-theme-default nb-card nb-card-header{
+  font-family: 'Roboto-Bold'; 
+}
+::ng-deep nb-card-body{ 
+  th{
+    .ng-star-inserted{
+      font-family: 'Roboto-Bold' !important ; 
+    }
+  }
+  .ng-star-inserted{
+  font-family: 'Roboto-Light'; 
+  tr,th,a{
+  }
+}
+}

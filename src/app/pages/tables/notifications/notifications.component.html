@@ -1,0 +1,77 @@
+
+<!-- <button nbButton class="btn-all-read" status="primary" (click)="markAllAsRead()">Mark all as read</button> -->
+
+<button *ngIf="!fromDashboard" nbButton class="btn-all-read" status="primary" (click)="viewAllReminders()">View All Reminders</button>
+
+<div class="row notification-page">
+  <div class="calendr-con col-md-6 pt-md-4" [ngStyle]="{'padding-top': fromDashboard ? 0 : null, 'padding-right': fromDashboard ? '5px' : null }">
+    <ngx-reminders [notifyFlag]="true" [isFromDashboard]="fromDashboard" (remindersForSelectedDate)="getReminderForSelectedDate($event)" (allReminders)="getAllReminders($event)"></ngx-reminders>
+  </div>
+  <div  class="reminder-con col-md-6 pt-md-4" [ngStyle]="{'padding-top': fromDashboard ? 0 : null, 'padding-right': fromDashboard ? '5px' : null, 'padding-left': fromDashboard ? '0px' : null }">
+    <nb-card class="own-scroll">
+
+
+      <ng-container *ngIf="!fromReminderFlag">
+        <nb-list-item
+          *ngFor="let notification of notifications" class="main-listing"   [ngClass]="{'unread-message': isRead(notification), 'read-message' : !isRead(notification) }"  (click) ="updateMessageStatus(notification)"
+        >
+
+          <span class="event-con">
+            <span class="item-con item-task"> {{ notification.resourceDetails.tableName}} </span>
+
+
+            <span class="item-con item-task" *ngIf="notification.resourceDetails.tableName == 'Tasks'" [innerHTML]="notification.resourceDetails.subject"></span>
+            <span class="item-con item-description" *ngIf="notification.resourceDetails.tableName == 'Tasks'" [innerHTML]="notification.resourceDetails.description"></span>
+          </span>
+
+
+          <span class="item-con item-description" *ngIf="notification.resourceDetails.tableName != 'Tasks'" [innerHTML]="notification.resourceDetails.resourceName"></span>
+
+          <span class="item-con item-description" *ngIf="notification.resourceDetails.reminderNotes">
+            Reminder Notes : {{ notification.resourceDetails.reminderNotes }}
+          </span>
+
+          <span class="event-dt-con">
+            <span class="item-con item-remind-date-time"> <a class="notification-item" (click)="redirect(notification)"><img src="assets/images/redirect.png"></a></span>
+            <span class="item-con item-date">{{ formatDate(notification.createdAt)}}</span>
+          </span>
+        </nb-list-item>
+      <nb-list-item *ngIf="notifications.length==0">No Notifications!</nb-list-item>
+      <button nbButton (click)="onScrollDown()" *ngIf="notifications.length >= 20">Load More</button>
+      </ng-container>
+
+
+      <ng-container *ngIf="fromReminderFlag">
+        <nb-list-item
+          *ngFor="let reminder of reminderData;let rowIndex = index" [ngClass]="{'unread-message': reminder.visibilityStatus == 'unread', 'read-message' : reminder.visibilityStatus == 'read' }" class="main-listing" (click)="reminderClicked(reminder,rowIndex)">
+
+          <div class="row col-md-10" style="overflow: hidden;" >
+            <div class="col-md-6" >
+              <span class="reminder-tick-main" ><nb-icon icon="checkmark-circle-2-outline" class="reminder-tick-icon"></nb-icon></span>
+              {{reminder.date | date:'shortTime'}}
+            </div>
+            <div class="col-md-6">
+              {{reminder.notes}}
+            </div>
+          </div>
+
+          <div class="alert-notification col-md-4" style="padding: 0;">
+            <nb-icon class="delete-reminder" (click)="deleteReminder(reminder,rowIndex)" icon="trash-2-outline"></nb-icon>
+          <img src="assets/images/due-alert.png" *ngIf="reminder.overDue && reminder.visibilityStatus == 'unread'" class="alert-notification-img show">
+          <ng-container *ngIf="reminder.visibilityStatus == 'unread'">
+            <img src="assets/images/inbox-alert.png"   class="alert-notification-img show">
+          </ng-container>
+          </div>
+
+        </nb-list-item>
+      <nb-list-item *ngIf="reminderData.length==0">No Notifications!</nb-list-item>
+      <button nbButton (click)="onScrollDownForReminder()" *ngIf="reminderData.length >= 5">Load More</button>
+      </ng-container>
+
+
+  </nb-card>
+
+  </div>
+</div>
+
+

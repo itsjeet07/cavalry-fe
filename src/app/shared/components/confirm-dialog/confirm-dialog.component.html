@@ -1,0 +1,25 @@
+<nb-card [style.background-color]="warningColor?.color" [ngClass]="{'setWidth': !exportButton}" [style.border-color]="warningColor?.color"  >
+  <nb-card-header style="border: none;">
+    <div class="icon-box">
+      <img *ngIf="actionFlag" src="assets/images/alert-triangle-outline.png" alt=""> <h4 class="modal-title w-100">{{ title }}</h4>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <p *ngIf="actionFlag">{{warningMessage}}</p>
+    <p>{{ text }}</p>
+  </nb-card-body>
+  <nb-card-footer style="border: none;" *ngIf="exportButton">
+    <div *ngIf="exportButton">
+      <button class="cancel" nbButton matRipple status="primary" (click)="onSelect('Yes & Next')">Yes & Next</button>
+      <button type="submit" nbButton matRipple status="primary" class="export-buttons mr-2" (click)="onSelect('Ignore & Next')">Ignore & Next</button>
+      <button type="submit" nbButton matRipple status="primary"  class="export-buttons" (click)="onSelect('Choose manual')">Choose manual</button>
+    </div>
+  </nb-card-footer>
+  <nb-card-footer style="border: none;" *ngIf="!exportButton">
+    <button *ngIf="!actionFlag" class="cancel" nbButton matRipple status="primary" (click)="onCancel()">No</button>
+    <button *ngIf="!actionFlag" type="submit" nbButton matRipple status="primary" (click)="onYes()">Yes</button>
+    <button *ngIf="actionFlag" class="cancel" nbButton matRipple status="primary" (click)="onCancel()"> {{ cancel }}</button>
+    <button *ngIf="actionFlag && !finalDialog" type="submit" nbButton matRipple status="primary" (click)="onYes()">Proceed</button>
+  </nb-card-footer>
+
+</nb-card>

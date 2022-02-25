@@ -1,0 +1,20 @@
+@import '../../../../@theme/styles/themes';
+
+@include nb-install-component() {
+  input {
+    width: 100%;
+  }
+
+  .cancel {
+    margin-right: 1rem;
+    font-family: 'Roboto-Bold' !important;
+  }
+  .submit{
+    font-family: 'Roboto-Bold' !important;
+  }
+}
+.nb-additional-form { width: 600px; max-width: 95vw; }
+// nb-card{
+//   width: 600px;
+//   height: 350px;
+// }

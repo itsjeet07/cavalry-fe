@@ -1,0 +1,156 @@
+<nb-card class="email_modal" style="min-width: 600px">
+  <nb-card-header class="action-card-header">
+    <div class="row">
+      <div class="col-md-11">Add Default Filters</div>
+      <div
+        class="col-md-1"
+        (click)="closeModal(); $event.preventDefault()"
+        style="cursor: pointer"
+      >
+        <strong>X</strong>
+      </div>
+    </div>
+  </nb-card-header>
+  <nb-card-body
+    class="action-card-body py-3 justify-content-center"
+    [ngClass]="{
+      'open-filter-height': !hideFilters,
+      'd-flex align-items-center': hideFilters
+    }"
+  >
+    <div class="search_main">
+      <div
+        class="filter-pop-row mb-3 d-flex flex-row justify-content-center"
+        style="float: inherit"
+      >
+        <div class="d-block w-100">
+          <div class="filter-label">
+            <span>Filter Name</span>
+          </div>
+          <div class="filter-input w-100">
+            <input
+              class=""
+              nbInput
+              #search
+              [(ngModel)]="filterName"
+              [type]="'text'"
+              [placeholder]="'Enter the filter name'"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="d-flex flex-row justify-content-center">
+        <mat-slide-toggle
+          color="primary"
+          (change)="viewClosedEvent($event)"
+          class="viewClosedToggleCl"
+          [(ngModel)]="viewAllRecords"
+          *ngIf="statuses.length > 0"
+        >
+          <span>{{ viewAllRecords ? "Hide Closed" : "View Closed" }}</span>
+        </mat-slide-toggle>
+
+        <ng-container *ngFor="let column of parentTableHeader">
+          <ng-container *ngIf="column.type && column.type === 'status'">
+            <div class="d-flex align-items-center select-dropdown">
+              <div class="status-con">
+                <span class="label-main-filter-status">
+                  <span class="label-filter-status">
+                    <label *ngIf="filteredStatus.length == 0" for="stat">{{
+                      column.label
+                    }}</label>
+                  </span>
+                </span>
+                <nb-select
+                  optionsListClass="filter-option123"
+                  #statusSelect
+                  class="filter-select"
+                  [(ngModel)]="filteredStatus"
+                  multiple
+                  (selectedChange)="statusSelected($event, column.name)"
+                >
+                  <nb-option
+                    optionsListClass="filter-option"
+                    *ngFor="let status of column.statusOptions"
+                    [value]="status.status"
+                    >{{ status.status }}</nb-option
+                  >
+                </nb-select>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+
+        <span id="filterDiv" class="btn-span">
+          <button
+            type="button"
+            class="btn btn-outline-default btn-sm btn-custom"
+            (click)="hideFilters = !hideFilters"
+          >
+            <img src="/assets/images/Group 50.svg" /> &nbsp; Filter
+          </button>
+
+          <mat-icon
+            *ngIf="!hideFilters"
+            role="img"
+            class="
+              mat-icon
+              notranslate
+              material-icons
+              mat-icon-no-color
+              ng-star-inserted
+            "
+            aria-hidden="true"
+          >
+          </mat-icon>
+
+          <ngx-filter
+            *ngIf="!hideFilters"
+            [hideFilters]="hideFilters"
+            [tableName]="filterName"
+            [filterObject]="filterObject"
+            [finalList]="finalList"
+            [usersWithIds]="usersWithIds"
+            (emitFilterObject)="getDataForFilterObject($event)"
+            [dynamicFilterData]="dynamicFilterData"
+          ></ngx-filter>
+        </span>
+        <!--Filters ends -->
+      </div>
+      <div
+        class="filter-pop-row mb-3 d-flex flex-row justify-content-center"
+        style="float: inherit"
+      >
+        <div class="d-block w-100">
+          <nb-checkbox
+            class="inner_checkbox"
+            (checkedChange)="changeMarkDefault($event)"
+            [checked]="defaultCheck"
+          >
+            Mark as default filter.
+          </nb-checkbox>
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer>
+    <div class="action-card-footer">
+      <button
+        ngbButton
+        class="btn btn-primary"
+        type="button"
+        (click)="saveActions(); $event.preventDefault()"
+      >
+        Save</button
+      >&nbsp;&nbsp;
+      <button
+        ngbButton
+        class="btn btn-primary"
+        type="button"
+        (click)="closeModal(); $event.preventDefault()"
+      >
+        Cancel
+      </button>
+    </div>
+  </nb-card-footer>
+</nb-card>

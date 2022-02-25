@@ -1,0 +1,99 @@
+<div class="message_Box" *ngIf="textDisplay">
+  <div class="icon_image">
+    <img src="assets/images/pending-check.png">
+  </div>
+  <div class="message_Box1">
+  <span class="success">Successful</span>
+  <span class="message_boxtext">{{this.textDisplay}}</span>
+</div>
+</div>
+
+<div class="h-100 d-flex justify-content-center align-items-center">
+  <div class="example-card shadow-lg bg-white">
+    <div class="layout_logo">
+      <span class="logo"><img src="{{logoURL}}"  width="40"/></span>
+      </div>
+    <div class="card-body">
+      <nb-card class="scroller" [nbSpinner]="loading" nbSpinnerSize="large" nbSpinnerStatus="primary">
+        <nb-tabset fullWidth>
+          <nb-tab tabTitle="SIGN IN">
+            <span><img src="assets/images/user.png" alt="user" width="30"/></span>
+            <form (ngSubmit)="onFormSubmit('login')" [formGroup]="loginForm" class="mt-1">
+              <input
+                class="form-control shadow-none p-3 mb-2 h-25 bg-light rounded"
+                formControlName="email"
+                placeholder="login"
+                type="email">
+              <div class="wrap_password_eye">
+                <input
+                class="form-control shadow-none p-3 mb-2 h-25 bg-light rounded"
+                formControlName="password"
+                placeholder="password"
+                [type]="isEyeEnableSignIn ? 'text' : 'password'">
+                <nb-icon class="eye-icon" icon="eye-outline" *ngIf="isEyeEnableSignIn" (click)="isEyeEnableSignIn = !isEyeEnableSignIn"></nb-icon>
+                <nb-icon class="eye-icon" icon="eye-off-outline" *ngIf="!isEyeEnableSignIn" (click)="isEyeEnableSignIn = !isEyeEnableSignIn"></nb-icon>
+              </div>
+              <button [disabled]="!loginForm.valid" class="btn btn-primary btn-lg w-50 mb-1" type="submit">
+                LOG IN
+              </button>
+              <div class="forgot-password shadow-none p-3 bg-light w-100" style="margin-top: 15px;">
+                <button class="btn btn-link" type="button" (click)="redirectForgotPassword()">Forgot Password?</button>
+              </div>
+            </form>
+          </nb-tab>
+          <nb-tab tabTitle="SIGN UP">
+            <span><img src="assets/images/user.png" alt="user" width="30"/></span>
+            <form (ngSubmit)="onFormSubmit('registration')" [formGroup]="registrationForm" class="mt-1">
+              <input
+                class="form-control shadow-none p-3 mb-2 h-25 bg-light rounded"
+                formControlName="firstName"
+                placeholder="First Name"
+                type="text"
+                (keypress)="alphabetOnly($event)">
+              <input
+                class="form-control shadow-none p-3 mb-2 h-25 bg-light rounded"
+                formControlName="lastName"
+                placeholder="Last Name"
+                type="text"
+                (keypress)="alphabetOnly($event)">
+              <input
+                class="form-control shadow-none p-3 mb-2 h-25 bg-light rounded"
+                formControlName="mobileNumber"
+                placeholder="Mobile Number"
+                type="text"
+                (keypress)="numberOnly($event)">
+              <input
+                class="form-control shadow-none p-3 mb-2 h-25 bg-light rounded"
+                formControlName="email"
+                placeholder="Email"
+                type="email">
+              <div class="wrap_password_eye">
+                <input
+                  class="form-control shadow-none p-3 mb-2 h-25 bg-light rounded"
+                  formControlName="password"
+                  placeholder="Password"
+                  [type]="isEyeEnableSignUp ? 'text' : 'password'">
+                  <nb-icon class="eye-icon" icon="eye-outline" *ngIf="isEyeEnableSignUp" (click)="isEyeEnableSignUp = !isEyeEnableSignUp"></nb-icon>
+                  <nb-icon class="eye-icon" icon="eye-off-outline" *ngIf="!isEyeEnableSignUp" (click)="isEyeEnableSignUp = !isEyeEnableSignUp"></nb-icon>
+              </div>
+                <div class="d-flex flex-column align-items-center">
+                <div class="d-flex flex-row align-items-center">
+              <input type="checkbox" required formControlName="privacy"/><small class="ml-2 font-s">By signing up, you agree to {{appName || "Synccos's"}}</small>
+            </div>
+                <span class="d-flex flex-row align-items-center">
+                  <button type="button" class="btn btn-link btn-sm" (click)="openTermsCondition()"><small class="font-s">Terms&Condition</small></button>
+                 <small class="font-s"> and </small>
+                  <button type="button" class="btn btn-link btn-sm" (click)="openPrivacyPolicy()"><small class="font-s">Privacy Policy</small></button>
+                </span>
+              </div>
+              <br>
+              <button [disabled]="!registrationForm.valid" class="btn btn-primary btn-lg w-50 mb-1" type="submit">
+                Sign Up
+              </button>
+            </form>
+          </nb-tab>
+        </nb-tabset>
+      </nb-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+<!-- <nb-card class="closing-form">
+    <nb-card-header>
+        <div class="icon-box">
+            <h4 class="modal-title w-100">Are you sure?</h4>
+        </div>
+    </nb-card-header>
+    <nb-card-body>
+        <p>Are you sure you want to cancel?</p>
+    </nb-card-body>
+    <nb-card-footer>
+        <button class="cancel" nbButton matRipple status="primary" (click)="onCancel()">NO</button>
+        <button type="submit" nbButton matRipple status="primary" (click)="onYes()">Yes</button>
+    </nb-card-footer>
+</nb-card> -->
+
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-basic-title">Are you sure?</h4>
+  <button type="button" class="close" aria-label="Close" (click)="onCancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <p>Are you sure you want to cancel?</p>
+</div>
+<div class="modal-footer">
+  <!-- <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button> -->
+  <button class="cancel" nbButton matRipple status="primary" (click)="onCancel()">NO</button>
+  <button type="submit" nbButton matRipple class="btn btn-outline-dark" (click)="onYes()">Yes</button>
+</div>

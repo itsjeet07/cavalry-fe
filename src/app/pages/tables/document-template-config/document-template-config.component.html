@@ -1,0 +1,82 @@
+<nb-card class="config_cards">
+  <nb-card-header>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-10">
+          <nb-checkbox
+            name="isDocumentTemplate"
+            (checkedChange)="documentTemplateChange($event)"
+            [(ngModel)]="tableDetails.isDocumentTemplate"
+            >Documents Template : {{ tableDetails.tableName }}</nb-checkbox
+          >
+        </div>
+        <div class="col-md-2 icon-space">
+          <i
+            class="fa fa-plus"
+            nbTooltip="Add Documnets"
+            style="cursor: pointer"
+            nbTooltipStatus="primary"
+            (click)="addNewDocumentTemplate()"
+          ></i>
+          <a
+            nbTooltip="Back to tables listing"
+            nbTooltipStatus="primary"
+            routerLink="/pages/tables/list"
+          >
+            <nb-icon icon="arrow-back-outline"></nb-icon>
+          </a>
+          <i
+            class="nb-edit"
+            nbTooltip="Edit Columns"
+            style="cursor: pointer"
+            nbTooltipStatus="primary"
+            (click)="onEdit()"
+          ></i
+          >&nbsp;&nbsp;
+        </div>
+      </div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <div *ngIf="documentTemplateList && documentTemplateList.length">
+      <table>
+        <tr>
+          <th>File Name</th>
+          <th>Action</th>
+        </tr>
+        <ng-container>
+          <!-- *ngFor="let column of emailTemplateList; let columnIndex = index" -->
+          <tr *ngFor="let col of documentTemplateList; let i = index">
+            <td>
+              <b *ngIf="col?.event?.name">{{ col?.event?.name | uppercase }}</b>
+            </td>
+            <td class="d-flex">
+              <div
+                class="col-md-1 mt-2 mr-2 edit_but"
+                style="cursor: pointer"
+                (click)="editTemplate(col._id, i)"
+              >
+                <i class="fas fa-pencil-alt"></i>
+              </div>
+              <div
+                class="col-md-1 mt-2 mr-2 edit_but"
+                style="cursor: pointer"
+                (click)="deleteTemplate(col._id, i)"
+              >
+                <i class="fas fa-trash-alt"></i>
+              </div>
+              <div
+                class="col-md-1 mt-2 mr-2 edit_but"
+                style="cursor: pointer"
+                (click)="viewDocument(col)"
+              >
+                <i class="fa fa-file-text-o"></i>
+              </div>
+              <!-- <button nbButton status="primary" size="tiny" (click)="fireTestEmail(col._id)">Test Email</button> -->
+            </td>
+          </tr>
+        </ng-container>
+      </table>
+    </div>
+  </nb-card-body>
+</nb-card>
